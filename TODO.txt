@@ -1,0 +1,31 @@
+List of To Do's
+
+----------------------------------------------------------
+DSL:
+- Build the whole thing
+
+
+----------------------------------------------------------
+Lexical Analyser:
+- Build the whole thing
+
+
+----------------------------------------------------------
+Syntax Analyser:
+- Build the whole thing
+
+
+----------------------------------------------------------
+Semantic Analyser:
+- Build the whole thing
+
+
+----------------------------------------------------------
+Intermediate code generator:
+- Build the whole thing
+
+
+----------------------------------------------------------
+Optimizations:
+- Do the whole thing
+
