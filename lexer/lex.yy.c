@@ -589,8 +589,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "test.l"
-#line 2 "test.l"
+#line 1 "lexer.l"
+#line 2 "lexer.l"
 #include <stdio.h>
 // #include "y.tab.h"
 
@@ -813,7 +813,7 @@ YY_DECL
 		}
 
 	{
-#line 11 "test.l"
+#line 11 "lexer.l"
 
 
 #line 820 "lex.yy.c"
@@ -876,431 +876,431 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 13 "test.l"
+#line 13 "lexer.l"
 ;
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 14 "test.l"
+#line 14 "lexer.l"
 ;   
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 16 "test.l"
-{count(); /* return (INTEGER); */}
+#line 16 "lexer.l"
+{count(); return (INTEGER);}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 17 "test.l"
-{count(); /* return (FLOAT); */}
+#line 17 "lexer.l"
+{count(); return (FLOAT);}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 18 "test.l"
-{count(); /* return (STRING); */}
+#line 18 "lexer.l"
+{count(); return (STRING);}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 19 "test.l"
-{count(); /* return (CHAR); */}
+#line 19 "lexer.l"
+{count(); return (CHAR);}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 20 "test.l"
-{count(); /* return (BOOL); */}
+#line 20 "lexer.l"
+{count(); return (BOOL);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 21 "test.l"
-{count(); /* return (DATASET); */}
+#line 21 "lexer.l"
+{count(); return (DATASET);}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 22 "test.l"
-{count(); /* return (ARRAY); */}
+#line 22 "lexer.l"
+{count(); return (ARRAY);}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 24 "test.l"
-{count(); /* return (IF); */}
+#line 24 "lexer.l"
+{count(); return (IF);}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 25 "test.l"
-{count(); /* return (ELSE); */}
+#line 25 "lexer.l"
+{count(); return (ELSE);}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 26 "test.l"
-{count(); /* return (LOOP); */}
+#line 26 "lexer.l"
+{count(); return (LOOP);}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 27 "test.l"
-{count(); /* return (BREAK); */}
+#line 27 "lexer.l"
+{count(); return (BREAK);}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 28 "test.l"
-{count(); /* return (CONTINUE); */}
+#line 28 "lexer.l"
+{count(); return (CONTINUE);}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 29 "test.l"
-{count(); /* return (RETURN); */}
+#line 29 "lexer.l"
+{count(); return (RETURN);}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 30 "test.l"
-{count(); /* return (FUNCTION); */}
+#line 30 "lexer.l"
+{count(); return (FUNCTION);}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 32 "test.l"
-{count(); /* return (OR); */}
+#line 32 "lexer.l"
+{count(); return (OR);}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 33 "test.l"
-{count(); /* return (AND); */}
+#line 33 "lexer.l"
+{count(); return (AND);}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 34 "test.l"
-{count(); /* return (NOT); */}
+#line 34 "lexer.l"
+{count(); return (NOT);}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 36 "test.l"
-{count(); /* return (FROM); */}
+#line 36 "lexer.l"
+{count(); return (FROM);}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 37 "test.l"
-{count(); /* return (TO); */}
+#line 37 "lexer.l"
+{count(); return (TO);}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 38 "test.l"
-{count(); /* return (STEP); */}
+#line 38 "lexer.l"
+{count(); return (STEP);}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 39 "test.l"
-{count(); /* return (ALSO); */}
+#line 39 "lexer.l"
+{count(); return (ALSO);}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 41 "test.l"
-{count(); /* return (ROW); */}
+#line 41 "lexer.l"
+{count(); return (ROW);}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 42 "test.l"
-{count(); /* return (COL); */}
+#line 42 "lexer.l"
+{count(); return (COL);}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 43 "test.l"
-{count(); /* return (FILTER); */}
+#line 43 "lexer.l"
+{count(); return (FILTER);}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 44 "test.l"
-{count(); /* return (SUM); */}
+#line 44 "lexer.l"
+{count(); return (SUM);}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 45 "test.l"
-{count(); /* return (MAX); */}
+#line 45 "lexer.l"
+{count(); return (MAX);}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 46 "test.l"
-{count(); /* return (MIN); */}
+#line 46 "lexer.l"
+{count(); return (MIN);}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 47 "test.l"
-{count(); /* return (MEAN); */}
+#line 47 "lexer.l"
+{count(); return (MEAN);}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 48 "test.l"
-{count(); /* return (JOIN); */}
+#line 48 "lexer.l"
+{count(); return (JOIN);}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 49 "test.l"
-{count(); /* return (READ); */}
+#line 49 "lexer.l"
+{count(); return (READ);}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 50 "test.l"
-{count(); /* return (WRITE); */}
+#line 50 "lexer.l"
+{count(); return (WRITE);}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 51 "test.l"
-{count(); /* return (UNIQUE); */}
+#line 51 "lexer.l"
+{count(); return (UNIQUE);}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 52 "test.l"
-{count(); /* return (SHOW); */}
+#line 52 "lexer.l"
+{count(); return (SHOW);}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 53 "test.l"
-{count(); /* return (SPLIT); */}
+#line 53 "lexer.l"
+{count(); return (SPLIT);}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 54 "test.l"
-{count(); /* return (SORT); */}
+#line 54 "lexer.l"
+{count(); return (SORT);}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 55 "test.l"
-{count(); /* return (SHUFFLE); */}
+#line 55 "lexer.l"
+{count(); return (SHUFFLE);}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 56 "test.l"
-{count(); /* return (ADD); */}
+#line 56 "lexer.l"
+{count(); return (ADD);}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 57 "test.l"
-{count(); /* return (SHAPE); */}
+#line 57 "lexer.l"
+{count(); return (SHAPE);}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 58 "test.l"
-{count(); /* return (DROP); */}
+#line 58 "lexer.l"
+{count(); return (DROP);}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 60 "test.l"
-{count();/*  return (SHOW_bar); */}
+#line 60 "lexer.l"
+{count(); return (SHOW_bar);}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 61 "test.l"
-{count();/*  return (SHOW_SCATTER); */}
+#line 61 "lexer.l"
+{count(); return (SHOW_SCATTER);}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 62 "test.l"
-{count();/*  return (SHOW_LINE); */}
+#line 62 "lexer.l"
+{count(); return (SHOW_LINE);}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 63 "test.l"
-{count(); /* return (SHOW_BOX); */}
+#line 63 "lexer.l"
+{count(); return (SHOW_BOX);}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 65 "test.l"
-{count(); /* return (FUNC_LABEL); */}
+#line 65 "lexer.l"
+{count(); return (FUNC_LABEL);}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 66 "test.l"
-{count(); /* return (START_LABEL); */}
+#line 66 "lexer.l"
+{count(); return (START_LABEL);}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 68 "test.l"
-{count(); /* return (IDENTIFIER); */}	
+#line 68 "lexer.l"
+{count(); return (IDENTIFIER);}	
 	YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 69 "test.l"
-{count(); /* return (STRING_LITERAL); */}
+#line 69 "lexer.l"
+{count(); return (STRING_LITERAL);}
 	YY_BREAK
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
-#line 70 "test.l"
-{count(); /* return (CONSTANT); */}
+#line 70 "lexer.l"
+{count(); return (CONSTANT);}
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 71 "test.l"
-{count(); /* return (CONSTANT); */}
+#line 71 "lexer.l"
+{count(); return (CONSTANT);}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 72 "test.l"
-{count(); /* return (CONSTANT); */}
+#line 72 "lexer.l"
+{count(); return (CONSTANT);}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 73 "test.l"
-{count(); /* return (CONSTANT); */}
+#line 73 "lexer.l"
+{count(); return (CONSTANT);}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 76 "test.l"
-{count(); /* return (ADD_ASSIGN); */}
+#line 76 "lexer.l"
+{count(); return (ADD_ASSIGN);}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 77 "test.l"
-{count(); /* return (SUB_ASSIGN); */}
+#line 77 "lexer.l"
+{count(); return (SUB_ASSIGN);}
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 78 "test.l"
-{count(); /* return (MUL_ASSIGN); */}
+#line 78 "lexer.l"
+{count(); return (MUL_ASSIGN);}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 79 "test.l"
-{count(); /* return (DIV_ASSIGN); */}
+#line 79 "lexer.l"
+{count(); return (DIV_ASSIGN);}
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 80 "test.l"
-{count(); /* return (MOD_ASSIGN); */}
+#line 80 "lexer.l"
+{count(); return (MOD_ASSIGN);}
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 81 "test.l"
-{count(); /* return (EQ_OP); */}
+#line 81 "lexer.l"
+{count(); return (EQ_OP);}
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 82 "test.l"
-{count(); /* return ('='); */}
+#line 82 "lexer.l"
+{count(); return ('=');}
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 83 "test.l"
-{count(); /* return ('+'); */}
+#line 83 "lexer.l"
+{count(); return ('+');}
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 84 "test.l"
-{count(); /* return ('-'); */}
+#line 84 "lexer.l"
+{count(); return ('-');}
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 85 "test.l"
-{count(); /* return ('/'); */}
+#line 85 "lexer.l"
+{count(); return ('/');}
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 86 "test.l"
-{count(); /* return ('*'); */}
+#line 86 "lexer.l"
+{count(); return ('*');}
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 87 "test.l"
-{count(); /* return ('%'); */}
+#line 87 "lexer.l"
+{count(); return ('%');}
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 88 "test.l"
-{count(); /* return (INC_OP); */}
+#line 88 "lexer.l"
+{count(); return (INC_OP);}
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 89 "test.l"
-{count(); /* return (DEC_OP); */}
+#line 89 "lexer.l"
+{count(); return (DEC_OP);}
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 90 "test.l"
-{count(); /* return ('>'); */}
+#line 90 "lexer.l"
+{count(); return ('>');}
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 91 "test.l"
-{count(); /* return ('<'); */}
+#line 91 "lexer.l"
+{count(); return ('<');}
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 92 "test.l"
-{count(); /* return (GE_OP); */}
+#line 92 "lexer.l"
+{count(); return (GE_OP);}
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 93 "test.l"
-{count(); /* return (LE_OP); */}
+#line 93 "lexer.l"
+{count(); return (LE_OP);}
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 94 "test.l"
-{count(); /* return (NE_OP); */}
+#line 94 "lexer.l"
+{count(); return (NE_OP);}
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 95 "test.l"
-{count(); /* return (FLOW); */}
+#line 95 "lexer.l"
+{count(); return (FLOW);}
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 96 "test.l"
-{count(); /* return (';'); */}
+#line 96 "lexer.l"
+{count(); return (';');}
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 97 "test.l"
-{count(); /* return ('('); */}
+#line 97 "lexer.l"
+{count(); return ('(');}
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 98 "test.l"
-{count(); /* return (')'); */}
+#line 98 "lexer.l"
+{count(); return (')');}
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 99 "test.l"
-{count(); /* return ('!'); */}
+#line 99 "lexer.l"
+{count(); return ('!');}
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 100 "test.l"
-{count(); /* return (','); */}
+#line 100 "lexer.l"
+{count(); return (',');}
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 101 "test.l"
-{count(); /* return ('{'); */}
+#line 101 "lexer.l"
+{count(); return ('{');}
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 102 "test.l"
-{count(); /* return ('}'); */}
+#line 102 "lexer.l"
+{count(); return ('}');}
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 103 "test.l"
-{count(); /* return ('['); */}
+#line 103 "lexer.l"
+{count(); return ('[');}
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 104 "test.l"
-{count(); /* return (']'); */}
+#line 104 "lexer.l"
+{count(); return (']');}
 	YY_BREAK
 case 83:
 /* rule 83 can match eol */
 YY_RULE_SETUP
-#line 107 "test.l"
+#line 107 "lexer.l"
 {}
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 108 "test.l"
+#line 108 "lexer.l"
 {puts("error in lexing"); /* ignore */}
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 110 "test.l"
+#line 110 "lexer.l"
 ECHO;
 	YY_BREAK
 #line 1307 "lex.yy.c"
@@ -2308,31 +2308,10 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 110 "test.l"
+#line 110 "lexer.l"
 
 
 void count() {
     ECHO;
-    printf("\n");
-}
-
-int yywrap() {
-    return 1;
-}
-
-int main(int argc, char** argv) {
-	if(argc >= 2){
-		yyin = fopen(argv[1] ,"r");
-		if(yyin ==NULL){
-			printf("File not found\n");
-			return 0;
-		}
-	}
-	else{
-		puts("error: usage: ./lexer.out <filename>");
-		return 0;
-	}
-	yylex();
-    fclose(yyin);
-	return 0;
+    printf("\t");
 }

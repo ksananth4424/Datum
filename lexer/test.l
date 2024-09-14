@@ -110,8 +110,8 @@ L			[a-zA-Z_]
 %%
 
 void count() {
-    ECHO;
-    printf("\n");
+    // ECHO;
+    // printf("\n");
 }
 
 int yywrap() {
