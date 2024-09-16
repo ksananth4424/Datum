@@ -1,0 +1,33 @@
+$$ First convert each row with their respective probabilities row-wise and split to train and test sets with ratios 0.8 and 0.2 respectively.
+
+function_declarations:
+
+function (dataset ds1) -> train_test_split(float testSize) -> (dataset,dataset) 
+{
+    ds->shuffle();
+    float trainSize = 1 - testSize;
+    array(ds) splitDs = ds->split([trainSize, testSize]);
+    return splitDs[0], splitDs[1];
+}
+
+function (dataset ds) -> convert_rows_to_orobabilities() -> (dataset)
+{
+    ds->row({r = r/r->sum()});
+    return ds;
+}
+
+start:
+
+dataset ds = read("./dataset.csv", "csv")
+
+train, test = ds->convert_rows_to_orobabilities()->train_test_split(0.2);
+
+X_train = train->col(to 10)
+y_train = train->col(10)
+X_test = test->col(to 10)
+y_test = test->col(10)
+
+X_train -> write("./x-train", "csv");
+y_train -> write("./y-train", "csv");
+X_test -> write("./x-test", "csv");
+y_test -> write("./y-test", "csv");
