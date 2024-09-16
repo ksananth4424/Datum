@@ -1,0 +1,8 @@
+start:
+float a = 1.23421;
+float b = .248389; 
+float c = 842398.;
+string s = "084328\n\r\n\3235jl''sjaf";
+string u = "sjklfs0234"
+integer x = 3248098234;
+char t = 'a'

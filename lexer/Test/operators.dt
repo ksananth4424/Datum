@@ -1,0 +1,15 @@
+start:
+integer x = 42234;
+integer y = 2308042;
+integer z = x * y + y / (x % y) - y * (2 + x) * (x < y);
+z++;
+z += 4;
+z -= z * y;
+z /= 532;
+if ((z %= 2) == 0) {
+    $! ;jlsda
+    asdfjlkjasd
+    fsdlj lj 
+
+    !$
+}
