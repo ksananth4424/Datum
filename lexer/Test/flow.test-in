@@ -1,0 +1,34 @@
+$$ Iterative control flow
+
+if(condition1){
+    if(condition2){
+
+    } 
+    if(condition3){
+
+    } else if (condition4){
+
+    } else {
+        integer x = 5;
+    }
+} else {
+    integer y = 6;
+}
+
+loop( i from 0 to 100){
+    
+}
+
+loop (i from 0 to 100 step j){
+    integer x = 9;
+    if(condition1) break;
+    if(condition2) continue;
+    loop(k from 0 to i step j){
+        loop (l from 0 to x step y){
+            x*=9;
+            $! yet another
+            integer c = 121;
+            multi-line comment !$
+        }
+    }
+}
