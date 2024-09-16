@@ -1,0 +1,51 @@
+$$ Function definitions
+function_declarations:
+function (string filePath) -> initialize_data() -> (dataset) {
+    dataset newData = read(filePath, "csv");
+    return newData;
+}
+
+function (array nums, integer size)  -> calculate_average() -> (float) {
+    float sum = 0;
+    loop i from 0 to size {
+        sum += nums[i];
+    }
+    return sum / length(nums);
+}
+
+start:
+integer count = 0;
+float average = 0.0;
+string name = "Sample Dataset";
+bool isActive = true;
+array numbers = [1, 2, 3, 4, 5];
+dataset data;
+
+string filePath = "input.csv"
+data = filePath -> initialise_data();
+average = (nums,5) -> calculate_average();
+
+$$ Conditional logic
+if (isActive and average > 10.0) {
+    integer max_value = data -> max();
+    integer min_value = data -> min();
+    "Max value: " -> show();
+    max_value -> show();
+    "Min value: " -> show();
+    min_value -> show();
+} else {
+    "Average is low." -> show();
+}
+
+$$ Loop with step
+loop i from 0 to 5 step 1 {
+    integer evenTotal = 0;
+    "Processing number: " -> show();
+    numbers[i] -> show();
+    if (numbers[i] % 2 == 0) {
+        evenTotal += numbers[i];
+    } else {
+        "Odd number: " -> show();
+        numbers[i] -> show();
+    }
+}
