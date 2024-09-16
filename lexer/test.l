@@ -110,7 +110,6 @@ L			[a-zA-Z_]
 
 void count() {
     ECHO;
-	fprintf(yyout, "\n");
     printf("\n");
 }
 
@@ -130,13 +129,7 @@ int main(int argc, char** argv) {
 		puts("error: usage: ./lexer.out <filename>");
 		return 0;
 	}
-	yyout = fopen("output.txt", "w");
-	if(yyout == NULL){
-		printf("Error opening file\n");
-		return 0;
-	}
 	yylex();
     fclose(yyin);
-	fclose(yyout);
 	return 0;
 }

@@ -593,9 +593,10 @@ char *yytext;
 #line 2 "test.l"
 #include <stdio.h>
 // #include "y.tab.h"
+
 void count();
-#line 598 "lex.yy.c"
 #line 599 "lex.yy.c"
+#line 600 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -812,10 +813,10 @@ YY_DECL
 		}
 
 	{
-#line 10 "test.l"
+#line 11 "test.l"
 
 
-#line 819 "lex.yy.c"
+#line 820 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -875,434 +876,434 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 12 "test.l"
+#line 13 "test.l"
 ;
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 13 "test.l"
+#line 14 "test.l"
 ;   
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 15 "test.l"
+#line 16 "test.l"
 {count(); /* return (INTEGER); */}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 16 "test.l"
+#line 17 "test.l"
 {count(); /* return (FLOAT); */}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 17 "test.l"
+#line 18 "test.l"
 {count(); /* return (STRING); */}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 18 "test.l"
+#line 19 "test.l"
 {count(); /* return (CHAR); */}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 19 "test.l"
+#line 20 "test.l"
 {count(); /* return (BOOL); */}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 20 "test.l"
+#line 21 "test.l"
 {count(); /* return (DATASET); */}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 21 "test.l"
+#line 22 "test.l"
 {count(); /* return (ARRAY); */}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 23 "test.l"
+#line 24 "test.l"
 {count(); /* return (IF); */}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 24 "test.l"
+#line 25 "test.l"
 {count(); /* return (ELSE); */}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 25 "test.l"
+#line 26 "test.l"
 {count(); /* return (LOOP); */}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 26 "test.l"
+#line 27 "test.l"
 {count(); /* return (BREAK); */}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 27 "test.l"
+#line 28 "test.l"
 {count(); /* return (CONTINUE); */}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 28 "test.l"
+#line 29 "test.l"
 {count(); /* return (RETURN); */}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 29 "test.l"
+#line 30 "test.l"
 {count(); /* return (FUNCTION); */}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 31 "test.l"
+#line 32 "test.l"
 {count(); /* return (OR); */}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 32 "test.l"
+#line 33 "test.l"
 {count(); /* return (AND); */}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 33 "test.l"
+#line 34 "test.l"
 {count(); /* return (NOT); */}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 35 "test.l"
+#line 36 "test.l"
 {count(); /* return (FROM); */}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 36 "test.l"
+#line 37 "test.l"
 {count(); /* return (TO); */}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 37 "test.l"
+#line 38 "test.l"
 {count(); /* return (STEP); */}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 38 "test.l"
+#line 39 "test.l"
 {count(); /* return (ALSO); */}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 40 "test.l"
+#line 41 "test.l"
 {count(); /* return (ROW); */}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 41 "test.l"
+#line 42 "test.l"
 {count(); /* return (COL); */}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 42 "test.l"
+#line 43 "test.l"
 {count(); /* return (FILTER); */}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 43 "test.l"
+#line 44 "test.l"
 {count(); /* return (SUM); */}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 44 "test.l"
+#line 45 "test.l"
 {count(); /* return (MAX); */}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 45 "test.l"
+#line 46 "test.l"
 {count(); /* return (MIN); */}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 46 "test.l"
+#line 47 "test.l"
 {count(); /* return (MEAN); */}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 47 "test.l"
+#line 48 "test.l"
 {count(); /* return (JOIN); */}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 48 "test.l"
+#line 49 "test.l"
 {count(); /* return (READ); */}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 49 "test.l"
+#line 50 "test.l"
 {count(); /* return (WRITE); */}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 50 "test.l"
+#line 51 "test.l"
 {count(); /* return (UNIQUE); */}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 51 "test.l"
+#line 52 "test.l"
 {count(); /* return (SHOW); */}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 52 "test.l"
+#line 53 "test.l"
 {count(); /* return (SPLIT); */}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 53 "test.l"
+#line 54 "test.l"
 {count(); /* return (SORT); */}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 54 "test.l"
+#line 55 "test.l"
 {count(); /* return (SHUFFLE); */}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 55 "test.l"
+#line 56 "test.l"
 {count(); /* return (ADD); */}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 56 "test.l"
+#line 57 "test.l"
 {count(); /* return (SHAPE); */}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 57 "test.l"
+#line 58 "test.l"
 {count(); /* return (DROP); */}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 59 "test.l"
+#line 60 "test.l"
 {count();/*  return (SHOW_bar); */}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 60 "test.l"
+#line 61 "test.l"
 {count();/*  return (SHOW_SCATTER); */}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 61 "test.l"
+#line 62 "test.l"
 {count();/*  return (SHOW_LINE); */}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 62 "test.l"
+#line 63 "test.l"
 {count(); /* return (SHOW_BOX); */}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 64 "test.l"
+#line 65 "test.l"
 {count(); /* return (FUNC_LABEL); */}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 65 "test.l"
+#line 66 "test.l"
 {count(); /* return (START_LABEL); */}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 67 "test.l"
+#line 68 "test.l"
 {count(); /* return (IDENTIFIER); */}	
 	YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 68 "test.l"
+#line 69 "test.l"
 {count(); /* return (STRING_LITERAL); */}
 	YY_BREAK
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
-#line 69 "test.l"
+#line 70 "test.l"
 {count(); /* return (CONSTANT); */}
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 70 "test.l"
+#line 71 "test.l"
 {count(); /* return (CONSTANT); */}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 71 "test.l"
+#line 72 "test.l"
 {count(); /* return (CONSTANT); */}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 72 "test.l"
+#line 73 "test.l"
 {count(); /* return (CONSTANT); */}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 75 "test.l"
+#line 76 "test.l"
 {count(); /* return (ADD_ASSIGN); */}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 76 "test.l"
+#line 77 "test.l"
 {count(); /* return (SUB_ASSIGN); */}
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 77 "test.l"
+#line 78 "test.l"
 {count(); /* return (MUL_ASSIGN); */}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 78 "test.l"
+#line 79 "test.l"
 {count(); /* return (DIV_ASSIGN); */}
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 79 "test.l"
+#line 80 "test.l"
 {count(); /* return (MOD_ASSIGN); */}
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 80 "test.l"
+#line 81 "test.l"
 {count(); /* return (EQ_OP); */}
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 81 "test.l"
+#line 82 "test.l"
 {count(); /* return ('='); */}
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 82 "test.l"
+#line 83 "test.l"
 {count(); /* return ('+'); */}
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 83 "test.l"
+#line 84 "test.l"
 {count(); /* return ('-'); */}
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 84 "test.l"
+#line 85 "test.l"
 {count(); /* return ('/'); */}
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 85 "test.l"
+#line 86 "test.l"
 {count(); /* return ('*'); */}
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 86 "test.l"
+#line 87 "test.l"
 {count(); /* return ('%'); */}
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 87 "test.l"
+#line 88 "test.l"
 {count(); /* return (INC_OP); */}
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 88 "test.l"
+#line 89 "test.l"
 {count(); /* return (DEC_OP); */}
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 89 "test.l"
+#line 90 "test.l"
 {count(); /* return ('>'); */}
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 90 "test.l"
+#line 91 "test.l"
 {count(); /* return ('<'); */}
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 91 "test.l"
+#line 92 "test.l"
 {count(); /* return (GE_OP); */}
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 92 "test.l"
+#line 93 "test.l"
 {count(); /* return (LE_OP); */}
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 93 "test.l"
+#line 94 "test.l"
 {count(); /* return (NE_OP); */}
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 94 "test.l"
+#line 95 "test.l"
 {count(); /* return (FLOW); */}
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 95 "test.l"
+#line 96 "test.l"
 {count(); /* return (';'); */}
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 96 "test.l"
+#line 97 "test.l"
 {count(); /* return ('('); */}
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 97 "test.l"
+#line 98 "test.l"
 {count(); /* return (')'); */}
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 98 "test.l"
+#line 99 "test.l"
 {count(); /* return ('!'); */}
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 99 "test.l"
+#line 100 "test.l"
 {count(); /* return (','); */}
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 100 "test.l"
+#line 101 "test.l"
 {count(); /* return ('{'); */}
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 101 "test.l"
+#line 102 "test.l"
 {count(); /* return ('}'); */}
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 102 "test.l"
+#line 103 "test.l"
 {count(); /* return ('['); */}
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 103 "test.l"
+#line 104 "test.l"
 {count(); /* return (']'); */}
 	YY_BREAK
 case 83:
 /* rule 83 can match eol */
 YY_RULE_SETUP
-#line 106 "test.l"
+#line 107 "test.l"
 {}
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 107 "test.l"
+#line 108 "test.l"
 {puts("error in lexing"); /* ignore */}
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 109 "test.l"
+#line 110 "test.l"
 ECHO;
 	YY_BREAK
-#line 1306 "lex.yy.c"
+#line 1307 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2307,12 +2308,11 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 109 "test.l"
+#line 110 "test.l"
 
 
 void count() {
     ECHO;
-	// fprintf(yyout, "\n");
     printf("\n");
 }
 
@@ -2332,14 +2332,7 @@ int main(int argc, char** argv) {
 		puts("error: usage: ./lexer.out <filename>");
 		return 0;
 	}
-	// open file 
-	// yyout = fopen("output.txt", "w");
-	// if(yyout == NULL){
-		// printf("Error opening file\n");
-		// return 0;
-	// }
 	yylex();
     fclose(yyin);
-	fclose(yyout);
 	return 0;
 }

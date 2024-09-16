@@ -2,7 +2,7 @@ all-tests := $(addsuffix .test, $(basename $(wildcard *.test-in)))
 prog-tests := $(addsuffix .dt.test, $(basename $(wildcard *.dt)))
 EXEC := test.o
 
-.PHONY : test all %.dt.test
+.PHONY : test all %.test
 
 test : $(EXEC) $(all-tests) $(prog-tests)
 		(grep 1 .command.status > .command.null &&\
