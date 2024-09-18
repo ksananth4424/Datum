@@ -1,198 +1,77 @@
-integer
-first_int
-;
-float
-first_float
-;
-char
-first_char
-;
-string
-first_string
-;
-bool
-first_bool
-;
-dataset
-first_dataset
-;
-array
-first_array
-;
-integer
-second_int
-;
-float
-second_float
-;
-char
-second_char
-;
-string
-second_string
-;
-bool
-second_bool
-;
-dataset
-second_dataset
-;
-array
-second_array
-;
-first_int
-++
-;
-first_int
---
-;
-first_int
-=
-first_int
-+
-second_int
-;
-first_int
-=
-first_int
--
-second_int
-;
-first_int
-=
-first_int
-*
-second_int
-;
-first_int
-=
-first_int
-/
-second_int
-;
-first_int
-=
-first_int
-%
-second_int
-;
-first_int
-=
-second_int
-;
-first_float
-*=
-second_float
-;
-first_float
-/=
-second_float
-;
-first_float
-%=
-second_float
-;
-first_float
-+=
-second_float
-;
-first_float
--=
-second_float
-;
-if
-(
-first_int
->
-second_int
-)
-{
-first_int
-=
-second_int
-;
-}
-if
-(
-first_int
-<
-second_int
-)
-{
-first_int
-=
-second_int
-;
-}
-if
-(
-first_int
->=
-second_int
-)
-{
-first_int
-=
-second_int
-;
-}
-if
-(
-first_int
-<=
-second_int
-)
-{
-first_int
-=
-second_int
-;
-}
-if
-(
-first_int
-==
-second_int
-)
-{
-first_int
-=
-second_int
-;
-}
-if
-(
-first_int
-!=
-second_int
-)
-{
-first_int
-=
-second_int
-;
-}
-if
-(
-first_int
-and
-second_int
-)
-{
-first_int
-=
-second_int
-;
-}
-if
-(
-first_int
-or
-second_int
-)
-{
-first_int
-=
-second_int
-;
-}
+
+ INTEGER  IDENTIFIER ;
+ FLOAT  IDENTIFIER ;
+ CHAR  IDENTIFIER ;
+ STRING  IDENTIFIER ;
+ BOOL  IDENTIFIER ;
+ DATASET  IDENTIFIER ;
+ ARRAY  IDENTIFIER ;
+
+ INTEGER  IDENTIFIER ;
+ FLOAT  IDENTIFIER ;
+ CHAR  IDENTIFIER ;
+ STRING  IDENTIFIER ;
+ BOOL  IDENTIFIER ;
+ DATASET  IDENTIFIER ;
+ ARRAY  IDENTIFIER ;
+
+
+
+
+	
+
+
+	
+	
+
+
+
+
+ IDENTIFIER INC_OP ;
+ IDENTIFIER DEC_OP ;
+ IDENTIFIER  =  IDENTIFIER  +  IDENTIFIER ;
+ IDENTIFIER  =  IDENTIFIER  -  IDENTIFIER ;
+ IDENTIFIER  =  IDENTIFIER  *  IDENTIFIER ;
+ IDENTIFIER  =  IDENTIFIER  /  IDENTIFIER ;
+ IDENTIFIER  =  IDENTIFIER  %  IDENTIFIER ;
+ IDENTIFIER  =   IDENTIFIER ;
+ IDENTIFIER  MUL_ASSIGN  IDENTIFIER ;
+ IDENTIFIER  DIV_ASSIGN  IDENTIFIER ;
+ IDENTIFIER  MOD_ASSIGN  IDENTIFIER ;
+ IDENTIFIER  ADD_ASSIGN  IDENTIFIER ;
+ IDENTIFIER  SUB_ASSIGN  IDENTIFIER ;
+
+
+ IF ( IDENTIFIER  >  IDENTIFIER )
+ {
+	 IDENTIFIER  =  IDENTIFIER ;
+ }
+ IF ( IDENTIFIER  <  IDENTIFIER )
+ {
+         IDENTIFIER  =  IDENTIFIER ;
+ }
+ IF ( IDENTIFIER  GE_OP  IDENTIFIER )
+ {
+         IDENTIFIER  =  IDENTIFIER ;
+ }
+ IF ( IDENTIFIER  LE_OP  IDENTIFIER )
+ {
+         IDENTIFIER  =  IDENTIFIER ;
+ }
+ IF ( IDENTIFIER  EQ_OP  IDENTIFIER )
+ {
+         IDENTIFIER  =  IDENTIFIER ;
+ }
+ IF ( IDENTIFIER  NE_OP  IDENTIFIER )
+ {
+         IDENTIFIER  =  IDENTIFIER ;
+ }
+
+ IF ( IDENTIFIER  AND  IDENTIFIER )
+ {
+         IDENTIFIER  =  IDENTIFIER ;
+ }
+ IF ( IDENTIFIER  OR  IDENTIFIER )
+ {
+         IDENTIFIER  =  IDENTIFIER ;
+ }

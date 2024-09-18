@@ -8,12 +8,13 @@ Prepare whitepaper
 
 ----------------------------------------------------------
 DSL:
-- Build the whole thing
+- Lexer Done
+- Rest left to do
 
 
 ----------------------------------------------------------
 Lexical Analyser:
-- Actions and tests left
+- Done
 
 
 ----------------------------------------------------------

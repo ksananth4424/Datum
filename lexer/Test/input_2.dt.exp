@@ -1,119 +1,26 @@
-function_declarations:
-function
-(
-dataset
-ds
-)
-->
-my_func
-(
-dataset
-ds1
-,
-dataset
-ds2
-,
-int
-i
-)
-->
-dataset
-{
-dataset
-ds1
-;
-ds
-=
-ds1
-;
-array
-(
-int
-)
-arr
-=
-{
-1
-,
-2
-,
-3
-}
-;
-ds
-(
-"'height'"
-)
-*=
-10
-;
-(
-ds1
-,
-ds2
-)
-->
-join
-(
-{
-int
-i
-;
-}
-)
-->
-Roww
-(
-to
-10
-)
-->
-show
-(
-)
-;
-string
-st
-=
-"string'f"
-return
-ds3
-;
-}
-start:
-dataset
-ds
-=
-read
-(
+
+
+ FUNC_LABEL
+ FUNCTION  ( DATASET  IDENTIFIER ) FLOW IDENTIFIER ( DATASET  IDENTIFIER ,  DATASET  IDENTIFIER ,  IDENTIFIER  IDENTIFIER ) FLOW DATASET {
+     DATASET  IDENTIFIER ;
+     IDENTIFIER  =  IDENTIFIER ;
+     ARRAY ( IDENTIFIER )  IDENTIFIER  =  { CONSTANT ,  CONSTANT ,  CONSTANT } ;
+     IDENTIFIER ( STRING_LITERAL )  MUL_ASSIGN  CONSTANT ;
+     ( IDENTIFIER , IDENTIFIER ) FLOW JOIN ( {
+         IDENTIFIER  IDENTIFIER ;
+     } ) FLOW  IDENTIFIER  (  TO  CONSTANT )  FLOW  SHOW  ( )  ;
+     STRING  IDENTIFIER  =  STRING_LITERAL
+     RETURN  IDENTIFIER ;
+ }
+
+
+ START_LABEL
+ DATASET  IDENTIFIER  =  READ (error in lexing
+ IDENTIFIERerror in lexing
+ , error in lexing
+ IDENTIFIERerror in lexing
+ )  DATASET  IDENTIFIER ,  IDENTIFIER FLOW IDENTIFIER ( ) ;
+ IDENTIFIER FLOW COL ( IDENTIFIER ) FLOW SHOW_bar ( )
 error in lexing
-ds
-error in lexing
-,
-error in lexing
-csv
-error in lexing
-)
-dataset
-d1
-,
-ds2
-->
-myfunc
-(
-)
-;
-ds
-->
-col
-(
-i
-)
-->
-show_bar
-(
-)
-error in lexing
-!
-invalid
-comment
+ !
+ IDENTIFIER  IDENTIFIER

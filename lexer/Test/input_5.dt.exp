@@ -1,267 +1,48 @@
-function_declarations:
-function
-(
-string
-filePath
-)
-->
-initialize_data
-(
-)
-->
-(
-dataset
-)
-{
-dataset
-newData
-=
-read
-(
-filePath
-,
-"csv"
-)
-;
-return
-newData
-;
-}
-function
-(
-array
-nums
-,
-integer
-size
-)
-->
-calculate_average
-(
-)
-->
-(
-float
-)
-{
-float
-sum
-=
-0
-;
-loop
-i
-from
-0
-to
-size
-{
-sum
-+=
-nums
-[
-i
-]
-;
-}
-return
-sum
-/
-length
-(
-nums
-)
-;
-}
-start:
-integer
-count
-=
-0
-;
-float
-average
-=
-0.0
-;
-string
-name
-=
-"Sample Dataset"
-;
-bool
-isActive
-=
-true
-;
-array
-numbers
-=
-[
-1
-,
-2
-,
-3
-,
-4
-,
-5
-]
-;
-dataset
-data
-;
-string
-filePath
-=
-"input.csv"
-data
-=
-filePath
-->
-initialise_data
-(
-)
-;
-average
-=
-(
-nums
-,
-5
-)
-->
-calculate_average
-(
-)
-;
-if
-(
-isActive
-and
-average
->
-10.0
-)
-{
-integer
-max_value
-=
-data
-->
-max
-(
-)
-;
-integer
-min_value
-=
-data
-->
-min
-(
-)
-;
-"Max value: "
-->
-show
-(
-)
-;
-max_value
-->
-show
-(
-)
-;
-"Min value: "
-->
-show
-(
-)
-;
-min_value
-->
-show
-(
-)
-;
-}
-else
-{
-"Average is low."
-->
-show
-(
-)
-;
-}
-loop
-i
-from
-0
-to
-5
-step
-1
-{
-integer
-evenTotal
-=
-0
-;
-"Processing number: "
-->
-show
-(
-)
-;
-numbers
-[
-i
-]
-->
-show
-(
-)
-;
-if
-(
-numbers
-[
-i
-]
-%
-2
-==
-0
-)
-{
-evenTotal
-+=
-numbers
-[
-i
-]
-;
-}
-else
-{
-"Odd number: "
-->
-show
-(
-)
-;
-numbers
-[
-i
-]
-->
-show
-(
-)
-;
-}
-}
+ FUNC_LABEL
+ FUNCTION  ( STRING  IDENTIFIER )  FLOW  IDENTIFIER ( )  FLOW  ( DATASET )  {
+     DATASET  IDENTIFIER  =  READ ( IDENTIFIER ,  STRING_LITERAL ) ;
+     RETURN  IDENTIFIER ;
+ }
+
+ FUNCTION  ( ARRAY  IDENTIFIER ,  INTEGER  IDENTIFIER )   FLOW  IDENTIFIER ( )  FLOW  ( FLOAT )  {
+     FLOAT  SUM  =  CONSTANT ;
+     LOOP  IDENTIFIER  FROM  CONSTANT  TO  IDENTIFIER  {
+         SUM  ADD_ASSIGN  IDENTIFIER [ IDENTIFIER ] ;
+     }
+     RETURN  SUM  /  IDENTIFIER ( IDENTIFIER ) ;
+ }
+
+ START_LABEL
+ INTEGER  IDENTIFIER  =  CONSTANT ;
+ FLOAT  IDENTIFIER  =  CONSTANT ;
+ STRING  IDENTIFIER  =  STRING_LITERAL ;
+ BOOL  IDENTIFIER  =  IDENTIFIER ;
+ ARRAY  IDENTIFIER  =  [ CONSTANT ,  CONSTANT ,  CONSTANT ,  CONSTANT ,  CONSTANT ] ;
+ DATASET  IDENTIFIER ;
+
+ STRING  IDENTIFIER  =  STRING_LITERAL
+ IDENTIFIER  =  IDENTIFIER  FLOW  IDENTIFIER ( ) ;
+ IDENTIFIER  =  ( IDENTIFIER , CONSTANT )  FLOW  IDENTIFIER ( ) ;
+
+ IF  ( IDENTIFIER  AND  IDENTIFIER  >  CONSTANT )  {
+     INTEGER  IDENTIFIER  =  IDENTIFIER  FLOW  MAX ( ) ;
+     INTEGER  IDENTIFIER  =  IDENTIFIER  FLOW  MIN ( ) ;
+     STRING_LITERAL  FLOW  SHOW ( ) ;
+     IDENTIFIER  FLOW  SHOW ( ) ;
+     STRING_LITERAL  FLOW  SHOW ( ) ;
+     IDENTIFIER  FLOW  SHOW ( ) ;
+ }  ELSE  {
+     STRING_LITERAL  FLOW  SHOW ( ) ;
+ }
+
+ LOOP  IDENTIFIER  FROM  CONSTANT  TO  CONSTANT  STEP  CONSTANT  {
+     INTEGER  IDENTIFIER  =  CONSTANT ;
+     STRING_LITERAL  FLOW  SHOW ( ) ;
+     IDENTIFIER [ IDENTIFIER ]  FLOW  SHOW ( ) ;
+     IF  ( IDENTIFIER [ IDENTIFIER ]  %  CONSTANT  EQ_OP  CONSTANT )  {
+         IDENTIFIER  ADD_ASSIGN  IDENTIFIER [ IDENTIFIER ] ;
+     }  ELSE  {
+         STRING_LITERAL  FLOW  SHOW ( ) ;
+         IDENTIFIER [ IDENTIFIER ]  FLOW  SHOW ( ) ;
+     }
+ }

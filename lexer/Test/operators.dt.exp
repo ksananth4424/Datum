@@ -1,69 +1,11 @@
-start:
-integer
-x
-=
-42234
-;
-integer
-y
-=
-2308042
-;
-integer
-z
-=
-x
-*
-y
-+
-y
-/
-(
-x
-%
-y
-)
--
-y
-*
-(
-2
-+
-x
-)
-*
-(
-x
-<
-y
-)
-;
-z
-++
-;
-z
-+=
-4
-;
-z
--=
-z
-*
-y
-;
-z
-/=
-532
-;
-if
-(
-(
-z
-%=
-2
-)
-==
-0
-)
-{
-}
+ START_LABEL
+ INTEGER  IDENTIFIER  =  CONSTANT ;
+ INTEGER  IDENTIFIER  =  CONSTANT ;
+ INTEGER  IDENTIFIER  =  IDENTIFIER  *  IDENTIFIER  +  IDENTIFIER  /  ( IDENTIFIER  %  IDENTIFIER )  -  IDENTIFIER  *  ( CONSTANT  +  IDENTIFIER )  *  ( IDENTIFIER  <  IDENTIFIER ) ;
+ IDENTIFIER INC_OP ;
+ IDENTIFIER  ADD_ASSIGN  CONSTANT ;
+ IDENTIFIER  SUB_ASSIGN  IDENTIFIER  *  IDENTIFIER ;
+ IDENTIFIER  DIV_ASSIGN  CONSTANT ;
+ IF  ( ( IDENTIFIER  MOD_ASSIGN  CONSTANT )  EQ_OP  CONSTANT )  {
+    
+ }

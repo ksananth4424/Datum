@@ -1,191 +1,32 @@
-function_declarations:
-function
-(
-dataset
-ds1
-)
-->
-train_test_split
-(
-float
-testSize
-)
-->
-(
-dataset
-,
-dataset
-)
-{
-ds
-->
-shuffle
-(
-)
-;
-float
-trainSize
-=
-1
--
-testSize
-;
-array
-(
-ds
-)
-splitDs
-=
-ds
-->
-split
-(
-[
-trainSize
-,
-testSize
-]
-)
-;
-return
-splitDs
-[
-0
-]
-,
-splitDs
-[
-1
-]
-;
-}
-function
-(
-dataset
-ds
-)
-->
-convert_rows_to_orobabilities
-(
-)
-->
-(
-dataset
-)
-{
-ds
-->
-row
-(
-{
-r
-=
-r
-/
-r
-->
-sum
-(
-)
-}
-)
-;
-return
-ds
-;
-}
-start:
-dataset
-ds
-=
-read
-(
-"./dataset.csv"
-,
-"csv"
-)
-train
-,
-test
-=
-ds
-->
-convert_rows_to_orobabilities
-(
-)
-->
-train_test_split
-(
-0.2
-)
-;
-X_train
-=
-train
-->
-col
-(
-to
-10
-)
-y_train
-=
-train
-->
-col
-(
-10
-)
-X_test
-=
-test
-->
-col
-(
-to
-10
-)
-y_test
-=
-test
-->
-col
-(
-10
-)
-X_train
-->
-write
-(
-"./x-train"
-,
-"csv"
-)
-;
-y_train
-->
-write
-(
-"./y-train"
-,
-"csv"
-)
-;
-X_test
-->
-write
-(
-"./x-test"
-,
-"csv"
-)
-;
-y_test
-->
-write
-(
-"./y-test"
-,
-"csv"
-)
-;
+
+ FUNC_LABEL
+
+ FUNCTION  ( DATASET  IDENTIFIER )  FLOW  IDENTIFIER ( FLOAT  IDENTIFIER )  FLOW  ( DATASET , DATASET ) 
+ {
+     IDENTIFIER FLOW SHUFFLE ( ) ;
+     FLOAT  IDENTIFIER  =  CONSTANT  -  IDENTIFIER ;
+     ARRAY ( IDENTIFIER )  IDENTIFIER  =  IDENTIFIER FLOW SPLIT ( [ IDENTIFIER ,  IDENTIFIER ] ) ;
+     RETURN  IDENTIFIER [ CONSTANT ] ,  IDENTIFIER [ CONSTANT ] ;
+ }
+
+ FUNCTION  ( DATASET  IDENTIFIER )  FLOW  IDENTIFIER ( )  FLOW  ( DATASET )
+ {
+     IDENTIFIER FLOW ROW ( { IDENTIFIER  =  IDENTIFIER / IDENTIFIER FLOW SUM ( ) } ) ;
+     RETURN  IDENTIFIER ;
+ }
+
+ START_LABEL
+
+ DATASET  IDENTIFIER  =  READ ( STRING_LITERAL ,  STRING_LITERAL )
+
+ IDENTIFIER ,  IDENTIFIER  =  IDENTIFIER FLOW IDENTIFIER ( ) FLOW IDENTIFIER ( CONSTANT ) ;
+
+ IDENTIFIER  =  IDENTIFIER FLOW COL ( TO  CONSTANT )
+ IDENTIFIER  =  IDENTIFIER FLOW COL ( CONSTANT )
+ IDENTIFIER  =  IDENTIFIER FLOW COL ( TO  CONSTANT )
+ IDENTIFIER  =  IDENTIFIER FLOW COL ( CONSTANT )
+
+ IDENTIFIER  FLOW  WRITE ( STRING_LITERAL ,  STRING_LITERAL ) ;
+ IDENTIFIER  FLOW  WRITE ( STRING_LITERAL ,  STRING_LITERAL ) ;
+ IDENTIFIER  FLOW  WRITE ( STRING_LITERAL ,  STRING_LITERAL ) ;
+ IDENTIFIER  FLOW  WRITE ( STRING_LITERAL ,  STRING_LITERAL ) ;

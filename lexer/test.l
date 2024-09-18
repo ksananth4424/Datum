@@ -12,105 +12,102 @@ L			[a-zA-Z_]
 "$!"([^!]|(!+[^!$]))*!*"!$" ;
 "$$".*\n        ;   
 
-"integer"   {count(); /* return (INTEGER); */}
-"float"     {count(); /* return (FLOAT); */}
-"string"    {count(); /* return (STRING); */}
-"char"      {count(); /* return (CHAR); */}
-"bool"      {count(); /* return (BOOL); */}
-"dataset"   {count(); /* return (DATASET); */}
-"array"     {count(); /* return (ARRAY); */}
+"integer"   {count(); printf("INTEGER");}
+"float"     {count(); printf("FLOAT");}
+"string"    {count(); printf("STRING");}
+"char"      {count(); printf("CHAR");}
+"bool"      {count(); printf("BOOL");}
+"dataset"   {count(); printf("DATASET");}
+"array"     {count(); printf("ARRAY");}
 
-"if"        {count(); /* return (IF); */}
-"else"      {count(); /* return (ELSE); */}
-"loop"      {count(); /* return (LOOP); */}
-"break"     {count(); /* return (BREAK); */}
-"continue"  {count(); /* return (CONTINUE); */}
-"return"    {count(); /* return (RETURN); */}
-"function"  {count(); /* return (FUNCTION); */}
+"if"        {count(); printf("IF");}
+"else"      {count(); printf("ELSE");}
+"loop"      {count(); printf("LOOP");}
+"break"     {count(); printf("BREAK");}
+"continue"  {count(); printf("CONTINUE");}
+"return"    {count(); printf("RETURN");}
+"function"  {count(); printf("FUNCTION");}
 
-"or"        {count(); /* return (OR); */}
-"and"       {count(); /* return (AND); */}
-"not"       {count(); /* return (NOT); */}
+"or"        {count(); printf("OR");}
+"and"       {count(); printf("AND");}
+"not"       {count(); printf("NOT");}
+"from"      {count(); printf("FROM");}
+"to"        {count(); printf("TO");}
+"step"      {count(); printf("STEP");}
+"also"      {count(); printf("ALSO");}
 
-"from"      {count(); /* return (FROM); */}
-"to"        {count(); /* return (TO); */}
-"step"      {count(); /* return (STEP); */}
-"also"      {count(); /* return (ALSO); */}
+"row"       {count(); printf("ROW");}
+"col"       {count(); printf("COL");}
+"filter"    {count(); printf("FILTER");}
+"sum"       {count(); printf("SUM");}
+"max"       {count(); printf("MAX");}
+"min"       {count(); printf("MIN");}
+"mean"      {count(); printf("MEAN");}
+"join"      {count(); printf("JOIN");}
+"read"      {count(); printf("READ");}
+"write"     {count(); printf("WRITE");}
+"unique"    {count(); printf("UNIQUE");}
+"show"      {count(); printf("SHOW");}
+"split"     {count(); printf("SPLIT");}
+"sort"      {count(); printf("SORT");}
+"shuffle"   {count(); printf("SHUFFLE");}
+"add"       {count(); printf("ADD");}
+"shape"     {count(); printf("SHAPE");}
+"drop"      {count(); printf("DROP");}
 
-"row"       {count(); /* return (ROW); */}
-"col"       {count(); /* return (COL); */}
-"filter"    {count(); /* return (FILTER); */}
-"sum"       {count(); /* return (SUM); */}
-"max"       {count(); /* return (MAX); */}
-"min"       {count(); /* return (MIN); */}
-"mean"      {count(); /* return (MEAN); */}
-"join"      {count(); /* return (JOIN); */}
-"read"      {count(); /* return (READ); */}
-"write"     {count(); /* return (WRITE); */}
-"unique"    {count(); /* return (UNIQUE); */}
-"show"      {count(); /* return (SHOW); */}
-"split"     {count(); /* return (SPLIT); */}
-"sort"      {count(); /* return (SORT); */}
-"shuffle"   {count(); /* return (SHUFFLE); */}
-"add"       {count(); /* return (ADD); */}
-"shape"     {count(); /* return (SHAPE); */}
-"drop"      {count(); /* return (DROP); */}
-
-"show_bar"      {count();/*  return (SHOW_bar); */}
-"show_scatter"  {count();/*  return (SHOW_SCATTER); */}
-"show_line"     {count();/*  return (SHOW_LINE); */}
-"show_box"      {count(); /* return (SHOW_BOX); */}
-
-"function_declarations:"    {count(); /* return (FUNC_LABEL); */}
-"start:"                    {count(); /* return (START_LABEL); */}
-
-{L}({L}|{D})*           {count(); /* return (IDENTIFIER); */}	
-\"(\\.|[^\\"])*\"       {count(); /* return (STRING_LITERAL); */}
-'(\\.|[^\\'])'	        {count(); /* return (CONSTANT); */}
-{D}+                    {count(); /* return (CONSTANT); */}
-{D}*"."{D}+             {count(); /* return (CONSTANT); */}
-{D}+"."{D}*             {count(); /* return (CONSTANT); */}
+"show_bar"      {count();printf("SHOW_bar");}
+"show_scatter"  {count();printf("SHOW_SCATTER");}
+"show_line"     {count();printf("SHOW_LINE");}
+"show_box"      {count(); printf("SHOW_BOX");}
+"function_declarations:"    {count(); printf("FUNC_LABEL");}
+"start:"                    {count(); printf("START_LABEL");}
+{L}({L}|{D})*           {count(); printf("IDENTIFIER");}	
+\"(\\.|[^\\"])*\"       {count(); printf("STRING_LITERAL");}
+'(\\.|[^\\'])'	        {count(); printf("CONSTANT");}
+{D}+                    {count(); printf("CONSTANT");}
+{D}*"."{D}+             {count(); printf("CONSTANT");}
+{D}+"."{D}*             {count(); printf("CONSTANT");}
 
 
-"+="        {count(); /* return (ADD_ASSIGN); */}
-"-="        {count(); /* return (SUB_ASSIGN); */}
-"*="        {count(); /* return (MUL_ASSIGN); */}
-"/="        {count(); /* return (DIV_ASSIGN); */}
-"%="        {count(); /* return (MOD_ASSIGN); */}
-"=="        {count(); /* return (EQ_OP); */}
-"="         {count(); /* return ('='); */}
-"+"         {count(); /* return ('+'); */}
-"-"         {count(); /* return ('-'); */}
-"/"         {count(); /* return ('/'); */}
-"*"          {count(); /* return ('*'); */}
-"%"         {count(); /* return ('%'); */}
-"++"        {count(); /* return (INC_OP); */}
-"--"        {count(); /* return (DEC_OP); */}
-">"         {count(); /* return ('>'); */}
-"<"         {count(); /* return ('<'); */}
-">="        {count(); /* return (GE_OP); */}
-"<="        {count(); /* return (LE_OP); */}
-"!="        {count(); /* return (NE_OP); */}
-"->"        {count(); /* return (FLOW); */}
-";"         {count(); /* return (';'); */}
-"("         {count(); /* return ('('); */}
-")"         {count(); /* return (')'); */}
-"!"         {count(); /* return ('!'); */}
-","         {count(); /* return (','); */}
-"{"         {count(); /* return ('{'); */}
-"}"         {count(); /* return ('}'); */}
-"["         {count(); /* return ('['); */}
-"]"         {count(); /* return (']'); */}
+"+="        {count(); printf("ADD_ASSIGN");}
+"-="        {count(); printf("SUB_ASSIGN");}
+"*="        {count(); printf("MUL_ASSIGN");}
+"/="        {count(); printf("DIV_ASSIGN");}
+"%="        {count(); printf("MOD_ASSIGN");}
+"=="        {count(); printf("EQ_OP");}
+"="         {count(); printf("=");}
+"+"         {count(); printf("+");}
+"-"         {count(); printf("-");}
+"/"         {count(); printf("/");}
+"*"         {count(); printf("*");}
+"%"         {count(); printf("%%");}
+"++"        {count(); printf("INC_OP");}
+"--"        {count(); printf("DEC_OP");}
+">"         {count(); printf(">");}
+"<"         {count(); printf("<");}
+">="        {count(); printf("GE_OP");}
+"<="        {count(); printf("LE_OP");}
+"!="        {count(); printf("NE_OP");}
+"->"        {count(); printf("FLOW");}
+";"         {count(); printf(";");}
+"("         {count(); printf("(");}
+")"         {count(); printf(")");}
+"!"         {count(); printf("!");}
+","         {count(); printf(",");}
+"{"         {count(); printf("{");}
+"}"         {count(); printf("}");}
+"["         {count(); printf("[");}
+"]"         {count(); printf("]");}
 
 
-[ \t\v\n\f] {}
+[ \t\n\v\f] {ECHO;}
 .           {puts("error in lexing"); /* ignore */}
 
 %%
 
 void count() {
-    ECHO;
-    printf("\n");
+    // ECHO;
+    printf(" ");
 }
 
 int yywrap() {

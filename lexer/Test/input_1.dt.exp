@@ -1,185 +1,30 @@
-function_declarations:
-function
-(
-dataset
-ds
-)
-->
-fill_null_values
-(
-int
-num
-)
-->
-dataset
-{
-ds
-->
-filter
-(
-ds
-==
-null
-)
-=
-num
-;
-return
-ds
-;
-}
-function
-(
-dataset
-ds
-)
-->
-normalize
-(
-)
-->
-dataset
-{
-array
-(
-int
-)
-mean_arr
-=
-ds
-->
-mean
-(
-1
-)
-;
-loop
-i
-from
-0
-to
-ds
-->
-shape
-[
-0
-]
-{
-ds
-->
-col
-(
-i
-)
--=
-mean_arr
-[
-i
-]
-;
-}
-array
-(
-int
-)
-std_arr
-=
-ds
-*
-ds
-->
-sum
-(
-1
-)
-/
-ds
-->
-shape
-[
-0
-]
-;
-loop
-i
-from
-0
-to
-ds
-->
-shape
-[
-0
-]
-{
-ds
-->
-col
-(
-i
-)
-/=
-std_arr
-[
-i
-]
-;
-}
-return
-ds
-;
-}
-start:
-dataset
-ds
-=
-read
-(
-"./dataset"
-,
-"csv"
-)
-ds
-->
-col
-(
-1
-)
-->
-fill_null_values
-(
-0
-)
-->
-row
-(
-{
-return
-r
-[
-0
-]
-==
-null
-;
-}
-)
-->
-drop
-(
-0
-)
-;
-ds
-->
-normalize
-(
-)
-->
-write
-(
-"./dataset.csv"
-,
-"csv"
-)
-;
+
+ FUNC_LABEL
+
+ FUNCTION  ( DATASET  IDENTIFIER )  FLOW  IDENTIFIER ( IDENTIFIER  IDENTIFIER )  FLOW  DATASET  {
+   IDENTIFIER FLOW FILTER ( IDENTIFIER  EQ_OP  IDENTIFIER )  =  IDENTIFIER ;
+   RETURN  IDENTIFIER ;
+ }
+
+ FUNCTION  ( DATASET  IDENTIFIER )  FLOW  IDENTIFIER ( )  FLOW  DATASET  {
+     ARRAY ( IDENTIFIER )  IDENTIFIER  =  IDENTIFIER FLOW MEAN ( CONSTANT ) ;
+     LOOP  IDENTIFIER  FROM  CONSTANT  TO  IDENTIFIER FLOW SHAPE [ CONSTANT ]  {
+         IDENTIFIER FLOW COL ( IDENTIFIER )  SUB_ASSIGN  IDENTIFIER [ IDENTIFIER ] ;
+     }
+     ARRAY ( IDENTIFIER )  IDENTIFIER  =  IDENTIFIER * IDENTIFIER FLOW SUM ( CONSTANT )  /  IDENTIFIER FLOW SHAPE [ CONSTANT ] ;
+     LOOP  IDENTIFIER  FROM  CONSTANT  TO  IDENTIFIER FLOW SHAPE [ CONSTANT ]  {
+         IDENTIFIER FLOW COL ( IDENTIFIER )  DIV_ASSIGN  IDENTIFIER [ IDENTIFIER ] ;
+     }
+     RETURN  IDENTIFIER ;
+ }
+
+ START_LABEL
+
+ DATASET  IDENTIFIER  =  READ ( STRING_LITERAL ,  STRING_LITERAL )
+ IDENTIFIER FLOW COL ( CONSTANT )
+   FLOW IDENTIFIER ( CONSTANT )
+   FLOW ROW ( { 
+         RETURN  IDENTIFIER [ CONSTANT ]  EQ_OP  IDENTIFIER ; 
+     } ) FLOW DROP ( CONSTANT ) ;
+
+ IDENTIFIER FLOW IDENTIFIER ( ) FLOW WRITE ( STRING_LITERAL ,  STRING_LITERAL ) ;
