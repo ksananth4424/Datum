@@ -57,7 +57,7 @@ L			[a-zA-Z_]
 "shape"     {count(); return (SHAPE);}
 "drop"      {count(); return (DROP);}
 
-"show_bar"      {count(); return (SHOW_bar);}
+"show_bar"      {count(); return (SHOW_BAR);}
 "show_scatter"  {count(); return (SHOW_SCATTER);}
 "show_line"     {count(); return (SHOW_LINE);}
 "show_box"      {count(); return (SHOW_BOX);}

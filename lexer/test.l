@@ -55,7 +55,7 @@ L			[a-zA-Z_]
 "shape"     {count(); printf("SHAPE");}
 "drop"      {count(); printf("DROP");}
 
-"show_bar"      {count();printf("SHOW_bar");}
+"show_bar"      {count();printf("SHOW_BAR");}
 "show_scatter"  {count();printf("SHOW_SCATTER");}
 "show_line"     {count();printf("SHOW_LINE");}
 "show_box"      {count(); printf("SHOW_BOX");}
