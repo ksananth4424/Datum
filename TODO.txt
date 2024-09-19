@@ -19,7 +19,8 @@ Lexical Analyser:
 
 ----------------------------------------------------------
 Syntax Analyser:
-- Build the whole thing
+- parameterless functions
+- ++ -- required?
 
 
 ----------------------------------------------------------

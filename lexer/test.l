@@ -92,7 +92,6 @@ L			[a-zA-Z_]
 ";"         {count(); printf(";");}
 "("         {count(); printf("(");}
 ")"         {count(); printf(")");}
-"!"         {count(); printf("!");}
 ","         {count(); printf(",");}
 "{"         {count(); printf("{");}
 "}"         {count(); printf("}");}

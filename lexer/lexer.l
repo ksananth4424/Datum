@@ -96,7 +96,6 @@ L			[a-zA-Z_]
 ";"         {count(); return (';');}
 "("         {count(); return ('(');}
 ")"         {count(); return (')');}
-"!"         {count(); return ('!');}
 ","         {count(); return (',');}
 "{"         {count(); return ('{');}
 "}"         {count(); return ('}');}
