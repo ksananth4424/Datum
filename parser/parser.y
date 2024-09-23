@@ -11,6 +11,20 @@
 %token IF ELSE LOOP BREAK CONTINUE RETURN FUNCTION
 %token INTEGER FLOAT STRING CHAR BOOL DATASET ARRAY
 
+%left '*'
+%left '/'
+%left '%'
+%left '+'
+%left '-'
+%left '>'
+%left '<'
+%left LE_OP
+%left GE_OP
+%left EQ_OP
+%left NE_OP
+%left AND
+%left OR
+
 %start expression
 %%
 
@@ -82,7 +96,7 @@ unary_operator
 	| NOT
 	;
 
-multiplicative_expression
+/* multiplicative_expression
 	: unary_expression
 	| multiplicative_expression '*' unary_expression
 	| multiplicative_expression '/' unary_expression
@@ -117,7 +131,7 @@ logical_and_expression
 logical_or_expression
 	: logical_and_expression
 	| logical_or_expression OR logical_and_expression
-	;
+	; */
 
 lhs_assignment_expression
 	: IDENTIFIER
@@ -125,9 +139,25 @@ lhs_assignment_expression
     | lhs_assignment_expression FLOW IDENTIFIER '(' ')'
     | lhs_assignment_expression FLOW IDENTIFIER '(' argument_expression_list ')'
 
+expression
+	: unary_expression
+	| expression '*' expression
+	| expression '/' expression
+	| expression '%' expression
+	| expression '+' expression
+	| expression '-' expression
+	| expression '>' expression
+	| expression '<' expression
+	| expression LE_OP expression
+	| expression GE_OP expression
+	| expression EQ_OP expression
+	| expression NE_OP expression
+	| expression AND expression
+	| expression OR expression
+
 assignment_expression
-	: logical_or_expression
-	| lhs_assignment_expression assignment_operator assignment_expression
+	: expression
+	| lhs_assignment_expression assignment_operator expression
 	;
 
 assignment_operator
@@ -139,8 +169,6 @@ assignment_operator
 	| SUB_ASSIGN
 	;
 
-expression
-    : assignment_expression
 
 
 %%
