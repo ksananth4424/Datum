@@ -85,8 +85,6 @@ L			[a-zA-Z_]
 "/"         {count(); return ('/');}
 "*"         {count(); return ('*');}
 "%"         {count(); return ('%');}
-"++"        {count(); return (INC_OP);}
-"--"        {count(); return (DEC_OP);}
 ">"         {count(); return ('>');}
 "<"         {count(); return ('<');}
 ">="        {count(); return (GE_OP);}
