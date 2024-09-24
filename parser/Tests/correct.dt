@@ -1,0 +1,31 @@
+$$ Program that drops rows with null values in the first column, and fills all the null values in the second column with zeros. Then normalizes each column of the dataset.
+
+function_declarations:
+
+function (dataset ds) -> fill_null_values(int num) -> dataset {
+  ds->filter(ds == null) = num;
+  return ds;
+}
+
+function (dataset ds) -> normalize() -> dataset {
+    array(int) mean_arr = ds->mean(1);
+    loop i from 0 to ds->shape[0] {
+        ds->col(i) -= mean_arr[i];
+    }
+    array(int) std_arr = ds*ds->sum(1) / ds->shape[0];
+    loop i from 0 to ds->shape[0] {
+        ds->col(i) /= std_arr[i];
+    }
+    return ds;
+}
+
+start:
+
+dataset ds = read("./dataset", "csv")
+ds->col(1)
+  ->fill_null_values(0)
+  ->row({ 
+        return r[0] == null; 
+    })->drop(0);
+
+ds->normalize()->write("./dataset.csv", "csv");
