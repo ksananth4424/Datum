@@ -201,8 +201,8 @@ optional_step
     | STEP expression
 
 conditional_statement
-	: IF '(' expression ')' '{' statement '}'
-	| IF '(' expression ')' '{' statement '}' ELSE '{' statement '}'
+	: IF '(' expression ')' '{' statement_list '}'
+	| IF '(' expression ')' '{' statement_list '}' ELSE '{' statement_list '}'
 	;
 
 statement
