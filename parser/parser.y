@@ -62,6 +62,55 @@ inbuilt_function
     | DROP
     ;
 
+declaration
+    : declaration_specifiers ';'
+    | declaration_specifiers init_declarator_list ';'
+    ;
+
+declaration_specifiers
+    : type_specifier
+    | type_specifier declaration_specifiers
+    ;
+
+type_specifier
+    : INTEGER
+    | FLOAT
+    | STRING
+    | CHAR
+    | BOOL
+    | DATASET
+    | ARRAY '(' type_specifier ')'
+    ;
+
+init_declarator_list
+    : init_declarator
+    | init_declarator_list ',' init_declarator
+
+init_declarator
+	: declarator
+	| declarator '=' initializer
+	;
+
+declarator
+    : dir_declarator
+    ;
+
+dir_declarator
+    : IDENTIFIER
+    | '(' declarator ')'
+       
+
+initializer
+    : assignment_expression
+	| '{' initializer_list '}'
+	/* | '{' initializer_list ',' '}'  */
+	;
+
+initializer_list
+	: initializer
+	| initializer_list ',' initializer
+	;
+
 primary_expression 
     : CONSTANT
     | STRING_LITERAL
