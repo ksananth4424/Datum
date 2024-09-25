@@ -200,6 +200,23 @@ optional_step
     : 
     | STEP expression
 
+conditional_statements
+	: IF '(' expression ')' '{' statement '}'
+	| IF '(' expression ')' '{' statement '}' ELSE '{' statement '}'
+	;
+
+statement
+    : expression ';'
+    | conditional_statements
+    | loop_statements
+    | statement_list
+    ;
+
+statement_list
+    : statement
+    | statement_list statement
+    ;
+
 %%
 
 
