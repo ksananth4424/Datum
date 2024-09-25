@@ -99,7 +99,18 @@ declarator
 dir_declarator
     : IDENTIFIER
     | '(' declarator ')'
+    | dir_declarator '(' parameter_list ')'
     ;    
+
+parameter_list
+	: parameter_declaration
+	| parameter_list ',' parameter_declaration
+    ;
+
+parameter_declaration
+	: declaration_specifiers declarator
+	| declaration_specifiers
+	;
 
 initializer
     : assignment_expression
@@ -212,8 +223,14 @@ else_if_statement
     | else_if_statement ELSE IF '(' expression ')' '{' statement_list '}'
     ;
 
+compound_statement
+    : '{' '}'
+    | '{' statement_list '}'
+    ;
+
 statement
     : assignment_expression ';'
+    |compound_statement
     | conditional_statement
     | loop_statement
     | declaration
@@ -244,6 +261,9 @@ from_to_also_expression_rec
     | from_to_also_expression
     ;
 
+function_definition
+    : FUNCTION '(' parameter_list ')' FLOW declarator FLOW '(' parameter_list ')' compound_statement
+    | FUNCTION '(' parameter_list ')' FLOW declarator FLOW  parameter_declaration  compound_statement
 %%
 
 
