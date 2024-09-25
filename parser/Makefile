@@ -4,18 +4,18 @@ OBJECTS = object_folder/y.tab.o object_folder/lex.yy.o
 .SILENT: test run
 .PHONY: clean build test run
 
-$(EXEC): $(OBJECTS)
-	gcc -o $(EXEC) ${OBJECTS}
+$(EXEC): y.tab.c
+	gcc -o $(EXEC) y.tab.c
 
-y.tab.c y.tab.h: parser.y
+y.tab.c y.tab.h: parser.y lex.yy.c
 	yacc -d parser.y
-	
-lex.yy.c: lexer.l y.tab.h
+
+lex.yy.c: lexer.l
 	lex lexer.l
 
-object_folder/%.o: %.c
-	mkdir -p object_folder
-	gcc -c -o $@ $<
+# object_folder/%.o: %.c
+# 	mkdir -p object_folder
+# 	gcc -c -o $@ $<
 
 test: ${EXEC}
 	cd Tests && ./run.sh

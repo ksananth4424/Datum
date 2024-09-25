@@ -1,3 +1,10 @@
+%{
+    #include <stdio.h>
+    void yyerror(char*);
+    int yylex();
+
+%}
+
 %token FUNC_LABEL START_LABEL
 %token IDENTIFIER CONSTANT STRING_LITERAL
 %token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN 
@@ -25,8 +32,10 @@
 %left AND
 %left OR
 
-%start assignment_expression
+%start start
 %%
+
+start : from_to_step_expression       {puts("success!!");}
 
 inbuilt_function
     : SHOW_BAR
@@ -58,10 +67,10 @@ primary_expression
     | STRING_LITERAL
     ;
 
-
 expression_list
     : expression
     | expression_list ',' expression
+    ;
 
 single_chain_expression
 	: IDENTIFIER
@@ -87,8 +96,8 @@ multi_chain_expression
 
 postfix_expression
     : single_chain_expression
-    | primary_expression
     | multi_chain_expression
+    | primary_expression
     ;
 
 unary_expression
@@ -117,11 +126,7 @@ expression
 	| expression NE_OP expression
 	| expression AND expression
 	| expression OR expression
-
-assignment_expression
-	: single_chain_expression assignment_operator expression
-	| expression
-	;
+    ;
 
 assignment_operator
 	: '='
@@ -132,11 +137,25 @@ assignment_operator
 	| SUB_ASSIGN
 	;
 
+assignment_expression
+	: single_chain_expression assignment_operator expression
+	| expression
+	;
+
+from_to_step_expression
+    : FROM expression TO expression optional_step
+    | from_to_step_expression ALSO FROM expression TO expression optional_step
+    ;
+
+optional_step
+    : 
+    | STEP expression
+
 %%
 
 
-#include <stdio.h>
-/* #include "lex.yy.c" */
+
+#include "lex.yy.c"
 
 int yywrap() {
 	return 1;
@@ -146,6 +165,15 @@ void yyerror( char* s) {
 	printf("%s\n",s);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        puts("error: usage ./a.out <input_file>");
+        return 0;
+    }
+    yyin = fopen(argv[1], "r");
+    if (yyin == NULL) {
+        puts("error: couldn't open the file");
+        return 0;
+    }
 	yyparse(); 
 }

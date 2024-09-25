@@ -20,7 +20,7 @@ Lexical Analyser:
 ----------------------------------------------------------
 Syntax Analyser:
 - parameterless functions
-- ++ -- required?
+- complete from to step also syntax ()
 
 
 ----------------------------------------------------------

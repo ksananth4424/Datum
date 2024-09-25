@@ -1,0 +1,1 @@
+from 0 to ds->shape()[0] also from ds->shape()[1] to 10 step ds->getstep(0)
