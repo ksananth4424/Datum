@@ -35,7 +35,7 @@
 %start start
 %%
 
-start : from_to_step_expression       {puts("success!!");}
+start : loop_statement       {puts("success!!");}
 
 inbuilt_function
     : SHOW_BAR
@@ -206,15 +206,30 @@ conditional_statements
 	;
 
 statement
-    : expression ';'
+    : assignment_expression ';'
     | conditional_statements
-    | loop_statements
-    | statement_list
+    | loop_statement
+    | declaration
     ;
 
 statement_list
     : statement
     | statement_list statement
+    ;
+loop_statement
+    :LOOP IDENTIFIER from_to_also_expression '{' statement_list '}'
+    ;
+
+from_to_also_expression
+    : TO expression optional_step 
+    | TO expression optional_step ALSO from_to_also_expression_rec
+    | FROM expression TO expression optional_step
+    | FROM expression TO expression optional_step ALSO from_to_also_expression_rec
+
+
+from_to_also_expression_rec
+    :
+    | from_to_also_expression
     ;
 
 %%
