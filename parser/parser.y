@@ -85,6 +85,7 @@ type_specifier
 init_declarator_list
     : init_declarator
     | init_declarator_list ',' init_declarator
+    ;
 
 init_declarator
 	: declarator
@@ -98,7 +99,7 @@ declarator
 dir_declarator
     : IDENTIFIER
     | '(' declarator ')'
-       
+    ;    
 
 initializer
     : assignment_expression
@@ -202,9 +203,14 @@ optional_step
     ;
 
 conditional_statement
-	: IF '(' expression ')' '{' statement_list '}'
-	| IF '(' expression ')' '{' statement_list '}' ELSE '{' statement_list '}'
+	: IF '(' expression ')' '{' statement_list '}' else_if_statement
+	| IF '(' expression ')' '{' statement_list '}' else_if_statement ELSE '{' statement_list '}'
 	;
+
+else_if_statement
+    : 
+    | else_if_statement ELSE IF '(' expression ')' '{' statement_list '}'
+    ;
 
 statement
     : assignment_expression ';'
@@ -232,7 +238,6 @@ from_to_also_expression
     | FROM expression TO expression optional_step
     | FROM expression TO expression optional_step ALSO from_to_also_expression_rec
     ;
-
 
 from_to_also_expression_rec
     :

@@ -1,0 +1,6 @@
+function_declarations:
+
+
+start:
+
+dataset ds = read ("./dataset","csv")
