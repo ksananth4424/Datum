@@ -199,6 +199,7 @@ from_to_step_expression
 optional_step
     : 
     | STEP expression
+    ;
 
 conditional_statement
 	: IF '(' expression ')' '{' statement_list '}'
@@ -230,6 +231,7 @@ from_to_also_expression
     | TO expression optional_step ALSO from_to_also_expression_rec
     | FROM expression TO expression optional_step
     | FROM expression TO expression optional_step ALSO from_to_also_expression_rec
+    ;
 
 
 from_to_also_expression_rec

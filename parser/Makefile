@@ -25,6 +25,3 @@ clean:
 	rm -f *.tab.c
 	rm -f *.tab.h
 	rm -f *.o
-	rm -f object_folder/*.o
-	rm -f object_folder/*.o
-	rm -r object_folder
