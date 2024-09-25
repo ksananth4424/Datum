@@ -200,24 +200,29 @@ optional_step
     : 
     | STEP expression
 
-conditional_statements
+conditional_statement
 	: IF '(' expression ')' '{' statement '}'
 	| IF '(' expression ')' '{' statement '}' ELSE '{' statement '}'
 	;
 
 statement
     : assignment_expression ';'
-    | conditional_statements
+    | conditional_statement
     | loop_statement
     | declaration
+    | RETURN expression ';'
+    | RETURN ';'
+    | BREAK ';'
+    | CONTINUE ';'
     ;
 
 statement_list
     : statement
     | statement_list statement
     ;
+
 loop_statement
-    :LOOP IDENTIFIER from_to_also_expression '{' statement_list '}'
+    : LOOP IDENTIFIER from_to_also_expression '{' statement_list '}'
     ;
 
 from_to_also_expression
