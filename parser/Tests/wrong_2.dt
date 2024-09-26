@@ -1,0 +1,2 @@
+start:
+(ds3, ds4)->func1()[0]->func2({ return e != null; })->row(10) = 10; $$ ERROR_EXPECTED

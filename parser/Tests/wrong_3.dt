@@ -1,0 +1,2 @@
+start:
+"hello" = ds->func1(); $$ ERROR_EXPECTED

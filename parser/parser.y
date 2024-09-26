@@ -147,6 +147,7 @@ argument_list
 
 argument
     : expression
+    | from_to_also_expression
     | compound_statement
     ;
 

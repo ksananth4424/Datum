@@ -1,0 +1,14 @@
+start:
+
+ds1->func1()[0]->func2({ return e != null; })->row(10);
+(ds2)->func1()[0]->func2({ return e != null; })->row(10);
+(ds3, ds4)->func1()[0]->func2({ return e != null; })->row(10);
+((ds3, ds4)->func1()[0], ds6)->func2({ return e != null; })->row(10);
+
+ds1->func1()[0]->func2({ return e != null; })->row(10, 23, 43) += 20;
+ds2->func1()[0]->func2({ return e != null; })->row(10) = (ds2)->func1()[0]->func2({ return e != null; })->row(10);
+ds2->func1()[0]->func2({ return e != null; })->row(10) = (ds3, ds4)->func1()[0]->func2({ return e != null; })->row(10);
+ds1->func1()[0]->func2({ return e != null; })->row(10) = ((ds3, ds4)->func1()[0], ds6)->func2({ return e != null; })->row(10);
+n = 10;
+arr[10] = n;
+test(arr[10], n);
