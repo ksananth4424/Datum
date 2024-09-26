@@ -1,0 +1,49 @@
+function_declarations:
+
+function(dataset ds) -> add_columns(integer i1, integer i2) -> dataset {
+    $$ adds columns from i1 to i2(both endpoints are inclusive)
+    dataset dummy;
+    dummy = ds->col(i1)
+    loop i from i1+1 to i2{
+        dummy += ds->col(i);
+    }
+    $!
+        first assigning row i1 to dummy and then adding all the rows till i2
+    !$
+    return dummy;
+}
+
+function(dataset ds) -> max_element_each_row() -> array{
+    array dummy;
+    loop i from 0 to ds->shape()[0]{
+        array->add(ds->row(i)->max());
+    }
+    return dummy;
+}
+
+function(dataset ds) -> threshold_row(string col_name ,integer threshold_value) -> dataset{
+    loop i from 0 to ds->shape()[0]{
+        if(ds->row(i)->col(col_name) > threshold_value){
+            ds->row(i)->drop();
+        }
+    }
+    return ds;
+}
+
+start:
+
+dataset ds1 = read("quiz_scores", "csv");       $$ each student wrote multiple quizzes
+integer total_cols = ds1->shape()[1];
+ds1->add_columns(1, total_cols)->write("Cummulative_quiz_score", "csv");        $$ 0th indexed column is name field
+
+dataset ds2 = read("experiments_error_readings", "csv");        $$ this dataset contains error_readings of a experiment under various conditions and each time error is measured various times
+array max_error_readings;
+max_error_readings = ds2->max_element_each_row();
+integer mean_of_max_errors = max_error_readings->mean();
+max_error_readings->show();
+mean_of_max_errors->show();
+
+dataset ds3 = read("loss_predictions", "csv");      $$ loss is the column which contains predicted value of loss in a trade
+integer max_affordable_loss = 120;
+dataset ds4 = ds3-> threshold_row("loss", max_affordable_loss);     $$ this updated dataset is the list of our trades
+ds4->col("loss")->show_bar();
