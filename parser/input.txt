@@ -1,0 +1,16 @@
+array(integer) mean_arr = ds->mean(1);
+loop i from 0 to ds->shape()[0] {
+    ds->col(i) -= mean_arr[i];
+}
+array(integer) std_arr = (ds*ds)->sum(1) / ds->shape()[0];
+loop i from 0 to ds->shape()[0] {
+    ds->col(i) /= std_arr[i];
+}
+return ds;
+
+dataset ds = read("./dataset", "csv");
+ds->col(1)
+  ->fill_null_values(0)
+  ->row({ 
+        return r[0] == null; 
+    })->drop(0);

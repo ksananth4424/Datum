@@ -35,7 +35,7 @@
 %start start
 %%
 
-start : loop_statement       {puts("success!!");}
+start : statement_list       {puts("success!!");}
 
 inbuilt_function
     : SHOW_BAR
@@ -133,26 +133,36 @@ expression_list
     | expression_list ',' expression
     ;
 
+argument_list
+    : argument
+    | argument_list ',' argument
+    ;
+
+argument
+    : expression
+    | compound_statement
+    ;
+
 single_chain_expression
 	: IDENTIFIER
     | single_chain_expression '[' expression ']'
     | single_chain_expression FLOW IDENTIFIER '(' ')'
-    | single_chain_expression FLOW IDENTIFIER '(' expression_list ')'
+    | single_chain_expression FLOW IDENTIFIER '(' argument_list ')'
     | single_chain_expression FLOW inbuilt_function '(' ')'
-    | single_chain_expression FLOW inbuilt_function '(' expression_list ')'
+    | single_chain_expression FLOW inbuilt_function '(' argument_list ')'
     ;
 
 multi_chain_expression
 	: '(' expression_list ')'
     | multi_chain_expression '[' expression ']'
     | multi_chain_expression FLOW IDENTIFIER '(' ')'
-    | multi_chain_expression FLOW IDENTIFIER '(' expression_list ')'
+    | multi_chain_expression FLOW IDENTIFIER '(' argument_list ')'
     | multi_chain_expression FLOW inbuilt_function '(' ')'
-    | multi_chain_expression FLOW inbuilt_function '(' expression_list ')'
+    | multi_chain_expression FLOW inbuilt_function '(' argument_list ')'
     | IDENTIFIER '('  ')' 
-    | IDENTIFIER '(' expression_list ')' 
+    | IDENTIFIER '(' argument_list ')' 
     | inbuilt_function '('  ')' 
-    | inbuilt_function '(' expression_list ')' 
+    | inbuilt_function '(' argument_list ')' 
     ;
 
 postfix_expression
@@ -203,24 +213,19 @@ assignment_expression
 	| expression
 	;
 
-from_to_step_expression
-    : FROM expression TO expression optional_step
-    | from_to_step_expression ALSO FROM expression TO expression optional_step
-    ;
-
 optional_step
     : 
     | STEP expression
     ;
 
 conditional_statement
-	: IF '(' expression ')' '{' statement_list '}' else_if_statement
-	| IF '(' expression ')' '{' statement_list '}' else_if_statement ELSE '{' statement_list '}'
+	: IF '(' expression ')' compound_statement else_if_statement
+	| IF '(' expression ')' compound_statement else_if_statement ELSE compound_statement
 	;
 
 else_if_statement
     : 
-    | else_if_statement ELSE IF '(' expression ')' '{' statement_list '}'
+    | else_if_statement ELSE IF '(' expression ')' compound_statement
     ;
 
 compound_statement
@@ -246,7 +251,7 @@ statement_list
     ;
 
 loop_statement
-    : LOOP IDENTIFIER from_to_also_expression '{' statement_list '}'
+    : LOOP IDENTIFIER from_to_also_expression compound_statement
     ;
 
 from_to_also_expression

@@ -4,6 +4,8 @@ List of To Do's
 Prepare whitepaper
 - Logo 
 - Final Touches
+- change int to integer
+- some semi colons are missing
 
 
 ----------------------------------------------------------
@@ -19,10 +21,16 @@ Lexical Analyser:
 
 ----------------------------------------------------------
 Syntax Analyser:
-- parameterless functions
-- complete from to step also syntax ()
-
-
+- how to declare arrays (size?)
+- declaration : declaration_specifier   ??
+- do we support complex arrays?
+- replace dir_declarator with declarator ??
+- multi dimensional expression on lhs ?
+- are our loops restrictive ??
+- from_to_also_expression accepts "to expression also" - bug
+- do we need all rules of dir_declarator ??
+- parameter_declaration do we need all rules ?
+- do we need declarator in function_definition ?
 ----------------------------------------------------------
 Semantic Analyser:
 - Build the whole thing
