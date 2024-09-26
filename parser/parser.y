@@ -35,7 +35,14 @@
 %start start
 %%
 
-start : statement_list       {puts("success!!");}
+start : program       {puts("success!!");}
+
+program
+    : FUNC_LABEL functions START_LABEL statement_list
+    | FUNC_LABEL functions START_LABEL
+    | FUNC_LABEL START_LABEL statement_list
+    | START_LABEL statement_list
+    ;
 
 inbuilt_function
     : SHOW_BAR
@@ -235,7 +242,7 @@ compound_statement
 
 statement
     : assignment_expression ';'
-    |compound_statement
+    | compound_statement
     | conditional_statement
     | loop_statement
     | declaration
@@ -266,12 +273,18 @@ from_to_also_expression_rec
     | from_to_also_expression
     ;
 
+functions
+    : function_definition
+    | functions function_definition
+    ;
+
 function_definition
-    : FUNCTION '(' parameter_list ')' FLOW declarator FLOW '(' parameter_list ')' compound_statement
-    | FUNCTION '(' parameter_list ')' FLOW declarator FLOW  parameter_declaration  compound_statement
+    : FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' parameter_list ')' FLOW '(' parameter_list ')' compound_statement
+    | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' ')' FLOW '(' parameter_list ')' compound_statement
+    | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' parameter_list ')' FLOW  parameter_declaration  compound_statement
+    | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' ')' FLOW  parameter_declaration  compound_statement
+    ;
 %%
-
-
 
 #include "lex.yy.c"
 
