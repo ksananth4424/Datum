@@ -7,7 +7,7 @@
 
 %token FUNC_LABEL START_LABEL
 %token IDENTIFIER CONSTANT STRING_LITERAL
-%token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN 
+%token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %token FLOW EQ_OP
 %token GE_OP LE_OP NE_OP
 %token SHOW_BAR SHOW_LINE SHOW_SCATTER SHOW_BOX
@@ -70,13 +70,8 @@ inbuilt_function
     ;
 
 declaration
-    : declaration_specifiers ';'
-    | declaration_specifiers init_declarator_list ';'
-    ;
-
-declaration_specifiers
-    : type_specifier
-    | type_specifier declaration_specifiers
+    : type_specifier ';'
+    | type_specifier init_declarator_list ';'
     ;
 
 type_specifier
@@ -100,13 +95,9 @@ init_declarator
 	;
 
 declarator
-    : dir_declarator
-    ;
-
-dir_declarator
     : IDENTIFIER
-    | '(' declarator ')'
-    | dir_declarator '(' parameter_list ')'
+    /* | '(' declarator ')' */
+    /* | declarator '(' parameter_list ')' */
     ;    
 
 parameter_list
@@ -115,8 +106,8 @@ parameter_list
     ;
 
 parameter_declaration
-	: declaration_specifiers declarator
-	| declaration_specifiers
+	: type_specifier declarator
+	| type_specifier
 	;
 
 initializer
