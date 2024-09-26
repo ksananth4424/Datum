@@ -1,0 +1,17 @@
+start:
+if (not ds1->func1() * (ds2->func2({ return e == 1; }) + 123) / 2 != "h") {
+    integer x = 0;
+    if (-x + ds->func3({ integer z = 1; return e == z;}) == 0) {
+        $$ do something
+        bool flag = x / (ds1, ds2)->func4((ds3, ds4)->func5(from 1 to 10)) > x >= y;
+    } else {
+
+    }
+} else {
+    integer z = 0;
+    if (-z * ds->func3({ integer z = 1; return e == z;}) / (1, ds2)->func4() <= 0) {
+    } else {
+        bool flag = NOT -x / (ds1, ds2)->func4((ds3, ds4)->func5(from 1 to 10)) > x >= y;
+        $$ do something    
+    }
+}
