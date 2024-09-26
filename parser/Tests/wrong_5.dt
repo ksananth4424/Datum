@@ -1,0 +1,9 @@
+
+function_declarations:
+function (dataset ds) -> func() -> () { return ":P"; } $$ ERROR_EXPECTED no return type
+
+$$ ERROR_EXPECTED no start
+integer a = 1, b = 2;
+b = a;
+c = a + b; 
+ds->normalize(); 
