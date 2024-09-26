@@ -1,0 +1,14 @@
+function_declarations:
+
+function (dataset ds1) -> train_test_split(float testSize) -> (dataset,dataset) 
+{
+    $$ train_test_split code
+}
+
+                                            $$ ERROR_EXPECTED (no "start:")
+
+dataset ds = read("./MNIST_dataset", "csv");
+
+ds /= 255                       $$ make sure that each pixel is within range
+
+ds->normalize()->write("./MNIST_processed_dataset.csv", "csv");
