@@ -255,14 +255,11 @@ loop_statement
 
 from_to_also_expression
     : TO expression optional_step 
-    | TO expression optional_step ALSO from_to_also_expression_rec
+    | FROM expression optional_step
     | FROM expression TO expression optional_step
-    | FROM expression TO expression optional_step ALSO from_to_also_expression_rec
-    ;
-
-from_to_also_expression_rec
-    :
-    | from_to_also_expression
+    | from_to_also_expression ALSO TO expression optional_step  
+    | from_to_also_expression ALSO FROM expression optional_step  
+    | from_to_also_expression ALSO FROM expression TO expression optional_step  
     ;
 
 functions
