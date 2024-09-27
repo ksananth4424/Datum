@@ -1,0 +1,94 @@
+$$ testcase for  loop statements $$
+start:
+
+$!
+loop  i from 0 to 10 {
+    a = 34;
+}
+
+loop abc from def to ghi step jkl {
+    sjh = hus;
+}
+
+loop abc from def to ghi step jkl also from uhd to ksh {
+    sjh = hus;
+}
+
+loop  j from 0 to 10 step 5 {
+    a = 43;
+}
+
+loop  j from 0 to 10 step 5  also from 60 to 200{
+    a = 43;
+}
+
+loop  j from 0 to 10 step 5  also from 60 to 200 also from 9 to 2398{
+    a = 43;
+}
+
+loop  j from 0 to 10 step 5  also from 60 to 200 also from 239 to 2039 also from 129 to 23{
+    a = 43;
+}
+!$
+
+loop i to 99 {
+    a = 232;
+}
+
+loop i to 99 also to 230 {
+    a = 232;
+}
+
+loop i to 99 also from 2 to 10 {
+    a = 232;
+}
+
+loop i to 99 also from 2 to 10 step 9{
+    a = 232;
+}
+
+loop i to 99 step 8 also from 2 to 10 step 9{
+    a = 232;
+}
+
+
+loop  j from 0 to 10 step 5  also from 60 to 200{
+    loop  j from 0 to 10 step 5  also from 60 to 200 also from 239 to 2039 also from 129 to 23{
+        loop  i from 0 to 10 {
+            a = 34;
+        }
+        a = 43;
+    }
+}
+
+loop  i from 0 to 10 {
+    loop  j from 0 to 10 step 5 {
+        loop  i from 0 to 10 {
+            a = 34;
+        }
+
+        loop  j from 0 to 10 step 5 {
+            a = 43;
+        }
+        a = 43;
+    }
+    a = 34;
+}
+
+loop y from y-232 to z-39 step dj+323 also to y+23{
+    loop h from y*8 to z/23 step z%2{
+        ji=23;
+    }
+}
+
+$!loop i from x=4 to 23 {
+    x = 23;
+}
+loop j from x==j to y==z step z==a{
+}
+
+loop j from x==j to y==z step z==a{
+    loop y from y-232 to z-39 step dj+323 also to y+23{
+        
+    }
+} !$

@@ -1,0 +1,4 @@
+start:
+loop i to 29 from 98 to 99 {    $$ ERROR_EXPECTED  missing ALSO keyword
+
+}

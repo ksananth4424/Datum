@@ -11,7 +11,7 @@ L			[a-zA-Z_]
 %%
 
 "$!"([^!]|(!+[^!$]))*!*"!$" ;
-"$$".*\n        ;   
+"$$".*        ;   
 
 "integer"   {count(); return (INTEGER);}
 "float"     {count(); return (FLOAT);}
