@@ -187,7 +187,8 @@ postfix_expression
     | primary_expression
     ;
 
-unary_expression // 
+// this is how unary operators are used
+unary_expression
 	: postfix_expression
 	| unary_operator unary_expression
 	;
@@ -227,11 +228,13 @@ assignment_operator
 	| SUB_ASSIGN
 	;
 
+// this is how assignment is done it can be a single chain expression or a normal expression
 assignment_expression 
 	: single_chain_expression assignment_operator expression
 	| expression
 	;
 
+// this is step for loop, it can be empty or can have a step
 optional_step
     : 
     | STEP expression
