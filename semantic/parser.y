@@ -1,9 +1,10 @@
 %{
-    #include <stdio.h>
-    // #include "symbol_table.hpp"
-    // SymbolTable symtab;
-    void yyerror(char*);
+    #include <iostream>
+    #include <fstream>
     int yylex();
+    extern void yyerror(char*);
+    #include "symbol_table.hpp"
+    SymbolTable symtab;
     std::string scope = "g";
 %}
 

@@ -1,7 +1,8 @@
 %{
-    #include <stdio.h>
-    void yyerror(char*);
+    #include <iostream>
+    #include <fstream>
     int yylex();
+    extern void yyerror(char*);
 
 %}
 
