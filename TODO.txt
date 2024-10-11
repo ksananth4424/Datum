@@ -31,7 +31,7 @@ Syntax Analyser:
 
 ----------------------------------------------------------
 Semantic Analyser:
-- Build the whole thing
+- change language of Parser to cpp
 
 
 ----------------------------------------------------------

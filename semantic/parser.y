@@ -1,8 +1,10 @@
 %{
     #include <stdio.h>
+    // #include "symbol_table.hpp"
+    // SymbolTable symtab;
     void yyerror(char*);
     int yylex();
-
+    std::string scope = "g";
 %}
 
 %token FUNC_LABEL START_LABEL
