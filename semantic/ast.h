@@ -88,6 +88,7 @@ class DeclarationStatement;
 class Node
 {
 public:
+    int scope;
     Node();
 
     virtual ~Node() = default;
@@ -96,7 +97,6 @@ public:
 class Start : public Node
 {
 public:
-    int scope;
     vector<class DeclarationStatement *> *DeclarationsList;
     vector<class Statement *> *AssignmentList;
     vector<class FunctionDeclaration *> *FunctionList;
@@ -108,7 +108,6 @@ public:
 class ConstantValue : public Node
 {
 public:
-    int scope;
     TypeSpecifier type;
     string value;
     ConstantValue(TypeSpecifier type, string value, int scope);
@@ -119,7 +118,6 @@ public:
 class DeclarationStatement : public Node
 {
 public:
-    int scope;
     TypeSpecifier type;
     vector<class InitDeclaration *> *initDeclarations;
     DeclarationStatement(TypeSpecifier type, vector<class InitDeclaration *> *initDeclarations, int scope);
@@ -130,7 +128,6 @@ public:
 class InitDeclaration : public Node
 {
 public:
-    int scope;
     Declarator *declarator;
     Initializer *initializer;
 
@@ -142,7 +139,6 @@ public:
 class Declarator : public Node
 {
 public:
-    int scope;
     string identifier;
     Declarator(string identifier, int scope);
 
@@ -152,7 +148,6 @@ public:
 class Initializer : public Node
 {
 public:
-    int scope;
     Expression *expression;
     Initializer(Expression *expression, int scope);
 
@@ -162,7 +157,6 @@ public:
 class AssignmentStatement : public Node
 {
 public:
-    int scope;
     Declarator *declarator;
     Expression *expression;
     AssignmentOperator op;
@@ -175,7 +169,6 @@ public:
 class ConditionalStatement : public Node
 {
 public:
-    int scope;
     Expression *condition;
     vector<class Statement *> *ifStatements;
     vector<class Statement *> *elseStatements;
@@ -188,7 +181,6 @@ public:
 class LoopStatement : public Node
 {
 public:
-    int scope;
     Expression *condition;
     vector<class Statement *> *statements;
 
@@ -200,7 +192,6 @@ public:
 class ReturnStatement : public Node
 {
 public:
-    int scope;
     Expression *expression;
     ReturnStatement(Expression *expression, int scope);
 
@@ -210,7 +201,6 @@ public:
 class Statement : public Node
 {
 public:
-    int scope;
     int statementType;
     class AssignmentStatement *assignmentStatement;
     class ConditionalStatement *conditionalStatement;
@@ -224,7 +214,6 @@ public:
 class Expression : public Node
 {
 public:
-    int scope;
     TypeSpecifier type;
     vector<int> Dimensions;
     Expression();
@@ -233,7 +222,6 @@ public:
 
 class BinaryExpression : public Expression
 {
-    int scope;
     Expression *lhs;
     Expression *rhs;
     string op;
@@ -244,7 +232,6 @@ class BinaryExpression : public Expression
 
 class UnaryExpression : public Expression
 {
-    int scope;
     Expression *expr;
     string identifier;
     string op;
@@ -258,7 +245,6 @@ class UnaryExpression : public Expression
 class FunctionDeclaration : public Node
 {
 public:
-    int scope;
     TypeSpecifier returnType;
     string identifier;
     vector<class DeclarationStatement *> *parameters;
