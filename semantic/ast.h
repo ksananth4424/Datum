@@ -10,17 +10,6 @@ class Start;
 
 class Node;
 
-enum class TypeSpecifier
-{
-    INTEGER,
-    FLOAT,
-    STRING,
-    CHAR,
-    BOOL,
-    DATASET,
-    ARRAY
-};
-
 enum class InbuiltFunctions
 {
     SHOW_BAR,
@@ -57,6 +46,25 @@ enum AssignmentOperator
     MOD_ASSIGN
 };
 
+enum class BinaryOperator
+{
+    ADD,
+    SUB,
+    MUL,
+    DIV,
+    MOD,
+    AND,
+    OR,
+    EQ,
+    NEQ,
+    LT,
+    GT,
+    LTE,
+    GTE
+};
+
+class TypeSpecifier;
+
 class ConstantValue;
 
 class Expression;
@@ -64,6 +72,8 @@ class Expression;
 class BinaryExpression;
 
 class UnaryExpression;
+
+class Parameter;
 
 class FunctionDeclaration;
 
@@ -74,6 +84,10 @@ class ConditionalStatement;
 class LoopStatement;
 
 class ReturnStatement;
+
+class BreakStatement;
+
+class ContinueStatement;
 
 class Statement;
 // RHS in initialization statements.
@@ -94,14 +108,22 @@ public:
     virtual ~Node() = default;
 };
 
+class TypeSpecifier : public Node
+{
+public:
+    string type;
+    TypeSpecifier(string type,TypeSpecifier* TypeSpecifier, int scope);
+
+    virtual ~TypeSpecifier() = default;
+};
+
 class Start : public Node
 {
 public:
-    vector<class DeclarationStatement *> *DeclarationsList;
-    vector<class Statement *> *AssignmentList;
     vector<class FunctionDeclaration *> *FunctionList;
+    vector<class Statement *> *StatementList;
 
-    Start(vector<class DeclarationStatement *> *DeclarationsList, vector<class Statement *> *AssignmentList, vector<class FunctionDeclaration *> *FunctionList, int scope);
+    Start(vector<class FunctionDeclaration *> *FunctionList, vector<class Statement *> *StatementList, int scope);
     virtual ~Start() = default;
 };
 
@@ -149,7 +171,8 @@ class Initializer : public Node
 {
 public:
     Expression *expression;
-    Initializer(Expression *expression, int scope);
+    vector<class Initializer *> *initializerList;
+    Initializer(Expression *expression,vector<Initializer*> *initializerList ,int scope);
 
     virtual ~Initializer() = default;
 };
@@ -198,6 +221,22 @@ public:
     virtual ~ReturnStatement() = default;
 };
 
+class BreakStatement : public Node
+{
+public:
+    BreakStatement(int scope);
+
+    virtual ~BreakStatement() = default;
+};
+
+class ContinueStatement : public Node
+{
+public:
+    ContinueStatement(int scope);
+
+    virtual ~ContinueStatement() = default;
+};
+
 class Statement : public Node
 {
 public:
@@ -224,7 +263,7 @@ class BinaryExpression : public Expression
 {
     Expression *lhs;
     Expression *rhs;
-    string op;
+    BinaryOperator op;
     BinaryExpression(Expression *lhs, Expression *rhs, string op,int scope);
 
     virtual ~BinaryExpression() = default;
@@ -240,6 +279,16 @@ class UnaryExpression : public Expression
     UnaryExpression(Expression *expr, string op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction,int scope);
 
     virtual ~UnaryExpression() = default;
+};
+
+class Parameter : public Node
+{
+public:
+    TypeSpecifier type;
+    string identifier;
+    Parameter(TypeSpecifier type, string identifier, int scope);
+
+    virtual ~Parameter() = default;
 };
 
 class FunctionDeclaration : public Node
