@@ -9,11 +9,10 @@
     #include "symbol_table.hpp"
 
     class Start* root;
-    int SCOPE = 0;
+    std::string SCOPE = "g";
     int yylex();
     extern void yyerror(char*);
     SymbolTable symtab;
-    std::string scope = "g";
 %}
 
 %union{
@@ -119,7 +118,12 @@
 %start start
 %%
 
-start : program       {$$ = $1; root = $$; puts("success!!");} //parsing starts from here this triggers 'program'.
+start : program {
+    $$ = $1; root = $$;
+    root->scope = "g"
+    puts("success!!");
+} 
+//parsing starts from here this triggers 'program'.
 
 program
     : FUNC_LABEL functions START_LABEL statement_list       {$$ = new Start($2, $4,SCOPE); }

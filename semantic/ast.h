@@ -102,7 +102,7 @@ class DeclarationStatement;
 class Node
 {
 public:
-    int scope;
+    string scope;
     Node();
 
     virtual ~Node() = default;
@@ -112,7 +112,7 @@ class TypeSpecifier : public Node
 {
 public:
     string type;
-    TypeSpecifier(string type,TypeSpecifier* TypeSpecifier, int scope);
+    TypeSpecifier(string type,TypeSpecifier* TypeSpecifier, string scope);
 
     virtual ~TypeSpecifier() = default;
 };
@@ -123,7 +123,7 @@ public:
     vector<class FunctionDeclaration *> *FunctionList;
     vector<class Statement *> *StatementList;
 
-    Start(vector<class FunctionDeclaration *> *FunctionList, vector<class Statement *> *StatementList, int scope);
+    Start(vector<class FunctionDeclaration *> *FunctionList, vector<class Statement *> *StatementList, string scope);
     virtual ~Start() = default;
 };
 
@@ -132,7 +132,7 @@ class ConstantValue : public Node
 public:
     TypeSpecifier type;
     string value;
-    ConstantValue(TypeSpecifier type, string value, int scope);
+    ConstantValue(TypeSpecifier type, string value, string scope);
 
     virtual ~ConstantValue() = default;
 };
@@ -142,7 +142,7 @@ class DeclarationStatement : public Node
 public:
     TypeSpecifier type;
     vector<class InitDeclaration *> *initDeclarations;
-    DeclarationStatement(TypeSpecifier type, vector<class InitDeclaration *> *initDeclarations, int scope);
+    DeclarationStatement(TypeSpecifier type, vector<class InitDeclaration *> *initDeclarations, string scope);
 
     virtual ~DeclarationStatement() = default;
 };
@@ -153,7 +153,7 @@ public:
     Declarator *declarator;
     Initializer *initializer;
 
-    InitDeclaration(Declarator *declarator, Initializer *initializer, int scope);
+    InitDeclaration(Declarator *declarator, Initializer *initializer, string scope);
 
     virtual ~InitDeclaration() = default;
 };
@@ -162,7 +162,7 @@ class Declarator : public Node
 {
 public:
     string identifier;
-    Declarator(string identifier, int scope);
+    Declarator(string identifier, string scope);
 
     virtual ~Declarator() = default;
 };
@@ -172,7 +172,7 @@ class Initializer : public Node
 public:
     Expression *expression;
     vector<class Initializer *> *initializerList;
-    Initializer(Expression *expression,vector<Initializer*> *initializerList ,int scope);
+    Initializer(Expression *expression,vector<Initializer*> *initializerList ,string scope);
 
     virtual ~Initializer() = default;
 };
@@ -184,7 +184,7 @@ public:
     Expression *expression;
     AssignmentOperator op;
 
-    AssignmentStatement(Declarator *declarator, Expression *expression, AssignmentOperator op, int scope);
+    AssignmentStatement(Declarator *declarator, Expression *expression, AssignmentOperator op, string scope);
 
     virtual ~AssignmentStatement() = default;
 };
@@ -196,7 +196,7 @@ public:
     vector<class Statement *> *ifStatements;
     vector<class Statement *> *elseStatements;
 
-    ConditionalStatement(Expression *condition, vector<class Statement *> *ifStatements, vector<class Statement *> *elseStatements, int scope);
+    ConditionalStatement(Expression *condition, vector<class Statement *> *ifStatements, vector<class Statement *> *elseStatements, string scope);
 
     virtual ~ConditionalStatement() = default;
 };
@@ -207,7 +207,7 @@ public:
     Expression *condition;
     vector<class Statement *> *statements;
 
-    LoopStatement(Expression *condition, vector<class Statement *> *statements, int scope);
+    LoopStatement(Expression *condition, vector<class Statement *> *statements, string scope);
 
     virtual ~LoopStatement() = default;
 };
@@ -216,7 +216,7 @@ class ReturnStatement : public Node
 {
 public:
     Expression *expression;
-    ReturnStatement(Expression *expression, int scope);
+    ReturnStatement(Expression *expression, string scope);
 
     virtual ~ReturnStatement() = default;
 };
@@ -224,7 +224,7 @@ public:
 class BreakStatement : public Node
 {
 public:
-    BreakStatement(int scope);
+    BreakStatement(string scope);
 
     virtual ~BreakStatement() = default;
 };
@@ -232,7 +232,7 @@ public:
 class ContinueStatement : public Node
 {
 public:
-    ContinueStatement(int scope);
+    ContinueStatement(string scope);
 
     virtual ~ContinueStatement() = default;
 };
@@ -245,7 +245,7 @@ public:
     class ConditionalStatement *conditionalStatement;
     class LoopStatement *loopStatement;
     class ReturnStatement *returnStatement;
-    Statement(class AssignmentStatement *assignmentStatement, class ConditionalStatement *conditionalStatement, class LoopStatement *loopStatement, class ReturnStatement *returnStatement, int statementType, int scope);
+    Statement(class AssignmentStatement *assignmentStatement, class ConditionalStatement *conditionalStatement, class LoopStatement *loopStatement, class ReturnStatement *returnStatement, int statementType, string scope);
 
     virtual ~Statement() = default;
 };
@@ -264,7 +264,7 @@ class BinaryExpression : public Expression
     Expression *lhs;
     Expression *rhs;
     BinaryOperator op;
-    BinaryExpression(Expression *lhs, Expression *rhs, string op,int scope);
+    BinaryExpression(Expression *lhs, Expression *rhs, string op,string scope);
 
     virtual ~BinaryExpression() = default;
 };
@@ -276,7 +276,7 @@ class UnaryExpression : public Expression
     string op;
     ConstantValue *constantValue;
     InbuiltFunctions inbuiltFunction;
-    UnaryExpression(Expression *expr, string op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction,int scope);
+    UnaryExpression(Expression *expr, string op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction,string scope);
 
     virtual ~UnaryExpression() = default;
 };
@@ -286,7 +286,7 @@ class Parameter : public Node
 public:
     TypeSpecifier type;
     string identifier;
-    Parameter(TypeSpecifier type, string identifier, int scope);
+    Parameter(TypeSpecifier type, string identifier, string scope);
 
     virtual ~Parameter() = default;
 };
@@ -299,7 +299,7 @@ public:
     vector<class DeclarationStatement *> *parameters;
     vector<DeclarationStatement *> *localDeclarations;
     vector<class Statement *> *statements;
-    FunctionDeclaration(TypeSpecifier returnType, string identifier, vector<class DeclarationStatement *> *parameters, vector<DeclarationStatement *> *localDeclarations, vector<class Statement *> *statements, int scope);
+    FunctionDeclaration(TypeSpecifier returnType, string identifier, vector<class DeclarationStatement *> *parameters, vector<DeclarationStatement *> *localDeclarations, vector<class Statement *> *statements, string scope);
 
     virtual ~FunctionDeclaration() = default;
 };

@@ -32,7 +32,8 @@ Syntax Analyser:
 ----------------------------------------------------------
 Semantic Analyser:
 - change language of Parser to cpp
-
+- in parser.y line 149 and 108??
+- start, ConstantValue, Initializer, AssignmentStatement...
 
 ----------------------------------------------------------
 Intermediate code generator:
