@@ -71,6 +71,8 @@ L			[a-zA-Z_]
 {D}+                    {count(); return (CONSTANT);}
 {D}*"."{D}+             {count(); return (CONSTANT);}
 {D}+"."{D}*             {count(); return (CONSTANT);}
+"true"                  {count(); return (BOOL_TRUE);}
+"false"                 {count(); return (BOOL_FALSE);}
 
 
 "+="        {count(); return (ADD_ASSIGN);}

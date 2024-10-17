@@ -60,6 +60,8 @@
     vector<Expression*> AstExpressionList;
     vector<FunctionDeclaration*> AstFunctionDeclarationList;
     vector<Statement*> AstStatementList;
+    vector<tuple<Expression*,Expression*,Expression*>> AstFromToAlsoExpression;
+    vector<pair<Expression*,vector<Statement*>> AstConditionalStatementList;
 
 }
 
@@ -112,8 +114,13 @@
 %type <AstStatement> statement
 %type <AstStatementList> statement_list
 %type <AstStatementList> compound_statement
-
-
+%type <AstConstantValue> primary_expression
+%type <AstUnaryExpression> unary_expression
+%type <AstFromToAlsoExpression> from_to_also_expression
+%type <AstExpression> optional_step
+%type <AstLoopStatement> loop_statement
+%type <AstConditionalStatement> conditional_statement
+%type <AstConditionalStatementList> else_if_statement
 
 %start start
 %%
@@ -222,8 +229,8 @@ parameter_declaration
 
 // intuitive
 primary_expression 
-    : CONSTANT
-    | STRING_LITERAL
+    : CONSTANT                { $$ = new ConstantValue(TypeSpecifier("not sure"),$1,SCOPE); }
+    | STRING_LITERAL          { $$ = new ConstantValue(TypeSpecifier("string"),$1,SCOPE); }
     ;
 
  // similar to parameter list, multiple expressions are dealt.
@@ -325,20 +332,20 @@ assignment_expression
 
 // this is step for loop, it can be empty or can have a step
 optional_step
-    : 
-    | STEP expression
+    :                   {$$ = NULL;}
+    | STEP expression   {$$ = $2;}
     ;
 
 // this and next grammer declarations are for the use of if-else statements
 conditional_statement 
-	: IF '(' expression ')' compound_statement else_if_statement// all the conditional expressions must be used in '(' && ')' 
-	| IF '(' expression ')' compound_statement else_if_statement ELSE compound_statement
+	: IF '(' expression ')' compound_statement else_if_statement                            {$6.push_front(make_pair($3,$5)); $$ = new ConditionalStatement($6,SCOPE);}
+	| IF '(' expression ')' compound_statement else_if_statement ELSE compound_statement    {$6.push_front(make_pair($3,$5)); $6.push_back(make_pair(NULL,$8)); $$ = new ConditionalStatement($6,SCOPE);}
 	;
 
 // similar to the above understanding
 else_if_statement 
-    : 
-    | else_if_statement ELSE IF '(' expression ')' compound_statement// all the conditional expressions must be used in '(' && ')' 
+    :                                                                        {$$ = new vector<pair<Expression*,vector<Statement*>>>() ;}
+    | else_if_statement ELSE IF '(' expression ')' compound_statement        {$$ = $1; $1->push_back(make_pair($5,$7));}
     ;
 
 // all statements should adhere to '{' & '}'' at end and start respec. 
@@ -349,15 +356,15 @@ compound_statement
 
 // only these can be a statement
 statement 
-    : assignment_expression ';' 
-    | compound_statement
-    | conditional_statement
-    | loop_statement
-    | declaration
-    | RETURN expression ';'
-    | RETURN ';'
-    | BREAK ';'
-    | CONTINUE ';'
+    : assignment_expression ';' {$$ = new Statement(NULL,$1,NULL,NULL,NULL,NULL,NULL,SCOPE);}
+    | compound_statement        {$$ = new Statement($1,NULL,NULL,NULL,NULL,NULL,NULL,SCOPE);}
+    | conditional_statement     {$$ = new Statement(NULL,NULL,$1,NULL,NULL,NULL,NULL,SCOPE);}
+    | loop_statement            {$$ = new Statement(NULL,NULL,NULL,$1,NULL,NULL,NULL,SCOPE);}
+    | declaration               {$$ = new Statement($1,NULL,NULL,NULL,NULL,NULL,NULL,SCOPE);}
+    | RETURN expression ';'     {$$ = new Statement(NULL,NULL,NULL,NULL,new ReturnStatement($2,SCOPE),NULL,NULL,SCOPE);}
+    | RETURN ';'                {$$ = new Statement(NULL,NULL,NULL,NULL,new ReturnStatement(NULL,SCOPE),NULL,NULL,SCOPE);}
+    | BREAK ';'                 {$$ = new Statement(NULL,NULL,NULL,NULL,NULL,new BreakStatement(SCOPE),NULL,SCOPE);}
+    | CONTINUE ';'              {$$ = new Statement(NULL,NULL,NULL,NULL,NULL,NULL,new ContinueStatement(SCOPE),SCOPE);}
     ;
 
 // to handle multiple statements
@@ -368,17 +375,17 @@ statement_list
 
 // structure of loops should be adhered to this control of loop is handled by 'from_to_also_expression'
 loop_statement 
-    : LOOP IDENTIFIER from_to_also_expression compound_statement
+    : LOOP IDENTIFIER from_to_also_expression compound_statement    {$$ = new LoopStatement($2, $3, $4,SCOPE);}
     ;
 
  // this is how loop control is handled
 from_to_also_expression
-    : TO expression optional_step 
-    | FROM expression optional_step
-    | FROM expression TO expression optional_step
-    | from_to_also_expression ALSO TO expression optional_step  
-    | from_to_also_expression ALSO FROM expression optional_step  
-    | from_to_also_expression ALSO FROM expression TO expression optional_step  
+    : TO expression optional_step                                                   {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple(NULL,$2,$3));}
+    | FROM expression optional_step                                                 {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple($2,NULL,$3));}           
+    | FROM expression TO expression optional_step                                   {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple($2,$4,$5));}
+    | from_to_also_expression ALSO TO expression optional_step                      {$$ = $1; $1->push_back(make_tuple(NULL,$4,$5));}
+    | from_to_also_expression ALSO FROM expression optional_step                    {$$ = $1; $1->push_back(make_tuple($4,NULL,$5));}
+    | from_to_also_expression ALSO FROM expression TO expression optional_step      {$$ = $1; $1->push_back(make_tuple($4,$6,$7));}
     ;
 
 // grammer for one or multiple function declarations

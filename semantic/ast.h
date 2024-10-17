@@ -192,11 +192,10 @@ public:
 class ConditionalStatement : public Node
 {
 public:
-    Expression *condition;
-    vector<class Statement *> *ifStatements;
-    vector<class Statement *> *elseStatements;
+    vector<pair<class Expression *, vector<class Statement *>>> *ConditionStatements;
 
-    ConditionalStatement(Expression *condition, vector<class Statement *> *ifStatements, vector<class Statement *> *elseStatements, string scope);
+    ConditionalStatement(vector<pair<class Expression *, vector<class Statement *>>> *ConditionStatements, string scope);
+
 
     virtual ~ConditionalStatement() = default;
 };
@@ -204,10 +203,11 @@ public:
 class LoopStatement : public Node
 {
 public:
-    Expression *condition;
+    string identifier;
+    vector<tuple<class Expression *, class Expression *,class Expression *>> *fromToPairs;
     vector<class Statement *> *statements;
 
-    LoopStatement(Expression *condition, vector<class Statement *> *statements, string scope);
+    LoopStatement(string identifier,vector<pair<class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements, string scope);
 
     virtual ~LoopStatement() = default;
 };
@@ -241,10 +241,13 @@ class Statement : public Node
 {
 public:
     int statementType;
+    class DeclarationStatement *declarationStatement;
     class AssignmentStatement *assignmentStatement;
     class ConditionalStatement *conditionalStatement;
     class LoopStatement *loopStatement;
     class ReturnStatement *returnStatement;
+    class BreakStatement *breakStatement;
+    class ContinueStatement *continueStatement;
     Statement(class AssignmentStatement *assignmentStatement, class ConditionalStatement *conditionalStatement, class LoopStatement *loopStatement, class ReturnStatement *returnStatement, int statementType, string scope);
 
     virtual ~Statement() = default;
@@ -261,6 +264,7 @@ public:
 
 class BinaryExpression : public Expression
 {
+public:
     Expression *lhs;
     Expression *rhs;
     BinaryOperator op;
@@ -271,6 +275,7 @@ class BinaryExpression : public Expression
 
 class UnaryExpression : public Expression
 {
+public:
     Expression *expr;
     string identifier;
     string op;
