@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <cstring>
 #include <vector>
@@ -12,62 +13,62 @@ class Node;
 
 enum class InbuiltFunctions
 {
-    SHOW_BAR,
-    SHOW_LINE,
-    SHOW_SCATTER,
-    SHOW_BOX,
-    ROW,
-    COL,
-    FILTER,
-    SUM,
-    MAX,
-    MIN,
-    MEAN,
-    JOIN,
-    READ,
-    WRITE,
-    UNIQUE,
-    SHOW,
-    SPLIT,
-    SORT,
-    SHUFFLE,
-    ADD,
-    SHAPE,
-    DROP
+    show_bar,
+    show_line,
+    show_scatter,
+    show_box,
+    row,
+    col,
+    filter,
+    sum,
+    max,
+    min,
+    mean,
+    join,
+    read,
+    write,
+    unique,
+    show,
+    split,
+    sort,
+    shuffle,
+    add,
+    shape,
+    drop
 };
 
 enum class AssignmentOperator
 {
-    ASSIGN,
-    ADD_ASSIGN,
-    SUB_ASSIGN,
-    MUL_ASSIGN,
-    DIV_ASSIGN,
-    MOD_ASSIGN
+    assign,
+    add_assign,
+    sub_assign,
+    mul_assign,
+    div_assign,
+    mod_assign
 };
 
 enum class BinaryOperator
 {
-    ADD,
-    SUB,
-    MUL,
-    DIV,
-    MOD,
-    AND,
-    OR,
-    EQ,
-    NEQ,
-    LT,
-    GT,
-    LTE,
-    GTE
+    add,
+    sub,
+    mul,
+    div,
+    mod,
+    and_op,
+    or_op,
+    eq,
+    neq,
+    lt,
+    gt,
+    lte,
+    gte
 };
 
 enum class UnaryOperator
 {
-    NOT_OP,
-    PLUS_OP,
-    MINUS_OP
+    not_op,
+    plus_op,
+    minus_op
 };
 
 
@@ -161,24 +162,38 @@ public:
     virtual ~DeclarationStatement() = default;
 };
 
-class InitDeclaration : public Node
+class Expression : public Node
 {
 public:
-    Declarator *declarator;
-    Initializer *initializer;
-
-    InitDeclaration(Declarator *declarator, Initializer *initializer, string scope);
-
-    virtual ~InitDeclaration() = default;
+    TypeSpecifier type;
+    int castType;
+    vector<int> *Dimensions;
+    Expression();
+    virtual ~Expression() = default;
 };
 
-class Declarator : public Node
+class BinaryExpression : public Expression
 {
 public:
-    string identifier;
-    Declarator(string identifier, string scope);
+    Expression *lhs;
+    Expression *rhs;
+    BinaryOperator op;
+    BinaryExpression(Expression *lhs, Expression *rhs, string op, string scope);
 
-    virtual ~Declarator() = default;
+    virtual ~BinaryExpression() = default;
+};
+
+class UnaryExpression : public Expression
+{
+public:
+    Expression *expr;
+    string identifier;
+    vector<UnaryOperator> op ;
+    ConstantValue *constantValue;
+    InbuiltFunctions inbuiltFunction;
+    UnaryExpression(Expression *expr, vector<UnaryOperator> op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction, string scope);
+
+    virtual ~UnaryExpression() = default;
 };
 
 class Initializer : public Node
@@ -190,6 +205,29 @@ public:
 
     virtual ~Initializer() = default;
 };
+
+class Declarator : public Node
+{
+public:
+    string identifier;
+    Declarator(string identifier, string scope);
+
+    virtual ~Declarator() = default;
+};
+
+class InitDeclaration : public Node
+{
+public:
+    Declarator *declarator;
+    Initializer *initializer;
+
+    InitDeclaration(Declarator *declarator, Initializer *initializer, string scope);
+
+    virtual ~InitDeclaration() = default;
+};
+
+
+
 
 class AssignmentStatement : public Node
 {
@@ -272,40 +310,7 @@ public:
     virtual ~Statement() = default;
 };
 
-class Expression : public Node
-{
-public:
-    TypeSpecifier type;
-    int castType;
-    vector<int> *Dimensions;
-    Expression();
-    virtual ~Expression() = default;
-};
 
-class BinaryExpression : public Expression
-{
-public:
-    Expression *lhs;
-    Expression *rhs;
-    BinaryOperator op;
-    BinaryExpression(Expression *lhs, Expression *rhs, string op, string scope);
-
-    virtual ~BinaryExpression() = default;
-};
-
-
-class UnaryExpression : public Expression
-{
-public:
-    Expression *expr;
-    string identifier;
-    vector<UnaryOperator> op ;
-    ConstantValue *constantValue;
-    InbuiltFunctions inbuiltFunction;
-    UnaryExpression(Expression *expr, vector<UnaryOperator> op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction, string scope);
-
-    virtual ~UnaryExpression() = default;
-};
 
 class Parameter : public Node
 {
@@ -353,7 +358,7 @@ public:
     virtual ~FunctionCall() = default;
 };
 
-class SingleChainExpression : public Node
+class SingleChainExpression : public Expression
 {
 public:
     string identifier;
@@ -364,7 +369,7 @@ public:
     virtual ~SingleChainExpression() = default;
 };
 
-class MultiChainExpression : public Node
+class MultiChainExpression : public Expression
 {
 public:
     FunctionCall* functionCall;

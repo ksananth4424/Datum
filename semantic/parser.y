@@ -1,17 +1,17 @@
-%code requires{
-    #include "ast.h"
-}
+/* %code requires{
+    #include "ast.hpp"
+} */
 
 %{
     #include <iostream>
     #include <fstream>
-    #include "ast.h"
+    #include "ast.hpp"
     #include "symbol_table.hpp"
 
     class Start* root;
     std::string SCOPE = "g";
     int yylex();
-    extern void yyerror(char*);
+    void yyerror(char*);
     SymbolTable symtab;
 %}
 
@@ -20,7 +20,7 @@
     float fval;
     char cval;
     bool bval;
-    string string;
+    std::string str;
 
     InbuiltFunctions AstInbuiltFunctions;
     AssignmentOperator AstAssignmentOperator;
@@ -84,8 +84,8 @@
 %token AND OR NOT
 %token IF ELSE LOOP BREAK CONTINUE RETURN FUNCTION
 %token  STRING  BOOL DATASET ARRAY
-%token <string> STRING_LITERAL
-%token<string> IDENTIFIER
+%token <str> STRING_LITERAL
+%token<str> IDENTIFIER
 %token<ival> CONST_INTEGER
 %token<fval> CONST_FLOAT
 %token<cval> CONST_CHAR
@@ -150,58 +150,58 @@
 
 start : program {
     $$ = $1; root = $$;
-    root->scope = "g"
+    root->scope = "g";
     puts("success!!");
 } 
 //parsing starts from here this triggers 'program'.
 
 program
     : FUNC_LABEL functions START_LABEL statement_list       {$$ = new Start($2, $4,SCOPE); }
-    | FUNC_LABEL functions START_LABEL                      {$$ = new Start($2,NULL,SCOPE); }
-    | FUNC_LABEL START_LABEL statement_list                 {$$ = new Start(NULL, $3,SCOPE); }
-    | START_LABEL statement_list                            {$$ = new Start(NULL, $2,SCOPE); }
+    | FUNC_LABEL functions START_LABEL                      {$$ = new Start($2,nullptr,SCOPE); }
+    | FUNC_LABEL START_LABEL statement_list                 {$$ = new Start(nullptr, $3,SCOPE); }
+    | START_LABEL statement_list                            {$$ = new Start(nullptr, $2,SCOPE); }
     ;
 
 // these are all the funtions which will be supported by the DSL i.e. they will be in-build functions
 inbuilt_function 
-    : SHOW_BAR          { $$ = AstInbuiltFunctions::SHOW_BAR; }
-    | SHOW_LINE         { $$ = AstInbuiltFunctions::SHOW_LINE; }
-    | SHOW_SCATTER      { $$ = AstInbuiltFunctions::SHOW_SCATTER; }
-    | SHOW_BOX          { $$ = AstInbuiltFunctions::SHOW_BOX; }
-    | ROW               { $$ = AstInbuiltFunctions::ROW; }
-    | COL               { $$ = AstInbuiltFunctions::COL; }
-    | FILTER            { $$ = AstInbuiltFunctions::FILTER; }
-    | SUM               { $$ = AstInbuiltFunctions::SUM; }
-    | MAX               { $$ = AstInbuiltFunctions::MAX; }
-    | MIN               { $$ = AstInbuiltFunctions::MIN; }
-    | MEAN              { $$ = AstInbuiltFunctions::MEAN; }
-    | JOIN              { $$ = AstInbuiltFunctions::JOIN; }
-    | READ              { $$ = AstInbuiltFunctions::READ; }
-    | WRITE             { $$ = AstInbuiltFunctions::WRITE; }
-    | UNIQUE            { $$ = AstInbuiltFunctions::UNIQUE; }
-    | SHOW              { $$ = AstInbuiltFunctions::SHOW; }
-    | SPLIT             { $$ = AstInbuiltFunctions::SPLIT; }
-    | SORT              { $$ = AstInbuiltFunctions::SORT; }
-    | SHUFFLE           { $$ = AstInbuiltFunctions::SHUFFLE; }
-    | ADD               { $$ = AstInbuiltFunctions::ADD; }
-    | SHAPE             { $$ = AstInbuiltFunctions::SHAPE; }
-    | DROP              { $$ = AstInbuiltFunctions::DROP; }
+    : SHOW_BAR          { $$ = InbuiltFunctions::show_bar; }
+    | SHOW_LINE         { $$ = InbuiltFunctions::show_line; }
+    | SHOW_SCATTER      { $$ = InbuiltFunctions::show_scatter; }
+    | SHOW_BOX          { $$ = InbuiltFunctions::show_box; }
+    | ROW               { $$ = InbuiltFunctions::row; }
+    | COL               { $$ = InbuiltFunctions::col; }
+    | FILTER            { $$ = InbuiltFunctions::filter; }
+    | SUM               { $$ = InbuiltFunctions::sum; }
+    | MAX               { $$ = InbuiltFunctions::max; }
+    | MIN               { $$ = InbuiltFunctions::min; }
+    | MEAN              { $$ = InbuiltFunctions::mean; }
+    | JOIN              { $$ = InbuiltFunctions::join; }
+    | READ              { $$ = InbuiltFunctions::read; }
+    | WRITE             { $$ = InbuiltFunctions::write; }
+    | UNIQUE            { $$ = InbuiltFunctions::unique; }
+    | SHOW              { $$ = InbuiltFunctions::show; }
+    | SPLIT             { $$ = InbuiltFunctions::split; }
+    | SORT              { $$ = InbuiltFunctions::sort; }
+    | SHUFFLE           { $$ = InbuiltFunctions::shuffle; }
+    | ADD               { $$ = InbuiltFunctions::add; }
+    | SHAPE             { $$ = InbuiltFunctions::shape; }
+    | DROP              { $$ = InbuiltFunctions::drop; }
     ;
 
 // grammer for make variable declarations, all declarations must end with ';' 
 declaration 
-    : type_specifier ';'                        {$$ = new DeclarationStatement($1, NULL, SCOPE);}
+    : type_specifier ';'                        {$$ = new DeclarationStatement($1, nullptr, SCOPE);}
     | type_specifier init_declarator_list ';'   {$$ = new DeclarationStatement($1, $2, SCOPE);}
     ;
 
 // all the types which can be used for the above "declarations"
 type_specifier 
-    : INTEGER                       {$$ = new TypeSpecifier("int",NULL,SCOPE);}   
-    | FLOAT                         {$$ = new TypeSpecifier("float",NULL,SCOPE);}
-    | STRING                        {$$ = new TypeSpecifier("string",NULL,SCOPE);}
-    | CHAR                          {$$ = new TypeSpecifier("char",NULL,SCOPE);}
-    | BOOL                          {$$ = new TypeSpecifier("bool",NULL,SCOPE);}
-    | DATASET                       {$$ = new TypeSpecifier("dataset",NULL,SCOPE);}
+    : INTEGER                       {$$ = new TypeSpecifier("int",nullptr,SCOPE);}   
+    | FLOAT                         {$$ = new TypeSpecifier("float",nullptr,SCOPE);}
+    | STRING                        {$$ = new TypeSpecifier("string",nullptr,SCOPE);}
+    | CHAR                          {$$ = new TypeSpecifier("char",nullptr,SCOPE);}
+    | BOOL                          {$$ = new TypeSpecifier("bool",nullptr,SCOPE);}
+    | DATASET                       {$$ = new TypeSpecifier("dataset",nullptr,SCOPE);}
     | ARRAY '(' type_specifier ')'  {$$ = new TypeSpecifier("array",$3,SCOPE);}
     ;
 
@@ -213,7 +213,7 @@ init_declarator_list
 
 // for initializing while declaring variables
 init_declarator                     
-	: declarator                    {$$ = new InitDeclaration($1, NULL,SCOPE);}
+	: declarator                    {$$ = new InitDeclaration($1, nullptr,SCOPE);}
 	| declarator '=' initializer    {$$ = new InitDeclaration($1, $3,SCOPE);}
 	;
 
@@ -226,8 +226,8 @@ declarator
 
 // for initializing variables
 initializer     
-    : assignment_expression     {$$ = new Initializer($1,NULL,SCOPE);}
-	| '{' initializer_list '}'  {$$ = new Initializer(NULL,$2,SCOPE);}
+    : assignment_expression     {$$ = new Initializer($1,nullptr,SCOPE);}
+	| '{' initializer_list '}'  {$$ = new Initializer(nullptr,$2,SCOPE);}
 	/* | '{' initializer_list ',' '}'  */
 	;
 
@@ -246,7 +246,7 @@ parameter_list
 // for the above parameter_list way how each parameter is given to a funtion
 parameter_declaration 
 	: type_specifier declarator     {$$ = new Parameter($1, $2,SCOPE);}
-	| type_specifier                {$$ = new Parameter($1, NULL,SCOPE);}
+	| type_specifier                {$$ = new Parameter($1, nullptr,SCOPE);}
 	;
 
 
@@ -281,15 +281,15 @@ argument
 
 // e.g {variable_name}.{function_name}(expression) 
 single_chain_expression 
-	: IDENTIFIER                                                                                { $$ = new SingleChainExpression($1,NULL,new vector<pair<FunctionCall*,vector<Expression*>*>>(),SCOPE); }
+	: IDENTIFIER                                                                                { $$ = new SingleChainExpression($1,nullptr,new vector<pair<FunctionCall*,vector<Expression*>*>>(),SCOPE); }
 	| IDENTIFIER access_list                                                                    { $$ = new SingleChainExpression($1,$2,new vector<pair<FunctionCall*,vector<Expression*>*>>(),SCOPE); }
-    | single_chain_expression FLOW IDENTIFIER '(' ')'                                           { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,NULL,SCOPE),NULL)); }
-    | single_chain_expression FLOW IDENTIFIER '(' ')' access_list                               { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,NULL,SCOPE),$6)); }
-    | single_chain_expression FLOW IDENTIFIER '(' argument_list ')'                             { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),NULL)); }
+    | single_chain_expression FLOW IDENTIFIER '(' ')'                                           { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,nullptr,SCOPE),nullptr)); }
+    | single_chain_expression FLOW IDENTIFIER '(' ')' access_list                               { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,nullptr,SCOPE),$6)); }
+    | single_chain_expression FLOW IDENTIFIER '(' argument_list ')'                             { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),nullptr)); }
     | single_chain_expression FLOW IDENTIFIER '(' argument_list ')' access_list                 { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),$7)); }
-    | single_chain_expression FLOW inbuilt_function '(' ')'                                     { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,NULL,SCOPE),NULL)); }
-    | single_chain_expression FLOW inbuilt_function '(' ')' access_list                         { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,NULL,SCOPE),$6)); }
-    | single_chain_expression FLOW inbuilt_function '(' argument_list ')'                       { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),NULL)); }
+    | single_chain_expression FLOW inbuilt_function '(' ')'                                     { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,nullptr,SCOPE),nullptr)); }
+    | single_chain_expression FLOW inbuilt_function '(' ')' access_list                         { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,nullptr,SCOPE),$6)); }
+    | single_chain_expression FLOW inbuilt_function '(' argument_list ')'                       { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),nullptr)); }
     | single_chain_expression FLOW inbuilt_function '(' argument_list ')' access_list           { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),$7)); }
     ;
 
@@ -300,24 +300,24 @@ access_list
 
 // e.g {variable_name}.{function_name}(expression).{function_name}(expression)
 multi_chain_expression 
-	: '(' expression_list ')'                                                               { $$ = new MultiChainExpression(make_pair(NULL,$2),NULL,NULL,SCOPE); }
-	| '(' expression_list ')' access_list                                                   { $$ = new MultiChainExpression(make_pair(NULL,$2),$4,NULL,SCOPE); }
-    | multi_chain_expression FLOW IDENTIFIER '(' ')'                                        { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,NULL,SCOPE),NULL)); }
-    | multi_chain_expression FLOW IDENTIFIER '(' ')' access_list                            { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,NULL,SCOPE),$6)); }
-    | multi_chain_expression FLOW IDENTIFIER '(' argument_list ')'                          { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),NULL)); }
+	: '(' expression_list ')'                                                               { $$ = new MultiChainExpression(make_pair(nullptr,$2),nullptr,nullptr,SCOPE); }
+	| '(' expression_list ')' access_list                                                   { $$ = new MultiChainExpression(make_pair(nullptr,$2),$4,nullptr,SCOPE); }
+    | multi_chain_expression FLOW IDENTIFIER '(' ')'                                        { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,nullptr,SCOPE),nullptr)); }
+    | multi_chain_expression FLOW IDENTIFIER '(' ')' access_list                            { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,nullptr,SCOPE),$6)); }
+    | multi_chain_expression FLOW IDENTIFIER '(' argument_list ')'                          { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),nullptr)); }
     | multi_chain_expression FLOW IDENTIFIER '(' argument_list ')' access_list              { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),$7)); }
-    | multi_chain_expression FLOW inbuilt_function '(' ')'                                  { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,NULL,SCOPE),NULL)); }
-    | multi_chain_expression FLOW inbuilt_function '(' ')' access_list                      { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,NULL,SCOPE),$6)); }
-    | multi_chain_expression FLOW inbuilt_function '(' argument_list ')'                    { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),NULL)); }
+    | multi_chain_expression FLOW inbuilt_function '(' ')'                                  { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,nullptr,SCOPE),nullptr)); }
+    | multi_chain_expression FLOW inbuilt_function '(' ')' access_list                      { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,nullptr,SCOPE),$6)); }
+    | multi_chain_expression FLOW inbuilt_function '(' argument_list ')'                    { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),nullptr)); }
     | multi_chain_expression FLOW inbuilt_function '(' argument_list ')' access_list        { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5,SCOPE),$7)); }
-    | IDENTIFIER '('  ')'                                                                   { $$ = new MultiChainExpression(new FunctionCall($1,NULL,SCOPE),NULL,NULL,SCOPE); }                
-    | IDENTIFIER '('  ')' access_list                                                       { $$ = new MultiChainExpression(new FunctionCall($1,NULL,SCOPE),$4,NULL,SCOPE); }
-    | IDENTIFIER '(' argument_list ')'                                                      { $$ = new MultiChainExpression(new FunctionCall($1,$3,SCOPE),NULL,NULL,SCOPE); }
-    | IDENTIFIER '(' argument_list ')' access_list                                          { $$ = new MultiChainExpression(new FunctionCall($1,$3,SCOPE),$5,NULL,SCOPE); }
-    | inbuilt_function '('  ')'                                                             { $$ = new MultiChainExpression(new FunctionCall($1,NULL,SCOPE),NULL,NULL,SCOPE); }              
-    | inbuilt_function '('  ')' access_list                                                 { $$ = new MultiChainExpression(new FunctionCall($1,NULL,SCOPE),$4,NULL,SCOPE); }
-    | inbuilt_function '(' argument_list ')'                                                { $$ = new MultiChainExpression(new FunctionCall($1,$3,SCOPE),NULL,NULL,SCOPE); }
-    | inbuilt_function '(' argument_list ')' access_list                                    { $$ = new MultiChainExpression(new FunctionCall($1,$3,SCOPE),$5,NULL,SCOPE); }
+    | IDENTIFIER '('  ')'                                                                   { $$ = new MultiChainExpression(new FunctionCall($1,nullptr,SCOPE),nullptr,nullptr,SCOPE); }                
+    | IDENTIFIER '('  ')' access_list                                                       { $$ = new MultiChainExpression(new FunctionCall($1,nullptr,SCOPE),$4,nullptr,SCOPE); }
+    | IDENTIFIER '(' argument_list ')'                                                      { $$ = new MultiChainExpression(new FunctionCall($1,$3,SCOPE),nullptr,nullptr,SCOPE); }
+    | IDENTIFIER '(' argument_list ')' access_list                                          { $$ = new MultiChainExpression(new FunctionCall($1,$3,SCOPE),$5,nullptr,SCOPE); }
+    | inbuilt_function '('  ')'                                                             { $$ = new MultiChainExpression(new FunctionCall($1,nullptr,SCOPE),nullptr,nullptr,SCOPE); }              
+    | inbuilt_function '('  ')' access_list                                                 { $$ = new MultiChainExpression(new FunctionCall($1,nullptr,SCOPE),$4,nullptr,SCOPE); }
+    | inbuilt_function '(' argument_list ')'                                                { $$ = new MultiChainExpression(new FunctionCall($1,$3,SCOPE),nullptr,nullptr,SCOPE); }
+    | inbuilt_function '(' argument_list ')' access_list                                    { $$ = new MultiChainExpression(new FunctionCall($1,$3,SCOPE),$5,nullptr,SCOPE); }
     ;
 
  // this includes both single chain and multi chain expressions
@@ -328,62 +328,62 @@ postfix_expression
 
 // this is how unary operators are used
 unary_expression        
-	: postfix_expression                { $$ = $1;}   
+	: postfix_expression                { $$ = static_cast<UnaryExpression>$1;}   
 	| unary_operator unary_expression   { $$ = $2; $$->op.push_back($1);}
-    | primary_expression        { $$ = new AstUnaryExpression(NULL,NULL,$1,NULL,SCOPE); }
+    | primary_expression        { $$ = new AstUnaryExpression(nullptr,nullptr,$1,nullptr,SCOPE); }
 	;
 
 // unary operators for above unary_expressions
 unary_operator 
-	: '+'       { $$ = UnaryOperator::PLUS_OP; }
-	| '-'       { $$ = UnaryOperator::MINUS_OP; }
-	| NOT       { $$ = UnaryOperator::NOT_OP; }
+	: '+'       { $$ = UnaryOperator::plus_op; }
+	| '-'       { $$ = UnaryOperator::minus_op; }
+	| NOT       { $$ = UnaryOperator::not_op; }
 	;
 
 //operators with precedence order
 expression 
 	: unary_expression              { $$ = $1; }
-	| expression '*' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::MUL,SCOPE); }
-	| expression '/' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::DIV,SCOPE); }
-	| expression '%' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::MOD,SCOPE); }
-	| expression '+' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::ADD,SCOPE); }
-	| expression '-' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::SUB,SCOPE); }
-	| expression '>' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::GT,SCOPE); }
-	| expression '<' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::LT,SCOPE); }
-	| expression LE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::LE,SCOPE); }
-	| expression GE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::GE,SCOPE); }
-	| expression EQ_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::EQ,SCOPE); }
-	| expression NE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::NE,SCOPE); }
-	| expression AND expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::AND,SCOPE); }
-	| expression OR expression      { $$ = new BinaryExpression($1, $3, BinaryOperator::OR,SCOPE); }
+	| expression '*' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::mul,SCOPE); }
+	| expression '/' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::div,SCOPE); }
+	| expression '%' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::mod,SCOPE); }
+	| expression '+' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::add,SCOPE); }
+	| expression '-' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::sub,SCOPE); }
+	| expression '>' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::gt,SCOPE); }
+	| expression '<' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::lt,SCOPE); }
+	| expression LE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::lte,SCOPE); }
+	| expression GE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::gte,SCOPE); }
+	| expression EQ_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::eq,SCOPE); }
+	| expression NE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::ne,SCOPE); }
+	| expression AND expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::and_op,SCOPE); }
+	| expression OR expression      { $$ = new BinaryExpression($1, $3, BinaryOperator::or_op,SCOPE); }
     ;
 
 // assignemnt operator derives to '=' or can further move forward with other assignments
 assignment_operator
-	: '='           { $$ = AssignmentOperator::ASSIGN; }
-	| MUL_ASSIGN    { $$ = AssignmentOperator::MUL_ASSIGN; }
-	| DIV_ASSIGN    { $$ = AssignmentOperator::DIV_ASSIGN; }
-	| MOD_ASSIGN    { $$ = AssignmentOperator::MOD_ASSIGN; }
-	| ADD_ASSIGN    { $$ = AssignmentOperator::ADD_ASSIGN; }
-	| SUB_ASSIGN    { $$ = AssignmentOperator::SUB_ASSIGN; }
+	: '='           { $$ = AssignmentOperator::assign; }
+	| MUL_ASSIGN    { $$ = AssignmentOperator::mul_assign; }
+	| DIV_ASSIGN    { $$ = AssignmentOperator::div_assign; }
+	| MOD_ASSIGN    { $$ = AssignmentOperator::mod_assign; }
+	| ADD_ASSIGN    { $$ = AssignmentOperator::add_assign; }
+	| SUB_ASSIGN    { $$ = AssignmentOperator::sub_assign; }
 	;
 
 // this is how assignment is done it can be a single chain expression or a normal expression
 assignment_expression 
 	: single_chain_expression assignment_operator expression  { $$ = new AssignmentStatement($1, $3, $2,SCOPE); }
-	| expression                                              { $$ = new AssignmentStatement(NULL,$1,NULL,SCOPE); }
+	| expression                                              { $$ = new AssignmentStatement(nullptr,$1,nullptr,SCOPE); }
 	;
 
 // this is step for loop, it can be empty or can have a step
 optional_step
-    :                   {$$ = NULL;}
+    :                   {$$ = nullptr;}
     | STEP expression   {$$ = $2;}
     ;
 
 // this and next grammer declarations are for the use of if-else statements
 conditional_statement 
 	: IF '(' expression ')' compound_statement else_if_statement                            {$6->push_front(make_pair($3,$5)); $$ = new ConditionalStatement($6,SCOPE);}
-	| IF '(' expression ')' compound_statement else_if_statement ELSE compound_statement    {$6->push_front(make_pair($3,$5)); $6->push_back(make_pair(NULL,$8)); $$ = new ConditionalStatement($6,SCOPE);}
+	| IF '(' expression ')' compound_statement else_if_statement ELSE compound_statement    {$6->push_front(make_pair($3,$5)); $6->push_back(make_pair(nullptr,$8)); $$ = new ConditionalStatement($6,SCOPE);}
 	;
 
 // similar to the above understanding
@@ -406,7 +406,7 @@ statement
     | loop_statement            {$$ = new Statement($1,SCOPE);}
     | declaration               {$$ = new Statement($1,SCOPE);}
     | RETURN expression ';'     {$$ = new Statement(new ReturnStatement($2,SCOPE),SCOPE);}
-    | RETURN ';'                {$$ = new Statement(new ReturnStatement(NULL,SCOPE),SCOPE);}
+    | RETURN ';'                {$$ = new Statement(new ReturnStatement(nullptr,SCOPE),SCOPE);}
     | BREAK ';'                 {$$ = new Statement(new BreakStatement(SCOPE),SCOPE);}
     | CONTINUE ';'              {$$ = new Statement(new ContinueStatement(SCOPE),SCOPE);}
     ;
@@ -424,11 +424,11 @@ loop_statement
 
  // this is how loop control is handled
 from_to_also_expression
-    : TO expression optional_step                                                   {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple(NULL,$2,$3));}
-    | FROM expression optional_step                                                 {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple($2,NULL,$3));}           
+    : TO expression optional_step                                                   {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple(nullptr,$2,$3));}
+    | FROM expression optional_step                                                 {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple($2,nullptr,$3));}           
     | FROM expression TO expression optional_step                                   {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple($2,$4,$5));}
-    | from_to_also_expression ALSO TO expression optional_step                      {$$ = $1; $1->push_back(make_tuple(NULL,$4,$5));}
-    | from_to_also_expression ALSO FROM expression optional_step                    {$$ = $1; $1->push_back(make_tuple($4,NULL,$5));}
+    | from_to_also_expression ALSO TO expression optional_step                      {$$ = $1; $1->push_back(make_tuple(nullptr,$4,$5));}
+    | from_to_also_expression ALSO FROM expression optional_step                    {$$ = $1; $1->push_back(make_tuple($4,nullptr,$5));}
     | from_to_also_expression ALSO FROM expression TO expression optional_step      {$$ = $1; $1->push_back(make_tuple($4,$6,$7));}
     ;
 
@@ -441,9 +441,9 @@ functions
 // this is how parameter should be given to a function
 function_definition 
     : FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' parameter_list ')' FLOW '(' parameter_list ')' compound_statement     {$$ = new FunctionDeclaration($6,$3,$8,$12,$14,SCOPE);}
-    | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' ')' FLOW '(' parameter_list ')' compound_statement                    {$$ = new FunctionDeclaration($6,$3,NULL,$11,$13,SCOPE);}
+    | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' ')' FLOW '(' parameter_list ')' compound_statement                    {$$ = new FunctionDeclaration($6,$3,nullptr,$11,$13,SCOPE);}
     | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' parameter_list ')' FLOW  parameter_declaration  compound_statement    {vector<Parameter *> *p = new vector<Parameter*>(); p->push_back($11); $$ = new FunctionDeclaration($6,$3,$8,p,$12,SCOPE);}
-    | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' ')' FLOW  parameter_declaration  compound_statement                   {vector<Parameter *> *p = new vector<Parameter*>(); p->push_back($10); $$ = new FunctionDeclaration($6,$3,NULL,p,$11,SCOPE);}
+    | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' ')' FLOW  parameter_declaration  compound_statement                   {vector<Parameter *> *p = new vector<Parameter*>(); p->push_back($10); $$ = new FunctionDeclaration($6,$3,nullptr,p,$11,SCOPE);}
     ;
 %%
 
@@ -463,7 +463,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     yyin = fopen(argv[1], "r");
-    if (yyin == NULL) {
+    if (yyin == nullptr) {
         puts("error: couldn't open the file");
         return 0;
     }
