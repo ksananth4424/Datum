@@ -65,14 +65,14 @@ L			[a-zA-Z_]
 "function_declarations:"    {count(); return (FUNC_LABEL);}
 "start:"                    {count(); return (START_LABEL);}
 
-{L}({L}|{D})*           {count(); return (IDENTIFIER);}	
-\"(\\.|[^\\"])*\"       {count(); return (STRING_LITERAL);}
-'(\\.|[^\\'])'	        {count(); return (CONSTANT);}
-{D}+                    {count(); return (CONSTANT);}
-{D}*"."{D}+             {count(); return (CONSTANT);}
-{D}+"."{D}*             {count(); return (CONSTANT);}
 "true"                  {count(); return (BOOL_TRUE);}
 "false"                 {count(); return (BOOL_FALSE);}
+{L}({L}|{D})*           {count(); return (IDENTIFIER);}	
+\"(\\.|[^\\"])*\"       {count(); return (STRING_LITERAL);}
+'(\\.|[^\\'])'	        {count(); return (CONST_CHAR);}
+{D}+                    {count(); return (CONST_INT);}
+{D}*"."{D}+             {count(); return (CONST_FLOAT);}
+{D}+"."{D}*             {count(); return (CONST_FLOAT);}
 
 "+="        {count(); return (ADD_ASSIGN);}
 "-="        {count(); return (SUB_ASSIGN);}

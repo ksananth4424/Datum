@@ -7,7 +7,7 @@
 %}
 
 %token FUNC_LABEL START_LABEL
-%token IDENTIFIER CONSTANT STRING_LITERAL
+%token IDENTIFIER STRING_LITERAL BOOL_TRUE BOOL_FALSE CHAR INTEGER FLOAT
 %token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %token FLOW EQ_OP
 %token GE_OP LE_OP NE_OP
@@ -17,7 +17,7 @@
 %token FROM TO STEP ALSO
 %token AND OR NOT
 %token IF ELSE LOOP BREAK CONTINUE RETURN FUNCTION
-%token INTEGER FLOAT STRING CHAR BOOL DATASET ARRAY
+%token STRING BOOL DATASET ARRAY CONST_INTEGER CONST_FLOAT CONST_CHAR
 
 %left '*'
 %left '/'
@@ -134,8 +134,12 @@ initializer_list
 
 // intuitive
 primary_expression 
-    : CONSTANT
+    : CONST_INTEGER
+    | CONST_FLOAT
     | STRING_LITERAL
+    | CONST_CHAR
+    | BOOL_TRUE
+    | BOOL_FALSE
     ;
 
  // similar to parameter list, multiple expressions are dealt.
@@ -160,11 +164,15 @@ argument
 // e.g {variable_name}.{function_name}(expression) 
 single_chain_expression 
 	: IDENTIFIER
-    | single_chain_expression '[' expression ']'
+	| IDENTIFIER '[' expression ']'
     | single_chain_expression FLOW IDENTIFIER '(' ')'
+    | single_chain_expression FLOW IDENTIFIER '(' ')' '[' expression ']'
     | single_chain_expression FLOW IDENTIFIER '(' argument_list ')'
+    | single_chain_expression FLOW IDENTIFIER '(' argument_list ')' '[' expression ']'
     | single_chain_expression FLOW inbuilt_function '(' ')'
+    | single_chain_expression FLOW inbuilt_function '(' ')' '[' expression ']'
     | single_chain_expression FLOW inbuilt_function '(' argument_list ')'
+    | single_chain_expression FLOW inbuilt_function '(' argument_list ')' '[' expression ']'
     ;
 
 // e.g {variable_name}.{function_name}(expression).{function_name}(expression)
@@ -231,7 +239,7 @@ assignment_operator
 
 // this is how assignment is done it can be a single chain expression or a normal expression
 assignment_expression 
-	: single_chain_expression assignment_operator expression
+	: single_chain_expression assignment_operator expression 
 	| expression
 	;
 
