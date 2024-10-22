@@ -4,7 +4,7 @@ EXEC = parser.o
 .PHONY: clean build test run
 
 $(EXEC): y.tab.c
-	g++ -o $(EXEC) y.tab.c
+	g++ -o $(EXEC) y.tab.c ast.cpp
 
 y.tab.c y.tab.h: parser.y lex.yy.c
 	yacc -d parser.y
@@ -12,8 +12,6 @@ y.tab.c y.tab.h: parser.y lex.yy.c
 lex.yy.c: lexer.l
 	lex lexer.l
 
-test: ${EXEC}
-	cd Tests && ./run.sh
 
 clean:
 	rm -f *.yy.c

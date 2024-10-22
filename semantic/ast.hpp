@@ -11,7 +11,7 @@ class Start;
 
 class Node;
 
-enum class InbuiltFunctions
+enum InbuiltFunctions
 {
     show_bar,
     show_line,
@@ -37,7 +37,7 @@ enum class InbuiltFunctions
     drop
 };
 
-enum class AssignmentOperator
+enum AssignmentOperator
 {
     assign,
     add_assign,
@@ -47,7 +47,7 @@ enum class AssignmentOperator
     mod_assign
 };
 
-enum class BinaryOperator
+enum BinaryOperator
 {
     add,
     sub,
@@ -64,7 +64,7 @@ enum class BinaryOperator
     gte
 };
 
-enum class UnaryOperator
+enum UnaryOperator
 {
     not_op,
     plus_op,
@@ -72,47 +72,47 @@ enum class UnaryOperator
 };
 
 
-// class TypeSpecifier;
+class TypeSpecifier;
 
-// class ConstantValue;
+class ConstantValue;
 
-// class Expression;
+class Expression;
 
-// class BinaryExpression;
+class BinaryExpression;
 
-// class UnaryExpression;
+class UnaryExpression;
 
-// class Parameter;
+class Parameter;
 
-// class FunctionDeclaration;
+class FunctionDeclaration;
 
-// class AssignmentStatement;
+class AssignmentStatement;
 
-// class ConditionalStatement;
+class ConditionalStatement;
 
-// class LoopStatement;
+class LoopStatement;
 
-// class ReturnStatement;
+class ReturnStatement;
 
-// class BreakStatement;
+class BreakStatement;
 
-// class ContinueStatement;
+class ContinueStatement;
 
-// class Statement;
-// // RHS in initialization statements.
-// class Initializer;
-// // LHS in initialization statements.
-// class Declarator;
-// // in int a=2,b=3; a=2 is an InitDeclaration node. In declaration statement there would be InitDeclaration nodes ( vector<InitDeclaration*>).
-// class InitDeclaration;
+class Statement;
+// RHS in initialization statements.
+class Initializer;
+// LHS in initialization statements.
+class Declarator;
+// in int a=2,b=3; a=2 is an InitDeclaration node. In declaration statement there would be InitDeclaration nodes ( vector<InitDeclaration*>).
+class InitDeclaration;
 
-// class DeclarationStatement;
+class DeclarationStatement;
 
-// class FunctionCall;
+class FunctionCall;
 
-// class SingleChainExpression;
+class SingleChainExpression;
 
-// class Argument;
+class Argument;
 
 class Node
 {
@@ -127,7 +127,8 @@ class TypeSpecifier : public Node
 {
 public:
     string type;
-    TypeSpecifier(string type, TypeSpecifier *TypeSpecifier, string scope);
+    TypeSpecifier(string type, TypeSpecifier *TypeSpecifier);
+    TypeSpecifier(string type);
 
     virtual ~TypeSpecifier() = default;
 };
@@ -138,7 +139,7 @@ public:
     vector<class FunctionDeclaration *> *FunctionList;
     vector<class Statement *> *StatementList;
 
-    Start(vector<class FunctionDeclaration *> *FunctionList, vector<class Statement *> *StatementList, string scope);
+    Start(vector<class FunctionDeclaration *> *FunctionList, vector<class Statement *> *StatementList);
     virtual ~Start() = default;
 };
 
@@ -147,7 +148,7 @@ class ConstantValue : public Node
 public:
     TypeSpecifier type;
     string value;
-    ConstantValue(TypeSpecifier type, string value, string scope);
+    ConstantValue(TypeSpecifier type, string value);
 
     virtual ~ConstantValue() = default;
 };
@@ -157,7 +158,7 @@ class DeclarationStatement : public Node
 public:
     TypeSpecifier type;
     vector<class InitDeclaration *> *initDeclarations;
-    DeclarationStatement(TypeSpecifier type, vector<class InitDeclaration *> *initDeclarations, string scope);
+    DeclarationStatement(TypeSpecifier type, vector<class InitDeclaration *> *initDeclarations);
 
     virtual ~DeclarationStatement() = default;
 };
@@ -178,7 +179,7 @@ public:
     Expression *lhs;
     Expression *rhs;
     BinaryOperator op;
-    BinaryExpression(Expression *lhs, Expression *rhs, string op, string scope);
+    BinaryExpression(Expression *lhs, Expression *rhs, string op);
 
     virtual ~BinaryExpression() = default;
 };
@@ -191,7 +192,7 @@ public:
     vector<UnaryOperator> op ;
     ConstantValue *constantValue;
     InbuiltFunctions inbuiltFunction;
-    UnaryExpression(Expression *expr, vector<UnaryOperator> op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction, string scope);
+    UnaryExpression(Expression *expr, vector<UnaryOperator> op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction);
 
     virtual ~UnaryExpression() = default;
 };
@@ -201,7 +202,7 @@ class Initializer : public Node
 public:
     Expression *expression;
     vector<class Initializer *> *initializerList;
-    Initializer(Expression *expression, vector<Initializer *> *initializerList, string scope);
+    Initializer(Expression *expression, vector<Initializer *> *initializerList);
 
     virtual ~Initializer() = default;
 };
@@ -210,7 +211,7 @@ class Declarator : public Node
 {
 public:
     string identifier;
-    Declarator(string identifier, string scope);
+    Declarator(string identifier);
 
     virtual ~Declarator() = default;
 };
@@ -221,7 +222,7 @@ public:
     Declarator *declarator;
     Initializer *initializer;
 
-    InitDeclaration(Declarator *declarator, Initializer *initializer, string scope);
+    InitDeclaration(Declarator *declarator, Initializer *initializer);
 
     virtual ~InitDeclaration() = default;
 };
@@ -236,7 +237,7 @@ public:
     Expression *expression;
     AssignmentOperator op;
 
-    AssignmentStatement(Declarator *declarator, Expression *expression, AssignmentOperator op, string scope);
+    AssignmentStatement(Declarator *declarator, Expression *expression, AssignmentOperator op);
 
     virtual ~AssignmentStatement() = default;
 };
@@ -246,7 +247,7 @@ class ConditionalStatement : public Node
 public:
     vector<pair<class Expression *, vector<class Statement *>*>> *ConditionStatements;
 
-    ConditionalStatement(vector<pair<class Expression *, vector<class Statement *>*>> *ConditionStatements, string scope);
+    ConditionalStatement(vector<pair<class Expression *, vector<class Statement *>*>> *ConditionStatements);
 
     virtual ~ConditionalStatement() = default;
 };
@@ -258,7 +259,7 @@ public:
     vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs;
     vector<class Statement *> *statements;
 
-    LoopStatement(string identifier, vector<pair<class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements, string scope);
+    LoopStatement(string identifier, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements);
 
     virtual ~LoopStatement() = default;
 };
@@ -267,7 +268,7 @@ class ReturnStatement : public Node
 {
 public:
     Expression *expression;
-    ReturnStatement(Expression *expression, string scope);
+    ReturnStatement(Expression *expression);
 
     virtual ~ReturnStatement() = default;
 };
@@ -275,7 +276,7 @@ public:
 class BreakStatement : public Node
 {
 public:
-    BreakStatement(string scope);
+    BreakStatement();
 
     virtual ~BreakStatement() = default;
 };
@@ -283,7 +284,7 @@ public:
 class ContinueStatement : public Node
 {
 public:
-    ContinueStatement(string scope);
+    ContinueStatement();
 
     virtual ~ContinueStatement() = default;
 };
@@ -299,13 +300,13 @@ public:
     class ReturnStatement *returnStatement;
     class BreakStatement *breakStatement;
     class ContinueStatement *continueStatement;
-    Statement(class DeclarationStatement *declarationStatement, string scope);
-    Statement(class AssignmentStatement *assignmentStatement, string scope);
-    Statement(class ConditionalStatement *conditionalStatement, string scope);
-    Statement(class LoopStatement *loopStatement, string scope);
-    Statement(class ReturnStatement *returnStatement, string scope);
-    Statement(class BreakStatement *breakStatement, string scope);
-    Statement(class ContinueStatement *continueStatement, string scope);
+    Statement(class DeclarationStatement *declarationStatement);
+    Statement(class AssignmentStatement *assignmentStatement);
+    Statement(class ConditionalStatement *conditionalStatement);
+    Statement(class LoopStatement *loopStatement);
+    Statement(class ReturnStatement *returnStatement);
+    Statement(class BreakStatement *breakStatement);
+    Statement(class ContinueStatement *continueStatement);
 
     virtual ~Statement() = default;
 };
@@ -317,7 +318,7 @@ class Parameter : public Node
 public:
     TypeSpecifier type;
     string identifier;
-    Parameter(TypeSpecifier type, string identifier, string scope);
+    Parameter(TypeSpecifier type, string identifier);
 
     virtual ~Parameter() = default;
 };
@@ -330,7 +331,7 @@ public:
     vector<Parameter *> *otherParameter;
     vector<Parameter *> *outParameter;
     vector<class Statement *> *statements;
-    FunctionDeclaration(string identifier, vector<Parameter *> *inpParameter, vector<Parameter *> *otherParameter, vector<Parameter *> *outParameter, vector<class Statement *> *statements, string scope);
+    FunctionDeclaration(string identifier, vector<Parameter *> *inpParameter, vector<Parameter *> *otherParameter, vector<Parameter *> *outParameter, vector<class Statement *> *statements);
     virtual ~FunctionDeclaration() = default;
 };
 
@@ -340,9 +341,9 @@ public:
     Expression *expression;
     vector<tuple<Expression *, Expression *, Expression *>> FromToAlsoExpression;
     vector<Statement *> statements;
-    Argument(Expression *expression, string SCOPE);
-    Argument(vector<tuple<Expression *, Expression *, Expression *>> FromToAlsoExpression, string SCOPE);
-    Argument(vector<Statement *> statements, string SCOPE);
+    Argument(Expression *expression);
+    Argument(vector<tuple<Expression *, Expression *, Expression *>> FromToAlsoExpression);
+    Argument(vector<Statement *> statements);
 
     virtual ~Argument() = default;
 };
@@ -352,8 +353,8 @@ public:
     string identifier;
     InbuiltFunctions inbuiltFunc;
     vector<Argument *> argumentList;
-    FunctionCall(string identifier, vector<Argument *> *argumentList, string scope);
-    FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *argumentList, string scope);
+    FunctionCall(string identifier, vector<Argument *> *argumentList);
+    FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *argumentList);
 
     virtual ~FunctionCall() = default;
 };
@@ -364,7 +365,7 @@ public:
     string identifier;
     vector<Expression*> *access;
     vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList;
-    SingleChainExpression(string identifier, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, string scope);
+    SingleChainExpression(string identifier, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList);
 
     virtual ~SingleChainExpression() = default;
 };
@@ -378,8 +379,8 @@ public:
     vector<Expression*> *access;
 
     vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList;
-    MultiChainExpression(FunctionCall* functionCall, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, string scope);
-    MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, string scope);
-    MultiChainExpression(pair<string,vector<Expression*>*> functionCallStart, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, string scope);
+    MultiChainExpression(FunctionCall* functionCall, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList);
+    MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList);
+    MultiChainExpression(pair<string,vector<Expression*>*> functionCallStart, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList);
     virtual ~MultiChainExpression() = default;
 };
