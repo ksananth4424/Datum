@@ -127,8 +127,10 @@ class TypeSpecifier : public Node
 {
 public:
     string type;
-    TypeSpecifier(string type, TypeSpecifier *TypeSpecifier);
+    TypeSpecifier *typeSpecifier;
+    TypeSpecifier();
     TypeSpecifier(string type);
+    TypeSpecifier(string type, TypeSpecifier *typeSpecifier);
 
     virtual ~TypeSpecifier() = default;
 };
@@ -179,7 +181,7 @@ public:
     Expression *lhs;
     Expression *rhs;
     BinaryOperator op;
-    BinaryExpression(Expression *lhs, Expression *rhs, string op);
+    BinaryExpression(Expression *lhs, Expression *rhs, BinaryOperator op);
 
     virtual ~BinaryExpression() = default;
 };
@@ -352,7 +354,7 @@ class FunctionCall : public Node
 public:
     string identifier;
     InbuiltFunctions inbuiltFunc;
-    vector<Argument *> argumentList;
+    vector<Argument *> *argumentList;
     FunctionCall(string identifier, vector<Argument *> *argumentList);
     FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *argumentList);
 
