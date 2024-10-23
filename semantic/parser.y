@@ -30,7 +30,7 @@
     float fval;
     char cval;
     bool bval;
-    char* str;
+    char* sval;
 
     InbuiltFunctions AstInbuiltFunctions;
     AssignmentOperator AstAssignmentOperator;
@@ -77,7 +77,7 @@
     vector<FunctionDeclaration*> *AstFunctionDeclarationList;
     vector<Statement*> *AstStatementList;
     vector<tuple<Expression*,Expression*,Expression*>> *AstFromToAlsoExpression;
-    vector<pair<Expression*,vector<Statement*>>> *AstConditionalStatementList;
+    vector<pair<Expression*,vector<Statement*>*>> *AstConditionalStatementList;
     vector<Argument*> *AstArgumentList;
 
 }
@@ -94,8 +94,8 @@
 %token AND OR NOT
 %token IF ELSE LOOP BREAK CONTINUE RETURN FUNCTION
 %token  STRING  BOOL DATASET ARRAY
-%token <str> STRING_LITERAL
-%token<str> IDENTIFIER
+%token<sval> STRING_LITERAL
+%token<sval> IDENTIFIER
 %token<ival> CONST_INTEGER
 %token<fval> CONST_FLOAT
 %token<cval> CONST_CHAR
@@ -175,28 +175,28 @@ program
 
 // these are all the funtions which will be supported by the DSL i.e. they will be in-build functions
 inbuilt_function 
-    : SHOW_BAR          { $$ = InbuiltFunctions::show_bar; }
-    | SHOW_LINE         { $$ = InbuiltFunctions::show_line; }
-    | SHOW_SCATTER      { $$ = InbuiltFunctions::show_scatter; }
-    | SHOW_BOX          { $$ = InbuiltFunctions::show_box; }
-    | ROW               { $$ = InbuiltFunctions::row; }
-    | COL               { $$ = InbuiltFunctions::col; }
-    | FILTER            { $$ = InbuiltFunctions::filter; }
-    | SUM               { $$ = InbuiltFunctions::sum; }
-    | MAX               { $$ = InbuiltFunctions::max; }
-    | MIN               { $$ = InbuiltFunctions::min; }
-    | MEAN              { $$ = InbuiltFunctions::mean; }
-    | JOIN              { $$ = InbuiltFunctions::join; }
-    | READ              { $$ = InbuiltFunctions::read; }
-    | WRITE             { $$ = InbuiltFunctions::write; }
-    | UNIQUE            { $$ = InbuiltFunctions::unique; }
-    | SHOW              { $$ = InbuiltFunctions::show; }
-    | SPLIT             { $$ = InbuiltFunctions::split; }
-    | SORT              { $$ = InbuiltFunctions::sort; }
-    | SHUFFLE           { $$ = InbuiltFunctions::shuffle; }
-    | ADD               { $$ = InbuiltFunctions::add; }
-    | SHAPE             { $$ = InbuiltFunctions::shape; }
-    | DROP              { $$ = InbuiltFunctions::drop; }
+    : SHOW_BAR          { $$ = InbuiltFunctions::func_show_bar; }
+    | SHOW_LINE         { $$ = InbuiltFunctions::func_show_line; }
+    | SHOW_SCATTER      { $$ = InbuiltFunctions::func_show_scatter; }
+    | SHOW_BOX          { $$ = InbuiltFunctions::func_show_box; }
+    | ROW               { $$ = InbuiltFunctions::func_row; }
+    | COL               { $$ = InbuiltFunctions::func_col; }
+    | FILTER            { $$ = InbuiltFunctions::func_filter; }
+    | SUM               { $$ = InbuiltFunctions::func_sum; }
+    | MAX               { $$ = InbuiltFunctions::func_max; }
+    | MIN               { $$ = InbuiltFunctions::func_min; }
+    | MEAN              { $$ = InbuiltFunctions::func_mean; }
+    | JOIN              { $$ = InbuiltFunctions::func_join; }
+    | READ              { $$ = InbuiltFunctions::func_read; }
+    | WRITE             { $$ = InbuiltFunctions::func_write; }
+    | UNIQUE            { $$ = InbuiltFunctions::func_unique; }
+    | SHOW              { $$ = InbuiltFunctions::func_show; }
+    | SPLIT             { $$ = InbuiltFunctions::func_split; }
+    | SORT              { $$ = InbuiltFunctions::func_sort; }
+    | SHUFFLE           { $$ = InbuiltFunctions::func_shuffle; }
+    | ADD               { $$ = InbuiltFunctions::func_add; }
+    | SHAPE             { $$ = InbuiltFunctions::func_shape; }
+    | DROP              { $$ = InbuiltFunctions::func_drop; }
     ;
 
 // grammer for make variable declarations, all declarations must end with ';' 
@@ -207,13 +207,13 @@ declaration
 
 // all the types which can be used for the above "declarations"
 type_specifier 
-    : INTEGER                       {$$ = new TypeSpecifier("int",nullptr);}   
-    | FLOAT                         {$$ = new TypeSpecifier("float",nullptr);}
-    | STRING                        {$$ = new TypeSpecifier("string",nullptr);}
-    | CHAR                          {$$ = new TypeSpecifier("char",nullptr);}
-    | BOOL                          {$$ = new TypeSpecifier("bool",nullptr);}
-    | DATASET                       {$$ = new TypeSpecifier("dataset",nullptr);}
-    | ARRAY '(' type_specifier ')'  {$$ = new TypeSpecifier("array",$3);}
+    : INTEGER                       {$$ = new TypeSpecifier(new vector<int>{0});}   
+    | FLOAT                         {$$ = new TypeSpecifier(new vector<int>{1});}
+    | STRING                        {$$ = new TypeSpecifier(new vector<int>{2});}
+    | CHAR                          {$$ = new TypeSpecifier(new vector<int>{3});}
+    | BOOL                          {$$ = new TypeSpecifier(new vector<int>{4});}
+    | DATASET                       {$$ = new TypeSpecifier(new vector<int>{5});}
+    | ARRAY '(' type_specifier ')'  { $$ = $3; $$->type->push_back(6); }
     ;
 
 // for declaring multiple variables of same type in one declaration.
@@ -261,12 +261,12 @@ parameter_declaration
 
 // intuitive
 primary_expression 
-    : CONST_INTEGER                 { $$ = new ConstantValue(TypeSpecifier("int"),$1); }
-    | CONST_FLOAT                   { $$ = new ConstantValue(TypeSpecifier("float"),$1); }
-    | CONST_CHAR                   { $$ = new ConstantValue(TypeSpecifier("char"),$1); }
-    | STRING_LITERAL          { $$ = new ConstantValue(TypeSpecifier("string"),$1); }
-    | BOOL_TRUE               { $$ = new ConstantValue(TypeSpecifier("bool"),$1); }
-    | BOOL_FALSE              { $$ = new ConstantValue(TypeSpecifier("bool"),$1); }
+    : CONST_INTEGER           { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{0}),$1); }
+    | CONST_FLOAT             { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{1}),$1); }
+    | CONST_CHAR              { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{2}),$1); }
+    | STRING_LITERAL          { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{3}),$1); }
+    | BOOL_TRUE               { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{4}),$1); }
+    | BOOL_FALSE              { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{5}),$1); }
     ;
 
  // similar to parameter list, multiple expressions are dealt.
@@ -337,9 +337,8 @@ postfix_expression
 
 // this is how unary operators are used
 unary_expression        
-	: postfix_expression                { $$ = static_cast<UnaryExpression>$1;}   
-	| unary_operator unary_expression   { $$ = $2; $$->op.push_back($1);}
-    | primary_expression        { $$ = new AstUnaryExpression(nullptr,nullptr,$1,nullptr); }
+	: unary_operator unary_expression   { $$ = $2; $$->op->push_back($1);}
+    | primary_expression        { $$ = new UnaryExpression(nullptr,nullptr,$1,nullptr); }
 	;
 
 // unary operators for above unary_expressions
@@ -352,17 +351,18 @@ unary_operator
 //operators with precedence order
 expression 
 	: unary_expression              { $$ = $1; }
-	| expression '*' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::mul); }
-	| expression '/' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::div); }
-	| expression '%' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::mod); }
-	| expression '+' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::add); }
-	| expression '-' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::sub); }
-	| expression '>' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::gt); }
-	| expression '<' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::lt); }
-	| expression LE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::lte); }
-	| expression GE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::gte); }
-	| expression EQ_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::eq); }
-	| expression NE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::ne); }
+    | postfix_expression            { $$ = $1;}   
+	| expression '*' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::mul_op); }
+	| expression '/' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::div_op); }
+	| expression '%' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::mod_op); }
+	| expression '+' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::add_op); }
+	| expression '-' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::sub_op); }
+	| expression '>' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::gt_op); }
+	| expression '<' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::lt_op); }
+	| expression LE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::lte_op); }
+	| expression GE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::gte_op); }
+	| expression EQ_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::eq_op); }
+	| expression NE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::ne_op); }
 	| expression AND expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::and_op); }
 	| expression OR expression      { $$ = new BinaryExpression($1, $3, BinaryOperator::or_op); }
     ;
@@ -397,7 +397,7 @@ conditional_statement
 
 // similar to the above understanding
 else_if_statement 
-    :                                                                        {$$ = new vector<pair<Expression*,vector<Statement*>>>() ;}
+    :                                                                        {$$ = new vector<pair<Expression*,vector<Statement*>*>>() ;}
     | else_if_statement ELSE IF '(' expression ')' compound_statement        {$$ = $1; $1->push_back(make_pair($5,$7));}
     ;
 
@@ -409,16 +409,16 @@ compound_statement
 
 // only these can be a statement
 statement :
-    /* : assignment_expression ';' {$$ = new Statement($1);} */
-    /* | compound_statement        {$$ = new Statement($1);} */
-    /* | conditional_statement     {$$ = new Statement($1);} */
-    /* | loop_statement            {$$ = new Statement($1);} */
-      declaration               {$$ = new Statement($1);}
-    /* | RETURN expression ';'     {$$ = new Statement(new ReturnStatement($2));} */
-    /* | RETURN ';'                {$$ = new Statement(new ReturnStatement(nullptr));} */
-    /* | BREAK ';'                 {$$ = new Statement(new BreakStatement(SCOPE));} */
-    | CONTINUE ';'              {$$ = new Statement(new ContinueStatement(SCOPE));}
-    /* ; */
+     assignment_expression ';' {$$ = new Statement($1);}
+    | compound_statement        {$$ = new Statement($1);}
+    | conditional_statement     {$$ = new Statement($1);}
+    | loop_statement            {$$ = new Statement($1);}
+    |  declaration              {$$ = new Statement($1);}
+    | RETURN expression ';'     {$$ = new Statement(new ReturnStatement($2));}
+    | RETURN ';'                {$$ = new Statement(new ReturnStatement(nullptr));}
+    | BREAK ';'                 {$$ = new Statement(new BreakStatement());}
+    | CONTINUE ';'              {$$ = new Statement(new ContinueStatement());}
+    ;
 
 // to handle multiple statements
 statement_list 
@@ -427,9 +427,9 @@ statement_list
     ;
 
 // structure of loops should be adhered to this control of loop is handled by 'from_to_also_expression'
-/* loop_statement 
+loop_statement 
     : LOOP IDENTIFIER from_to_also_expression compound_statement    {$$ = new LoopStatement($2, $3, $4);}
-    ; */
+    ;
 
  // this is how loop control is handled
 from_to_also_expression

@@ -14,3 +14,14 @@ In each pair the Expression would be the condition and the statement list would 
 ->The first entry in vector would be the IF.
 ->The last entry is an ELSE only if has NULL in place of the condition
 ->The rest of the pairs in between are ELSE IF.
+
+BREAK STATEMENT, CONTINUE STATEMENT don't store any attribute. The node itself a statement.
+
+RETURN STATEMENT - It can store a return value which is an expression.
+
+START:
+Just contains the list ( vector ) of Function declarations and a statementList ( vector of statements)
+
+
+
+NOTE: Every attribute is a pointer except ENUMS.

@@ -22,7 +22,7 @@ BinaryExpression::BinaryExpression(Expression *lhs, Expression *rhs, BinaryOpera
 }
 
 //UnaryExpression
-UnaryExpression::UnaryExpression(Expression *expr, vector<UnaryOperator> op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction) {
+UnaryExpression::UnaryExpression(Expression *expr, vector<UnaryOperator> *op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction) {
     this->expr = expr;
     this->op = op;
     this->constantValue = constantValue;
@@ -30,26 +30,38 @@ UnaryExpression::UnaryExpression(Expression *expr, vector<UnaryOperator> op, Con
 }
 
 //ConstantValue
-ConstantValue::ConstantValue(TypeSpecifier type, string value) {
+ConstantValue::ConstantValue(TypeSpecifier *type, int ival){
     this->type = type;
-    this->value = value;
+    this->ival = ival;
+}
+
+ConstantValue::ConstantValue(TypeSpecifier *type, float fval){
+    this->type = type;
+    this->fval = fval;
+}
+
+ConstantValue::ConstantValue(TypeSpecifier *type, char cval){
+    this->type = type;
+    this->cval = cval;
+}
+
+ConstantValue::ConstantValue(TypeSpecifier *type, bool bval){
+    this->type = type;
+    this->bval = bval;
+}
+
+ConstantValue::ConstantValue(TypeSpecifier *type, char* sval){
+    this->type = type;
+    this->sval = sval;
 }
 
 //TypeSpecifier
-TypeSpecifier::TypeSpecifier() {
-
-}
-TypeSpecifier::TypeSpecifier(string type) {
+TypeSpecifier::TypeSpecifier(vector<int>*type){
     this->type = type;
 }
-TypeSpecifier::TypeSpecifier(string type, TypeSpecifier *typeSpecifier) {
-    this->type = type;
-    this->typeSpecifier = typeSpecifier;
-}
-
 //Initializer
-Initializer::Initializer(Expression *expression, vector<Initializer *> *initializerList){
-    this->expression = expression;
+Initializer::Initializer(AssignmentStatement *assignmentExpression, vector<Initializer *> *initializerList) {
+    this->assignmentExpression = assignmentExpression;
     this->initializerList = initializerList;
 }
 
@@ -65,7 +77,7 @@ InitDeclaration::InitDeclaration(Declarator *declarator, Initializer *initialize
 }
 
 //Parameter
-Parameter::Parameter(TypeSpecifier type, string identifier) {
+Parameter::Parameter(TypeSpecifier *type, Declarator* identifier) {
     this->type = type;
     this->identifier = identifier;
 }
@@ -74,10 +86,10 @@ Parameter::Parameter(TypeSpecifier type, string identifier) {
 Argument::Argument(Expression *expression) {
     this->expression = expression;
 }
-Argument::Argument(vector<tuple<Expression *, Expression *, Expression *>> FromToAlsoExpression) {
-    this->FromToAlsoExpression = FromToAlsoExpression;
+Argument::Argument(vector<tuple<Expression *, Expression *, Expression *>> *fromToAlsoExpression) {
+    this->fromToAlsoExpression = fromToAlsoExpression;
 }
-Argument::Argument(vector<Statement *> statements) {
+Argument::Argument(vector<Statement *> *statements) {
     this->statements = statements;
 }
 
@@ -160,6 +172,11 @@ Statement::Statement(ContinueStatement *continueStatement)  {
     this->statementType = 7;
 }
 
+Statement::Statement(vector<Statement*>* compoundStatement){
+    this->compoundStatement = compoundStatement;
+    this->statementType = 8;
+}
+
 ContinueStatement::ContinueStatement()  {
 
 }
@@ -172,7 +189,8 @@ ReturnStatement::ReturnStatement(Expression *expression)  {
     this->expression = expression;
 }
 
-DeclarationStatement::DeclarationStatement(TypeSpecifier type, vector<class InitDeclaration *> *initDeclarations) : type(type) {
+DeclarationStatement::DeclarationStatement(TypeSpecifier *type, vector<class InitDeclaration *> *initDeclarations) {
+    this->type;
     this->initDeclarations = initDeclarations;
 }
 
@@ -188,7 +206,7 @@ ConditionalStatement::ConditionalStatement(vector<pair<class Expression *, vecto
 }
 
 //Assignment Statement
-AssignmentStatement::AssignmentStatement(Declarator *declarator, Expression *expression, AssignmentOperator op){
+AssignmentStatement::AssignmentStatement(SingleChainExpression *declarator, Expression *expression, AssignmentOperator op){
     this->declarator = declarator;
     this->expression = expression;
     this->op = op;

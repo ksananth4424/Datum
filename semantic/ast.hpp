@@ -13,28 +13,28 @@ class Node;
 
 enum InbuiltFunctions
 {
-    show_bar,
-    show_line,
-    show_scatter,
-    show_box,
-    row,
-    col,
-    filter,
-    sum,
-    max,
-    min,
-    mean,
-    join,
-    read,
-    write,
-    unique,
-    show,
-    split,
-    sort,
-    shuffle,
-    add,
-    shape,
-    drop
+    func_show_bar,
+    func_show_line,
+    func_show_scatter,
+    func_show_box,
+    func_row,
+    func_col,
+    func_filter,
+    func_sum,
+    func_max,
+    func_min,
+    func_mean,
+    func_join,
+    func_read,
+    func_write,
+    func_unique,
+    func_show,
+    func_split,
+    func_sort,
+    func_shuffle,
+    func_add,
+    func_shape,
+    func_drop
 };
 
 enum AssignmentOperator
@@ -49,19 +49,20 @@ enum AssignmentOperator
 
 enum BinaryOperator
 {
-    add,
-    sub,
-    mul,
-    div,
-    mod,
+    add_op,
+    sub_op,
+    mul_op,
+    div_op,
+    mod_op,
     and_op,
     or_op,
-    eq,
-    neq,
-    lt,
-    gt,
-    lte,
-    gte
+    eq_op,
+    neq_op,
+    lt_op,
+    gt_op,
+    lte_op,
+    gte_op,
+    ne_op
 };
 
 enum UnaryOperator
@@ -126,11 +127,8 @@ public:
 class TypeSpecifier : public Node
 {
 public:
-    string type;
-    TypeSpecifier *typeSpecifier;
-    TypeSpecifier();
-    TypeSpecifier(string type);
-    TypeSpecifier(string type, TypeSpecifier *typeSpecifier);
+    vector<int> *type;
+    TypeSpecifier(vector<int> *type);
 
     virtual ~TypeSpecifier() = default;
 };
@@ -148,9 +146,17 @@ public:
 class ConstantValue : public Node
 {
 public:
-    TypeSpecifier type;
-    string value;
-    ConstantValue(TypeSpecifier type, string value);
+    TypeSpecifier *type;
+    int ival;
+    float fval;
+    bool bval;
+    char cval;
+    char* sval;
+    ConstantValue(TypeSpecifier *type, int ival);
+    ConstantValue(TypeSpecifier *type, float fval);
+    ConstantValue(TypeSpecifier *type, bool bval);
+    ConstantValue(TypeSpecifier *type, char cval);
+    ConstantValue(TypeSpecifier *type, char* sval);
 
     virtual ~ConstantValue() = default;
 };
@@ -158,9 +164,9 @@ public:
 class DeclarationStatement : public Node
 {
 public:
-    TypeSpecifier type;
+    TypeSpecifier *type;
     vector<class InitDeclaration *> *initDeclarations;
-    DeclarationStatement(TypeSpecifier type, vector<class InitDeclaration *> *initDeclarations);
+    DeclarationStatement(TypeSpecifier *type, vector<class InitDeclaration *> *initDeclarations);
 
     virtual ~DeclarationStatement() = default;
 };
@@ -168,7 +174,7 @@ public:
 class Expression : public Node
 {
 public:
-    TypeSpecifier type;
+    // TypeSpecifier type;
     int castType;
     vector<int> *Dimensions;
     Expression();
@@ -191,10 +197,10 @@ class UnaryExpression : public Expression
 public:
     Expression *expr;
     string identifier;
-    vector<UnaryOperator> op ;
+    vector<UnaryOperator> *op ;
     ConstantValue *constantValue;
     InbuiltFunctions inbuiltFunction;
-    UnaryExpression(Expression *expr, vector<UnaryOperator> op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction);
+    UnaryExpression(Expression *expr, vector<UnaryOperator> *op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction);
 
     virtual ~UnaryExpression() = default;
 };
@@ -202,9 +208,9 @@ public:
 class Initializer : public Node
 {
 public:
-    Expression *expression;
+    AssignmentStatement *assignmentExpression;
     vector<class Initializer *> *initializerList;
-    Initializer(Expression *expression, vector<Initializer *> *initializerList);
+    Initializer(AssignmentStatement *assignmentExpression, vector<class Initializer *> *initializerList);
 
     virtual ~Initializer() = default;
 };
@@ -235,11 +241,11 @@ public:
 class AssignmentStatement : public Node
 {
 public:
-    Declarator *declarator;
+    SingleChainExpression *declarator;
     Expression *expression;
     AssignmentOperator op;
 
-    AssignmentStatement(Declarator *declarator, Expression *expression, AssignmentOperator op);
+    AssignmentStatement(SingleChainExpression *declarator, Expression *expression, AssignmentOperator op);
 
     virtual ~AssignmentStatement() = default;
 };
@@ -295,20 +301,22 @@ class Statement : public Node
 {
 public:
     int statementType;
-    class DeclarationStatement *declarationStatement;
-    class AssignmentStatement *assignmentStatement;
-    class ConditionalStatement *conditionalStatement;
-    class LoopStatement *loopStatement;
-    class ReturnStatement *returnStatement;
-    class BreakStatement *breakStatement;
-    class ContinueStatement *continueStatement;
-    Statement(class DeclarationStatement *declarationStatement);
-    Statement(class AssignmentStatement *assignmentStatement);
-    Statement(class ConditionalStatement *conditionalStatement);
-    Statement(class LoopStatement *loopStatement);
-    Statement(class ReturnStatement *returnStatement);
-    Statement(class BreakStatement *breakStatement);
-    Statement(class ContinueStatement *continueStatement);
+    DeclarationStatement *declarationStatement;
+    AssignmentStatement *assignmentStatement;
+    ConditionalStatement *conditionalStatement;
+    LoopStatement *loopStatement;
+    ReturnStatement *returnStatement;
+    BreakStatement *breakStatement;
+    ContinueStatement *continueStatement;
+    vector<Statement*> * compoundStatement;
+    Statement(DeclarationStatement *declarationStatement);
+    Statement(AssignmentStatement *assignmentStatement);
+    Statement(ConditionalStatement *conditionalStatement);
+    Statement(LoopStatement *loopStatement);
+    Statement(ReturnStatement *returnStatement);
+    Statement(BreakStatement *breakStatement);
+    Statement(ContinueStatement *continueStatement);
+    Statement(vector<Statement*> *compoundStatement);
 
     virtual ~Statement() = default;
 };
@@ -318,9 +326,9 @@ public:
 class Parameter : public Node
 {
 public:
-    TypeSpecifier type;
-    string identifier;
-    Parameter(TypeSpecifier type, string identifier);
+    TypeSpecifier* type;
+    Declarator* identifier;
+    Parameter(TypeSpecifier* type, Declarator* identifier);
 
     virtual ~Parameter() = default;
 };
@@ -341,11 +349,11 @@ class Argument
 {
 public:
     Expression *expression;
-    vector<tuple<Expression *, Expression *, Expression *>> FromToAlsoExpression;
-    vector<Statement *> statements;
+    vector<tuple<Expression *, Expression *, Expression *>> *fromToAlsoExpression;
+    vector<Statement *> *statements;
     Argument(Expression *expression);
-    Argument(vector<tuple<Expression *, Expression *, Expression *>> FromToAlsoExpression);
-    Argument(vector<Statement *> statements);
+    Argument(vector<tuple<Expression *, Expression *, Expression *>> *fromToAlsoExpression);
+    Argument(vector<Statement *> *statements);
 
     virtual ~Argument() = default;
 };
