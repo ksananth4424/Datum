@@ -28,6 +28,12 @@ UnaryExpression::UnaryExpression(Expression *expr, vector<UnaryOperator> *op, Co
     this->constantValue = constantValue;
     this->inbuiltFunction = inbuiltFunction;
 }
+UnaryExpression::UnaryExpression(ConstantValue *constantValue) {
+    this->expr = nullptr;
+    this->op = new vector<UnaryOperator>();
+    this->constantValue = constantValue;
+    // this->inbuiltFunction = inbuiltFunction;
+}
 
 //ConstantValue
 ConstantValue::ConstantValue(TypeSpecifier *type, int ival){
@@ -210,4 +216,10 @@ AssignmentStatement::AssignmentStatement(SingleChainExpression *declarator, Expr
     this->declarator = declarator;
     this->expression = expression;
     this->op = op;
+}
+
+AssignmentStatement::AssignmentStatement(Expression *expression){
+    this->declarator = nullptr;
+    this->expression = expression;
+    // this->op = op;
 }

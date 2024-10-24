@@ -201,6 +201,7 @@ public:
     ConstantValue *constantValue;
     InbuiltFunctions inbuiltFunction;
     UnaryExpression(Expression *expr, vector<UnaryOperator> *op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction);
+    UnaryExpression(ConstantValue *constantValue);
 
     virtual ~UnaryExpression() = default;
 };
@@ -246,6 +247,7 @@ public:
     AssignmentOperator op;
 
     AssignmentStatement(SingleChainExpression *declarator, Expression *expression, AssignmentOperator op);
+    AssignmentStatement(Expression *expression);
 
     virtual ~AssignmentStatement() = default;
 };

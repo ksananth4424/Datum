@@ -338,7 +338,7 @@ postfix_expression
 // this is how unary operators are used
 unary_expression        
 	: unary_operator unary_expression   { $$ = $2; $$->op->push_back($1);}
-    | primary_expression        { $$ = new UnaryExpression(nullptr,nullptr,$1,nullptr); }
+    | primary_expression        { $$ = new UnaryExpression($1); }
 	;
 
 // unary operators for above unary_expressions
@@ -380,7 +380,7 @@ assignment_operator
 // this is how assignment is done it can be a single chain expression or a normal expression
 assignment_expression 
 	: single_chain_expression assignment_operator expression  { $$ = new AssignmentStatement($1, $3, $2); }
-	| expression                                              { $$ = new AssignmentStatement(nullptr,$1,nullptr); }
+	| expression                                              { $$ = new AssignmentStatement($1); }
 	;
 
 // this is step for loop, it can be empty or can have a step
@@ -391,8 +391,8 @@ optional_step
 
 // this and next grammer declarations are for the use of if-else statements
 conditional_statement 
-	: IF '(' expression ')' compound_statement else_if_statement                            {$6->push_front(make_pair($3,$5)); $$ = new ConditionalStatement($6);}
-	| IF '(' expression ')' compound_statement else_if_statement ELSE compound_statement    {$6->push_front(make_pair($3,$5)); $6->push_back(make_pair(nullptr,$8)); $$ = new ConditionalStatement($6);}
+	: IF '(' expression ')' compound_statement else_if_statement                            {reverse($6->begin(), $6->end()); $6->push_back(make_pair($3,$5)); reverse($6->begin(), $6->end());  $$ = new ConditionalStatement($6);}
+	| IF '(' expression ')' compound_statement else_if_statement ELSE compound_statement    {reverse($6->begin(), $6->end()); $6->push_back(make_pair($3,$5)); reverse($6->begin(), $6->end());  $6->push_back(make_pair(nullptr,$8)); $$ = new ConditionalStatement($6);}
 	;
 
 // similar to the above understanding
