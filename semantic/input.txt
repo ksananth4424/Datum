@@ -1,1 +1,11 @@
+function_declarations:
+start:
 continue;
+break;
+integer a=45;
+s = "23";
+loop i from 0 to 5 step 1 {
+}
+integer a = +2232;
+integer b = -2232;
+a->show()[0][b*a[0]]->add();

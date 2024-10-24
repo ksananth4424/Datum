@@ -7,21 +7,12 @@
     #include <fstream>
     #include "ast.hpp"
     #include "symbol_table.hpp"
+    #include "traversal.hpp"
 
     class Start* root;
     std::string SCOPE = "g";
     extern int yylex();
     extern void yyerror(char*);
-    // extern int yylineno;
-    // extern int yycolumn;
-    // extern char yytext[];
-    // extern char linebuf[];
-    // // extern const char* filename;
-
-    // // extern void yyerror(char *);
-    // struct YYLTYPE;
-    // extern void lyyerror(struct YYLTYPE t,char *s,...);
-    // extern void warning(const char*);
     SymbolTable symtab;
 %}
 
@@ -168,9 +159,9 @@ start : program {
 program
     : 
     FUNC_LABEL functions START_LABEL statement_list       {$$ = new Start($2, $4); }
-    | FUNC_LABEL functions START_LABEL                      {$$ = new Start($2,nullptr); }
-    | FUNC_LABEL START_LABEL statement_list                 {$$ = new Start(nullptr, $3); }
-    | START_LABEL statement_list                            {$$ = new Start(nullptr, $2); }
+    | FUNC_LABEL functions START_LABEL                      {$$ = new Start($2); }
+    | FUNC_LABEL START_LABEL statement_list                 {$$ = new Start($3); }
+    | START_LABEL statement_list                            {$$ = new Start($2); }
     ;
 
 // these are all the funtions which will be supported by the DSL i.e. they will be in-build functions
@@ -201,7 +192,7 @@ inbuilt_function
 
 // grammer for make variable declarations, all declarations must end with ';' 
 declaration 
-    : type_specifier ';'                        {$$ = new DeclarationStatement($1, nullptr);}
+    : type_specifier ';'                        {$$ = new DeclarationStatement($1);}
     | type_specifier init_declarator_list ';'   {$$ = new DeclarationStatement($1, $2);}
     ;
 
@@ -224,7 +215,7 @@ init_declarator_list
 
 // for initializing while declaring variables
 init_declarator                     
-	: declarator                    {$$ = new InitDeclaration($1, nullptr);}
+	: declarator                    {$$ = new InitDeclaration($1);}
 	| declarator '=' initializer    {$$ = new InitDeclaration($1, $3);}
 	;
 
@@ -236,8 +227,8 @@ declarator
 
 // for initializing variables
 initializer     
-    : assignment_expression     {$$ = new Initializer($1,nullptr);}
-	| '{' initializer_list '}'  {$$ = new Initializer(nullptr,$2);}
+    : assignment_expression     {$$ = new Initializer($1);}
+	| '{' initializer_list '}'  {$$ = new Initializer($2);}
 	;
 
 // for initializing multiple variables in one line
@@ -338,7 +329,8 @@ postfix_expression
 // this is how unary operators are used
 unary_expression        
 	: unary_operator unary_expression   { $$ = $2; $$->op->push_back($1);}
-    | primary_expression        { $$ = new UnaryExpression($1); }
+    | primary_expression        { $$ = new UnaryExpression($1); $$->castType = 1; }
+    | postfix_expression            { $$ = new UnaryExpression($1); $$->castType = 3; }   
 	;
 
 // unary operators for above unary_expressions
@@ -351,20 +343,19 @@ unary_operator
 //operators with precedence order
 expression 
 	: unary_expression              { $$ = $1; }
-    | postfix_expression            { $$ = $1;}   
-	| expression '*' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::mul_op); }
-	| expression '/' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::div_op); }
-	| expression '%' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::mod_op); }
-	| expression '+' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::add_op); }
-	| expression '-' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::sub_op); }
-	| expression '>' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::gt_op); }
-	| expression '<' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::lt_op); }
-	| expression LE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::lte_op); }
-	| expression GE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::gte_op); }
-	| expression EQ_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::eq_op); }
-	| expression NE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::ne_op); }
-	| expression AND expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::and_op); }
-	| expression OR expression      { $$ = new BinaryExpression($1, $3, BinaryOperator::or_op); }
+	| expression '*' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::mul_op); $$->castType = 2; }
+	| expression '/' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::div_op); $$->castType = 2; }
+	| expression '%' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::mod_op); $$->castType = 2; }
+	| expression '+' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::add_op); $$->castType = 2; }
+	| expression '-' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::sub_op); $$->castType = 2; }
+	| expression '>' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::gt_op); $$->castType = 2; }
+	| expression '<' expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::lt_op); $$->castType = 2; }
+	| expression LE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::lte_op); $$->castType = 2; }
+	| expression GE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::gte_op); $$->castType = 2; }
+	| expression EQ_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::eq_op); $$->castType = 2; }
+	| expression NE_OP expression   { $$ = new BinaryExpression($1, $3, BinaryOperator::ne_op); $$->castType = 2; }
+	| expression AND expression     { $$ = new BinaryExpression($1, $3, BinaryOperator::and_op); $$->castType = 2; }
+	| expression OR expression      { $$ = new BinaryExpression($1, $3, BinaryOperator::or_op); $$->castType = 2; }
     ;
 
 // assignemnt operator derives to '=' or can further move forward with other assignments
@@ -415,7 +406,7 @@ statement :
     | loop_statement            {$$ = new Statement($1);}
     |  declaration              {$$ = new Statement($1);}
     | RETURN expression ';'     {$$ = new Statement(new ReturnStatement($2));}
-    | RETURN ';'                {$$ = new Statement(new ReturnStatement(nullptr));}
+    | RETURN ';'                {$$ = new Statement(new ReturnStatement());}
     | BREAK ';'                 {$$ = new Statement(new BreakStatement());}
     | CONTINUE ';'              {$$ = new Statement(new ContinueStatement());}
     ;
@@ -477,4 +468,5 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 	yyparse(); 
+    traverse(root);
 }

@@ -4,6 +4,14 @@ Node::Node() {
 
 }
 
+Start::Start(vector<Statement *> *StatementList) {
+    this->StatementList = StatementList;
+}
+
+Start::Start(vector<FunctionDeclaration *> *FunctionList) {
+    this->FunctionList = FunctionList;
+}
+
 Start::Start(vector<FunctionDeclaration *> *FunctionList, vector<Statement *> *StatementList) {
     this->FunctionList = FunctionList;
     this->StatementList = StatementList;
@@ -32,9 +40,13 @@ UnaryExpression::UnaryExpression(ConstantValue *constantValue) {
     this->expr = nullptr;
     this->op = new vector<UnaryOperator>();
     this->constantValue = constantValue;
-    // this->inbuiltFunction = inbuiltFunction;
 }
 
+UnaryExpression::UnaryExpression(Expression *expr) {
+    this->expr = expr;
+    this->op = new vector<UnaryOperator>();
+    this->constantValue = nullptr;
+}
 //ConstantValue
 ConstantValue::ConstantValue(TypeSpecifier *type, int ival){
     this->type = type;
@@ -66,17 +78,27 @@ TypeSpecifier::TypeSpecifier(vector<int>*type){
     this->type = type;
 }
 //Initializer
-Initializer::Initializer(AssignmentStatement *assignmentExpression, vector<Initializer *> *initializerList) {
+Initializer::Initializer(AssignmentStatement *assignmentExpression) {
     this->assignmentExpression = assignmentExpression;
+    this->initializerList = new vector<Initializer *>();
+}
+
+Initializer::Initializer(vector<Initializer *> *initializerList) {
     this->initializerList = initializerList;
 }
 
 //Declarator
-Declarator::Declarator(string identifier) {
+Declarator::Declarator(char* identifier) {
     this->identifier = identifier;
 }
 
+
 //InitDeclaration
+InitDeclaration::InitDeclaration(Declarator *declarator) {
+    this->declarator = declarator;
+    this->initializer = nullptr;
+}
+
 InitDeclaration::InitDeclaration(Declarator *declarator, Initializer *initializer) {
     this->declarator = declarator;
     this->initializer = initializer;
@@ -100,7 +122,7 @@ Argument::Argument(vector<Statement *> *statements) {
 }
 
 //FunctionCall
-FunctionCall::FunctionCall(string identifier, vector<Argument *> *argumentList) {
+FunctionCall::FunctionCall(char* identifier, vector<Argument *> *argumentList) {
     this->identifier = identifier;
     this->argumentList = argumentList;
 }
@@ -110,7 +132,7 @@ FunctionCall::FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *arg
 }
 
 //FunctionDeclaration
-FunctionDeclaration::FunctionDeclaration(string identifier, vector<Parameter *> *inpParameter, vector<Parameter *> *otherParameter, vector<Parameter *> *outParameter, vector<Statement *> *statements) {
+FunctionDeclaration::FunctionDeclaration(char* identifier, vector<Parameter *> *inpParameter, vector<Parameter *> *otherParameter, vector<Parameter *> *outParameter, vector<Statement *> *statements) {
     this->identifier = identifier;
     this->inpParameter = inpParameter;
     this->otherParameter = otherParameter;
@@ -119,7 +141,7 @@ FunctionDeclaration::FunctionDeclaration(string identifier, vector<Parameter *> 
 }
 
 //SingleChainExpression
-SingleChainExpression::SingleChainExpression(string identifier, vector<Expression *> *access, vector<pair<FunctionCall *, vector<Expression *> *>> *functionCallList) {
+SingleChainExpression::SingleChainExpression(char* identifier, vector<Expression *> *access, vector<pair<FunctionCall *, vector<Expression *> *>> *functionCallList) {
     this->identifier = identifier;
     this->access = access;
     this->functionCallList = functionCallList;
@@ -136,7 +158,7 @@ MultiChainExpression::MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<
     this->access = access;
     this->functionCallList = functionCallList;
 }
-MultiChainExpression::MultiChainExpression(pair<string,vector<Expression*>*> functionCallStart, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList){
+MultiChainExpression::MultiChainExpression(pair<char*,vector<Expression*>*> functionCallStart, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList){
     this->functionCallStart = functionCallStart;
     this->access = access;
     this->functionCallList = functionCallList;
@@ -191,8 +213,17 @@ BreakStatement::BreakStatement()  {
 
 }
 
+ReturnStatement::ReturnStatement()  {
+    this->expression = nullptr;
+}
+
 ReturnStatement::ReturnStatement(Expression *expression)  {
     this->expression = expression;
+}
+
+DeclarationStatement::DeclarationStatement(TypeSpecifier *type){
+    this->type = type;
+    this->initDeclarations = nullptr;
 }
 
 DeclarationStatement::DeclarationStatement(TypeSpecifier *type, vector<class InitDeclaration *> *initDeclarations) {
@@ -200,7 +231,7 @@ DeclarationStatement::DeclarationStatement(TypeSpecifier *type, vector<class Ini
     this->initDeclarations = initDeclarations;
 }
 
-LoopStatement::LoopStatement(string identifier, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements) {
+LoopStatement::LoopStatement(char* identifier, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements) {
     this->identifier = identifier;
     this->fromToPairs = fromToPairs;
     this->statements = statements;

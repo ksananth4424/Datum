@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <cstring>
 #include <vector>
 #include <map>
 #include <unordered_map>
@@ -118,7 +117,7 @@ class Argument;
 class Node
 {
 public:
-    string scope;
+    char* scope;
     Node();
 
     virtual ~Node() = default;
@@ -139,6 +138,8 @@ public:
     vector<class FunctionDeclaration *> *FunctionList;
     vector<class Statement *> *StatementList;
 
+    Start(vector<class Statement *> *StatementList);
+    Start(vector<class FunctionDeclaration *> *FunctionList);
     Start(vector<class FunctionDeclaration *> *FunctionList, vector<class Statement *> *StatementList);
     virtual ~Start() = default;
 };
@@ -166,6 +167,7 @@ class DeclarationStatement : public Node
 public:
     TypeSpecifier *type;
     vector<class InitDeclaration *> *initDeclarations;
+    DeclarationStatement(TypeSpecifier *type);
     DeclarationStatement(TypeSpecifier *type, vector<class InitDeclaration *> *initDeclarations);
 
     virtual ~DeclarationStatement() = default;
@@ -176,7 +178,6 @@ class Expression : public Node
 public:
     // TypeSpecifier type;
     int castType;
-    vector<int> *Dimensions;
     Expression();
     virtual ~Expression() = default;
 };
@@ -196,11 +197,12 @@ class UnaryExpression : public Expression
 {
 public:
     Expression *expr;
-    string identifier;
+    char* identifier;
     vector<UnaryOperator> *op ;
     ConstantValue *constantValue;
     InbuiltFunctions inbuiltFunction;
     UnaryExpression(Expression *expr, vector<UnaryOperator> *op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction);
+    UnaryExpression(Expression *expr);
     UnaryExpression(ConstantValue *constantValue);
 
     virtual ~UnaryExpression() = default;
@@ -211,7 +213,8 @@ class Initializer : public Node
 public:
     AssignmentStatement *assignmentExpression;
     vector<class Initializer *> *initializerList;
-    Initializer(AssignmentStatement *assignmentExpression, vector<class Initializer *> *initializerList);
+    Initializer(AssignmentStatement *assignmentExpression);
+    Initializer(vector<class Initializer *> *initializerList);
 
     virtual ~Initializer() = default;
 };
@@ -219,8 +222,8 @@ public:
 class Declarator : public Node
 {
 public:
-    string identifier;
-    Declarator(string identifier);
+    char* identifier;
+    Declarator(char* identifier);
 
     virtual ~Declarator() = default;
 };
@@ -231,6 +234,7 @@ public:
     Declarator *declarator;
     Initializer *initializer;
 
+    InitDeclaration(Declarator *declarator);
     InitDeclaration(Declarator *declarator, Initializer *initializer);
 
     virtual ~InitDeclaration() = default;
@@ -265,11 +269,11 @@ public:
 class LoopStatement : public Node
 {
 public:
-    string identifier;
+    char* identifier;
     vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs;
     vector<class Statement *> *statements;
 
-    LoopStatement(string identifier, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements);
+    LoopStatement(char* identifier, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements);
 
     virtual ~LoopStatement() = default;
 };
@@ -278,6 +282,7 @@ class ReturnStatement : public Node
 {
 public:
     Expression *expression;
+    ReturnStatement();
     ReturnStatement(Expression *expression);
 
     virtual ~ReturnStatement() = default;
@@ -338,12 +343,12 @@ public:
 class FunctionDeclaration : public Node
 {
 public:
-    string identifier;
+    char* identifier;
     vector<Parameter *> *inpParameter;
     vector<Parameter *> *otherParameter;
     vector<Parameter *> *outParameter;
     vector<class Statement *> *statements;
-    FunctionDeclaration(string identifier, vector<Parameter *> *inpParameter, vector<Parameter *> *otherParameter, vector<Parameter *> *outParameter, vector<class Statement *> *statements);
+    FunctionDeclaration(char* identifier, vector<Parameter *> *inpParameter, vector<Parameter *> *otherParameter, vector<Parameter *> *outParameter, vector<class Statement *> *statements);
     virtual ~FunctionDeclaration() = default;
 };
 
@@ -362,10 +367,10 @@ public:
 class FunctionCall : public Node
 {
 public:
-    string identifier;
+    char* identifier;
     InbuiltFunctions inbuiltFunc;
     vector<Argument *> *argumentList;
-    FunctionCall(string identifier, vector<Argument *> *argumentList);
+    FunctionCall(char* identifier, vector<Argument *> *argumentList);
     FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *argumentList);
 
     virtual ~FunctionCall() = default;
@@ -374,10 +379,10 @@ public:
 class SingleChainExpression : public Expression
 {
 public:
-    string identifier;
+    char* identifier;
     vector<Expression*> *access;
     vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList;
-    SingleChainExpression(string identifier, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList);
+    SingleChainExpression(char* identifier, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList);
 
     virtual ~SingleChainExpression() = default;
 };
@@ -386,13 +391,13 @@ class MultiChainExpression : public Expression
 {
 public:
     FunctionCall* functionCall;
-    pair<string,vector<Expression*>*> functionCallStart;
+    pair<char*,vector<Expression*>*> functionCallStart;
     InbuiltFunctions inbuiltFunc;
     vector<Expression*> *access;
 
     vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList;
     MultiChainExpression(FunctionCall* functionCall, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList);
     MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList);
-    MultiChainExpression(pair<string,vector<Expression*>*> functionCallStart, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList);
+    MultiChainExpression(pair<char*,vector<Expression*>*> functionCallStart, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList);
     virtual ~MultiChainExpression() = default;
 };
