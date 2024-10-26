@@ -4,7 +4,7 @@ EXEC = parser.o
 .PHONY: clean build test run
 
 $(EXEC): y.tab.c
-	g++ -o $(EXEC) y.tab.c ast.cpp traversal.cpp
+	g++ -o $(EXEC) y.tab.c ast.cpp traversal.cpp symbol_table.cpp
 
 y.tab.c y.tab.h: parser.y lex.yy.c
 	yacc -d parser.y

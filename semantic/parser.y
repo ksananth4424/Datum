@@ -5,15 +5,14 @@
 %{
     #include <iostream>
     #include <fstream>
-    #include "ast.hpp"
-    #include "symbol_table.hpp"
+    // #include "ast.hpp"
+    // #include "symbol_table.hpp"
     #include "traversal.hpp"
 
     class Start* root;
-    // std::string SCOPE = "g";
     extern int yylex();
     extern void yyerror(char*);
-    SymbolTable symtab;
+    // SymbolTable symtab;
 %}
 
 %union{
@@ -203,7 +202,7 @@ type_specifier
     | CHAR                          {$$ = new TypeSpecifier(new vector<int>{3});}
     | BOOL                          {$$ = new TypeSpecifier(new vector<int>{4});}
     | DATASET                       {$$ = new TypeSpecifier(new vector<int>{5});}
-    | ARRAY '(' type_specifier ')'  { $$ = $3; $$->type->push_back(6); }
+    | ARRAY '(' type_specifier ')'  { $$ = $3; $$->type->insert($$->type->begin(),6); }
     ;
 
 // for declaring multiple variables of same type in one declaration.
@@ -398,12 +397,12 @@ compound_statement
     ;
 
 // only these can be a statement
-statement :
-     assignment_expression ';' {$$ = new Statement($1);}
+statement
+    : assignment_expression ';' {$$ = new Statement($1);}
     | compound_statement        {$$ = new Statement($1);}
     | conditional_statement     {$$ = new Statement($1);}
     | loop_statement            {$$ = new Statement($1);}
-    |  declaration              {$$ = new Statement($1);}
+    | declaration              {$$ = new Statement($1);}
     | RETURN expression ';'     {$$ = new Statement(new ReturnStatement($2));}
     | RETURN ';'                {$$ = new Statement(new ReturnStatement());}
     | BREAK ';'                 {$$ = new Statement(new BreakStatement());}
@@ -438,7 +437,7 @@ functions
     ;
 
 // this is how parameter should be given to a function
-function_definition 
+function_definition
     : FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' parameter_list ')' FLOW '(' parameter_list ')' compound_statement     {$$ = new FunctionDeclaration($6,$3,$8,$12,$14);}
     | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' ')' FLOW '(' parameter_list ')' compound_statement                    {$$ = new FunctionDeclaration($6,$3,nullptr,$11,$13);}
     | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' parameter_list ')' FLOW  parameter_declaration  compound_statement    {vector<Parameter *> *p = new vector<Parameter*>(); p->push_back($11); $$ = new FunctionDeclaration($6,$3,$8,p,$12);}
@@ -468,5 +467,6 @@ int main(int argc, char* argv[]) {
     }
 	yyparse(); 
     buildScope(root);
+    symtab.print();
     traverse(root);
 }

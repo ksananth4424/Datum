@@ -120,7 +120,7 @@ class Node
 public:
     string scope;
     Node();
-    string get_scope();
+    virtual string get_scope();
     virtual ~Node() = default;
 };
 
@@ -240,9 +240,6 @@ public:
 
     virtual ~InitDeclaration() = default;
 };
-
-
-
 
 class AssignmentStatement : public Node
 {

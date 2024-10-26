@@ -9,9 +9,9 @@
 enum DataType {
     Integer,
     Float,
+    String,
     Char,
     Boolean,
-    String,
     Dataset,
     Array,
     Function
@@ -22,12 +22,32 @@ public:
     std::string name;
     DataType dataType;
     std::string scope;
+    std::vector<DataType> *returnParameters;
+    std::vector<DataType> *inputParameters;
+    std::vector<DataType> *otherParameters;
+
     int rowNum;
 	int colNum;
 
-    SymbolTableEntry(std::string& name, DataType& dataType, std::string& scope, int rowNum, int colNum) {
+    SymbolTableEntry() {} 
+
+    SymbolTableEntry(std::string& name, DataType dataType, std::string& scope, int rowNum, int colNum) {
         this->name = name;
         this->dataType = dataType;
+        this->inputParameters = nullptr;
+        this->otherParameters = nullptr;
+        this->returnParameters = nullptr;
+        this->scope = scope;
+        this->rowNum = rowNum;
+        this->colNum = colNum;
+    }
+
+    SymbolTableEntry(std::string& name, std::vector<DataType> *inputParameters, std::vector<DataType> *otherParameters, std::vector<DataType> *returnParameters, std::string& scope, int rowNum, int colNum) {
+        this->name = name;
+        this->dataType = DataType::Function;
+        this->inputParameters = inputParameters;
+        this->otherParameters = otherParameters;
+        this->returnParameters = returnParameters;
         this->scope = scope;
         this->rowNum = rowNum;
         this->colNum = colNum;
@@ -48,7 +68,8 @@ private:
 
 public:
     SymbolTable() {}
-    bool insert(std::string&, DataType&, std::string&, int, int);
+    bool insert(std::string&, DataType, std::string&, int, int);
+    bool insert(std::string&, std::vector<DataType>*, std::vector<DataType>*, std::vector<DataType>*, std::string&, int, int);
     SymbolTableEntry* search(std::string&, std::string&);
     void print();
 };
