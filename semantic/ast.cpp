@@ -4,12 +4,19 @@ Node::Node() {
 
 }
 
+string Node::get_scope() {
+    return Node::scope.substr(0, scope.find_last_of('.')); 
+}
+
 Start::Start(vector<Statement *> *StatementList) {
     this->StatementList = StatementList;
+    this->FunctionList = new vector<FunctionDeclaration*>();
 }
 
 Start::Start(vector<FunctionDeclaration *> *FunctionList) {
     this->FunctionList = FunctionList;
+    this->StatementList = new vector<Statement*>();
+
 }
 
 Start::Start(vector<FunctionDeclaration *> *FunctionList, vector<Statement *> *StatementList) {

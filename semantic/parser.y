@@ -10,7 +10,7 @@
     #include "traversal.hpp"
 
     class Start* root;
-    std::string SCOPE = "g";
+    // std::string SCOPE = "g";
     extern int yylex();
     extern void yyerror(char*);
     SymbolTable symtab;
@@ -151,7 +151,6 @@
 
 start : program {
     $$ = $1; root = $$;
-    root->scope = "g";
     puts("success!!");
 } 
 //parsing starts from here this triggers 'program'.
@@ -468,5 +467,6 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 	yyparse(); 
+    buildScope(root);
     traverse(root);
 }

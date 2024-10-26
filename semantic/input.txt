@@ -5,6 +5,9 @@ break;
 integer a=45;
 s = "23";
 loop i from 0 to 5 step 1 {
+    if (true) {
+        integer y = 10;
+    }
 }
 integer a = +2232;
 integer b = -2232;
