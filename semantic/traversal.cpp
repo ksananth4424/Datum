@@ -146,58 +146,35 @@ void buildScope(Node *node, string scope)
         // add all the function declarations to the symbol table
         // symbol table format: name, input parameters, other parameters, return parameters, scope, row number, column number
 
-        cout << func_dec->identifier << endl;
-        std::string name = func_dec->identifier;
+        std::cout << func_dec->identifier << std::endl;
         // get the input parameters
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        for (auto *param : *(func_dec->inpParameter))
-        {
+        std::vector<DataType> *inputParameters;
+        for(auto* param : *(func_dec->inpParameter)){
             // map the type (which is a number)to DataType enum
             DataType dataType = mapTypeToDataType(param->type->type->at(0));
             inputParameters->push_back(dataType);
         }
         // get the other parameters
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        for (auto *param : *(func_dec->otherParameter))
-        {
+        std::vector<DataType> *otherParameters;
+        for(auto* param : *(func_dec->otherParameter)){
             // map the type (which is a number)to DataType enum
-            DataType dataType;
-            switch (param->type->type->at(0))
-            {
-            case 0:
-                dataType = Integer;
-                break;
-            case 1:
-                dataType = Float;
-                break;
-            case 2:
-                dataType = String;
-                break;
-            case 3:
-                dataType = Char;
-                break;
-            case 4:
-                dataType = Boolean;
-                break;
-            case 5:
-                dataType = Dataset;
-                break;
-            case 6:
-                dataType = Array;
-                break;
-            }
+            DataType dataType = mapTypeToDataType(param->type->type->at(0));
             otherParameters->push_back(dataType);
         }
         // get the return parameters
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        for (auto *param : *(func_dec->outParameter))
-        {
+        std::vector<DataType> *returnParameters;
+        for(auto* param : *(func_dec->outParameter)){
             // map the type (which is a number)to DataType enum
             DataType dataType = mapTypeToDataType(param->type->type->at(0));
+            returnParameters->push_back(dataType);
         }
-    }
-    else if (Statement *stmt = dynamic_cast<Statement *>(node))
-    {
+        if(func_dec->identifier != nullptr){
+            std::string name = func_dec->identifier;
+            std::string scope = func_dec->get_scope();
+            symtab.insert(name, inputParameters, otherParameters, returnParameters, scope, 0, 0);
+        }
+
+    } else if (Statement* stmt = dynamic_cast<Statement*>(node)) {
         stmt->scope = scope;
         switch (stmt->statementType)
         {
@@ -207,11 +184,13 @@ void buildScope(Node *node, string scope)
             for (auto &decl : *(stmt->declarationStatement->initDeclarations))
             {
                 cout << decl->declarator->identifier << endl;
-                std::string identifier = decl->declarator->identifier;
                 // map the type (which is a number)to DataType enum
                 DataType dataType = mapTypeToDataType(stmt->declarationStatement->type->type->at(0));
-                std::string scope = stmt->declarationStatement->get_scope();
-                symtab.insert(identifier, dataType, scope, 0, 0);
+                if(decl->declarator->identifier != nullptr){
+                    std::string identifier = decl->declarator->identifier;
+                    std::string scope = stmt->declarationStatement->get_scope();
+                    symtab.insert(identifier, dataType, scope, 0, 0);
+                }
             }
             break;
         case 2:
@@ -250,20 +229,14 @@ void buildScope(Node *node, string scope)
             {
                 LoopStatement *loop_stmt = stmt->loopStatement;
                 loop_stmt->scope = scope;
-                // for (auto &from_to : *loop_stmt->fromToPairs) {
-                // }
-
-                // add all loop variable init to symbol table
-                // for (auto &from_to : *loop_stmt->fromToPairs) {
                 cout << loop_stmt->identifier << endl;
-                std::string identifier = (loop_stmt)->identifier;
-                DataType dataType = Integer;
-                std::string scope = loop_stmt->get_scope();
-                symtab.insert(identifier, dataType, scope, 0, 0);
-                // }
-
-                for (auto &in_stmt : *loop_stmt->statements)
-                {
+                if(loop_stmt->identifier != nullptr){
+                    std::string identifier = (loop_stmt)->identifier;
+                    DataType dataType = Integer;
+                    std::string scope = loop_stmt->get_scope();
+                    symtab.insert(identifier, dataType, scope, 0, 0);
+                }
+                for (auto &in_stmt : *loop_stmt->statements) {
                     buildScope(in_stmt, scope + "." + to_string(child_scope++));
                 }
                 break;
@@ -286,6 +259,83 @@ void buildScope(Node *node, string scope)
     }
 }
 
+//function to do semantic checks on the loop statement
+void traverse_loop_statement(Start* root) {
+    if (root->StatementList != nullptr) {
+        for (auto* statement : *(root->StatementList)) {
+            if (statement->statementType == 4) {
+                //fromtopair check
+                LoopStatement* loop_stmt = statement->loopStatement;
+                if (loop_stmt->fromToPairs != nullptr) {
+                    for (auto &pair : *(loop_stmt->fromToPairs)) {
+                        // check if the from and to expressions are of type integer
+                        if (std::get<0>(pair) != nullptr) {
+                            if (std::get<0>(pair)->castType != 0) {
+                                std::cout << "Error: From expression in loop statement is not of type integer\n";
+                            }
+                        }
+                        if (std::get<1>(pair) != nullptr) {
+                            if (std::get<1>(pair)->castType != 0) {
+                                std::cout << "Error: To expression in loop statement is not of type integer\n";
+                            }
+                        }
+                        if (std::get<2>(pair) != nullptr) {
+                            if (std::get<2>(pair)->castType != 0) {
+                                std::cout << "Error: Step expression in loop statement is not of type integer\n";
+                            }
+                        }
+                    }
+                }
+                // check if the identifier is declared in the symbol table
+                if (loop_stmt->identifier != nullptr) {
+                    std::string name = loop_stmt->identifier;
+                    std::string scope = loop_stmt->get_scope();
+                    SymbolTableEntry* entry = symtab.search(name, scope);
+                    if (entry == nullptr) {
+                        std::cout << "Error: Identifier in loop statement is not declared\n";
+                    }
+                }
+
+                // check if the statements in the loop are valid
+                if (loop_stmt->statements != nullptr) {
+                    for (auto &stmt : *(loop_stmt->statements)) {
+                        // does this work??
+                        traverse_loop_statement(dynamic_cast<Start*>(stmt));
+                    }
+                }
+            }
+        }
+    }
+}
+
+void traverse_function_declaration(Node* node) {
+    if (node == nullptr) return;
+    if (Start* start = dynamic_cast<Start*>(node)) {
+        for (auto &func_dec : *(start->FunctionList)) {
+            traverse_function_declaration(func_dec);
+        }
+    } else if (FunctionDeclaration* func_dec = dynamic_cast<FunctionDeclaration*>(node)) {
+        for (auto &param : *(func_dec->inpParameter)) {
+            if (param->identifier == nullptr) {
+                cout << "error: identifier name missing in function declaration input parameter" << endl;
+            }
+        }
+        for (auto &param : *(func_dec->otherParameter)) {
+            if (param->identifier == nullptr) {
+                cout << "error: identifier name missing in function declaration input parameter" << endl;
+            }
+        }
+
+        std::cout << func_dec->identifier << std::endl;
+
+        for(auto* param : *(func_dec->outParameter)){
+            if (param->identifier == nullptr) {
+                cout << "error: unecessary identifier name in function declaration output parameter" << endl;
+            }
+        }
+    } else {
+    }
+}
 DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpression)
 {
     char* identifier = singleChainExpression->identifier;

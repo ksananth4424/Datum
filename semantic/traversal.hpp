@@ -16,7 +16,7 @@ extern char filename[100];
 
 void traverse_declaration(Start* root);
 
-void traverse_function_declaration(Start* root);
+void traverse_function_declaration(Node* root);
 
 void traverse_if_statement(Start* root);
 
