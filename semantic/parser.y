@@ -320,15 +320,15 @@ multi_chain_expression
 
  // this includes both single chain and multi chain expressions
 postfix_expression
-    : single_chain_expression   { $$ = $1; }
-    | multi_chain_expression    { $$ = $1; }
+    : single_chain_expression   { $$ = $1;$$->castType = 3; }
+    | multi_chain_expression    { $$ = $1;$$->castType = 4; }
     ;
 
 // this is how unary operators are used
 unary_expression        
 	: unary_operator unary_expression   { $$ = $2; $$->op->push_back($1);}
     | primary_expression        { $$ = new UnaryExpression($1); $$->castType = 1; }
-    | postfix_expression            { $$ = new UnaryExpression($1); $$->castType = 3; }   
+    | postfix_expression            { $$ = new UnaryExpression($1); $$->castType = $1->castType; }   
 	;
 
 // unary operators for above unary_expressions
@@ -466,7 +466,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 	yyparse(); 
-    buildScope(root);
+    /* buildScope(root); */
     symtab.print();
     traverse(root);
 }

@@ -14,7 +14,8 @@ enum DataType {
     Boolean,
     Dataset,
     Array,
-    Function
+    Function,
+    Unknown
 };
 
 class SymbolTableEntry {
