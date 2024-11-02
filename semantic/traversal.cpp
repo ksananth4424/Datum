@@ -245,10 +245,40 @@ void traverse_loop_statement(Start* root) {
                 // check if the statements in the loop are valid
                 if (loop_stmt->statements != nullptr) {
                     for (auto &stmt : *(loop_stmt->statements)) {
+                        // does this work??
                         traverse_loop_statement(dynamic_cast<Start*>(stmt));
                     }
                 }
             }
         }
+    }
+}
+
+void traverse_function_declaration(Node* node) {
+    if (node == nullptr) return;
+    if (Start* start = dynamic_cast<Start*>(node)) {
+        for (auto &func_dec : *(start->FunctionList)) {
+            traverse_function_declaration(func_dec);
+        }
+    } else if (FunctionDeclaration* func_dec = dynamic_cast<FunctionDeclaration*>(node)) {
+        for (auto &param : *(func_dec->inpParameter)) {
+            if (param->identifier == nullptr) {
+                cout << "error: identifier name missing in function declaration input parameter" << endl;
+            }
+        }
+        for (auto &param : *(func_dec->otherParameter)) {
+            if (param->identifier == nullptr) {
+                cout << "error: identifier name missing in function declaration input parameter" << endl;
+            }
+        }
+
+        std::cout << func_dec->identifier << std::endl;
+
+        for(auto* param : *(func_dec->outParameter)){
+            if (param->identifier == nullptr) {
+                cout << "error: unecessary identifier name in function declaration output parameter" << endl;
+            }
+        }
+    } else {
     }
 }
