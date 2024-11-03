@@ -259,6 +259,69 @@ void buildScope(Node *node, string scope)
     }
 }
 
+void traverse_declaration(Start* root){
+    if (root->StatementList != nullptr) {
+        for (auto* statement : *(root->StatementList)) {
+            if (statement->statementType == 1) {
+                //declaration
+                DeclarationStatement* decl_stmt = statement->declarationStatement;
+                if (decl_stmt->initDeclarations != nullptr) {
+                    for (auto* init_decl : *(decl_stmt->initDeclarations)) {
+                        if (init_decl->declarator != nullptr) {
+                            std::string name = init_decl->declarator->identifier;
+                            std::string scope = decl_stmt->get_scope();
+                            DataType type = mapTypeToDataType(decl_stmt->type->type->at(0));
+                            SymbolTableEntry* entry = symtab.search(name, scope);
+                            if (entry != nullptr) {
+                                std::cout << "Error: Identifier in declaration statement is already declared\n";
+                                continue;
+                            }
+                            //  type checking here. example: int a = 5.1 should give error here
+                            else if (init_decl->initializer->assignmentExpression != nullptr) {
+                                DataType rhs = traverse_operations(init_decl->initializer->assignmentExpression->expression);
+                                if(type == Integer){
+                                    if(rhs != Integer && rhs != Boolean){
+                                        std::cout << "Error: Cannot assign "<< rhs <<" to integer\n";
+                                    }
+                                }
+                                else if(type == Float){
+                                    if(rhs != Float && rhs != Integer && rhs != Boolean){
+                                        std::cout << "Error: Cannot assign "<< rhs <<" to float\n";
+                                    }
+                                }
+                                else if(type == Boolean){
+                                    if(rhs != Boolean && rhs != Integer){
+                                        std::cout << "Error: Cannot assign "<< rhs <<" to boolean\n";
+                                    }
+                                }
+                                else if(type == String && rhs != String){
+                                    std::cout << "Error: Cannot assign " << rhs << " to string\n";
+                                }
+                                else if(type == Char && rhs != Char){
+                                    std::cout << "Error: Cannot assign "<< rhs <<" to char\n";
+                                }
+                                else if(type == Dataset && rhs != Dataset){
+                                    std::cout << "Error: Cannot assign "<< rhs <<" to dataset\n";
+                                }
+                                else if(type == Array && rhs != Array){
+                                    std::cout << "Error: Cannot assign "<< rhs <<" to array\n";
+                                }
+                            }
+                            // type checking in case of array
+
+                            else{
+                                symtab.insert(name, type, scope, 0, 0);
+                            }
+
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 //function to do semantic checks on the loop statement
 void traverse_loop_statement(Start* root) {
     if (root->StatementList != nullptr) {
