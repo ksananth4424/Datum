@@ -399,14 +399,83 @@ void traverse_function_declaration(Node* node) {
     } else {
     }
 }
+
 DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpression)
 {
     char* identifier = singleChainExpression->identifier;
     std::string scope = singleChainExpression->get_scope();
     std::string identifier_str = std::string(identifier);
     SymbolTableEntry* entry = symtab.search(identifier_str, scope);
+    if(entry == nullptr)
+    {
+        cout << "Error: Identifier " << identifier << " not declared\n";
+        return Unknown;
+    }
     DataType currentDataType = entry->dataType;
+    DataType tempDataType = entry->dataType;
     //loop over the function calls
+    for(auto &functionCall : *(singleChainExpression->functionCallList))
+    {
+        //checking if the function is declared
+        if(functionCall.first->identifier != nullptr)
+        {
+            std::string function_name = std::string(functionCall.first->identifier);
+            std::string temp_scope = functionCall.first->get_scope();
+            SymbolTableEntry* function_entry = symtab.search(function_name, temp_scope);
+            if(function_entry == nullptr)
+            {
+                cout << "Error: Function " << function_name << " not declared\n";
+                return Unknown;
+            }
+            //checking if the function is called with the correct number of arguments
+            if(functionCall.second->size() != function_entry->inputParameters->size())
+            {
+                cout << "Error: Function " << function_name << " called with incorrect number of arguments\n";
+                return Unknown;
+            }
+            //checking if the arguments are of the correct type
+            for(int i = 0; i < functionCall.second->size(); i++)
+            {
+                Expression* argument = functionCall.second->at(i);
+                DataType argumentDataType = traverse_operations(argument);
+                if(argumentDataType != function_entry->inputParameters->at(i))
+                {
+                    cout << "Error: Argument " << i << " of function " << function_name << " is of incorrect type\n";
+                    return Unknown;
+                }
+            }
+            //checking if the return type of the function is the same as the current data type
+            if(function_entry->returnParameters->size() > 0)
+            {
+                if(function_entry->returnParameters->at(0) != tempDataType)
+                {
+                    cout << "Error: Function " << function_name << " returns a value of incorrect type\n";
+                    return Unknown;
+                }
+            }
+            tempDataType = function_entry->dataType;
+        }
+        else
+        {
+            //checking if the inbuilt function is called with the correct number of arguments
+            // incorrect condition in the loop statement fix this
+            if(functionCall.second->size() != functionCall.first->argumentList->size())
+            {
+                cout << "Error: Inbuilt function called with incorrect number of arguments\n";
+                return Unknown;
+            }
+            //checking if the argument is of the correct type
+            Expression* argument = functionCall.second->at(0);
+            DataType argumentDataType = traverse_operations(argument);
+            if(argumentDataType != tempDataType)
+            {
+                cout << "Error: Argument of inbuilt function is of incorrect type\n";
+                return Unknown;
+            }
+            // check this once!!
+            tempDataType = Dataset;
+        }
+    }
     
 
 
@@ -736,5 +805,40 @@ DataType traverse_operations(Expression *root)
     else
     {
         return DataType::Unknown;
+    }
+}
+
+void traverse_assignment(Start* root)
+{
+    if(root == nullptr)
+    {
+        return;
+    }
+    if(root->StatementList == nullptr)
+    {
+        return;
+    }
+    for(auto* each_statement : *(root->StatementList))
+    {
+        if(each_statement->statementType == 2)
+        {
+            AssignmentStatement* assignmentStatement = each_statement->assignmentStatement;
+            if(assignmentStatement->declarator == nullptr)
+            {
+                cout << "Error: Declarator is missing in assignment statement\n";
+                return;
+            }
+            if(assignmentStatement->expression == nullptr)
+            {
+                cout << "Error: Expression is missing in assignment statement\n";
+                return;
+            }
+            DataType lhs = traverse_single_chain_expression(assignmentStatement->declarator);
+            DataType rhs = traverse_operations(assignmentStatement->expression);
+            if(lhs != rhs)
+            {
+                cout << "Error: Assignment is invalid\n";
+            }
+        }
     }
 }
