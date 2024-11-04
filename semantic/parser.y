@@ -381,9 +381,9 @@ optional_step
 // this and next grammer declarations are for the use of if-else statements
 conditional_statement 
 	: IF '(' expression ')' compound_statement else_if_statement                            {reverse($6->begin(), $6->end()); $6->push_back(make_pair($3,$5)); reverse($6->begin(), $6->end());  $$ = new ConditionalStatement($6);}
-	| IF '(' expression ')' compound_statement else_if_statement ELSE compound_statement    {reverse($6->begin(), $6->end()); $6->push_back(make_pair($3,$5)); reverse($6->begin(), $6->end());  $6->push_back(make_pair(nullptr,$8)); $$ = new ConditionalStatement($6);}
+	| IF '(' expression ')' compound_statement else_if_statement ELSE compound_statement    {Expression* expr = new UnaryExpression(new ConstantValue(new TypeSpecifier(new vector<int>({1})),1)); expr->castType = 1; reverse($6->begin(), $6->end()); $6->push_back(make_pair($3,$5)); reverse($6->begin(), $6->end());   $6->push_back(make_pair(expr,$8)); $$ = new ConditionalStatement($6);}
 	;
-
+    
 // similar to the above understanding
 else_if_statement 
     :                                                                        {$$ = new vector<pair<Expression*,vector<Statement*>*>>() ;}
