@@ -24,6 +24,10 @@ void traverse_loop_statement(Start* root);
 
 void traverse_return_statement(Start* root);
 
+DataType traverse_single_chain_expression(SingleChainExpression* singleChainExpression);
+
+vector<DataType> traverse_multi_chain_expression(MultiChainExpression* multiChainExpression);
+
 DataType traverse_operations(Expression* root);
 
 void traverse_assignment(Start* root);

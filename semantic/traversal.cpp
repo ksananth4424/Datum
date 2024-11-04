@@ -295,6 +295,87 @@ void buildScope(Node *node, string scope)
     }
 }
 
+void traverse_declaration(Start *root)
+{
+    if (root->StatementList != nullptr)
+    {
+        for (auto *statement : *(root->StatementList))
+        {
+            if (statement->statementType == 1)
+            {
+                // declaration
+                DeclarationStatement *decl_stmt = statement->declarationStatement;
+                if (decl_stmt->initDeclarations != nullptr)
+                {
+                    for (auto *init_decl : *(decl_stmt->initDeclarations))
+                    {
+                        if (init_decl->declarator != nullptr)
+                        {
+                            std::string name = init_decl->declarator->identifier;
+                            std::string scope = decl_stmt->get_scope();
+                            DataType type = mapTypeToDataType(decl_stmt->type->type->at(0));
+                            SymbolTableEntry *entry = symtab.search(name, scope);
+                            if (entry != nullptr)
+                            {
+                                std::cout << "Error: Identifier in declaration statement is already declared\n";
+                                continue;
+                            }
+                            //  type checking here. example: int a = 5.1 should give error here
+                            else if (init_decl->initializer->assignmentExpression != nullptr)
+                            {
+                                DataType rhs = traverse_operations(init_decl->initializer->assignmentExpression->expression);
+                                if (type == Integer)
+                                {
+                                    if (rhs != Integer && rhs != Boolean)
+                                    {
+                                        std::cout << "Error: Cannot assign " << rhs << " to integer\n";
+                                    }
+                                }
+                                else if (type == Float)
+                                {
+                                    if (rhs != Float && rhs != Integer && rhs != Boolean)
+                                    {
+                                        std::cout << "Error: Cannot assign " << rhs << " to float\n";
+                                    }
+                                }
+                                else if (type == Boolean)
+                                {
+                                    if (rhs != Boolean && rhs != Integer)
+                                    {
+                                        std::cout << "Error: Cannot assign " << rhs << " to boolean\n";
+                                    }
+                                }
+                                else if (type == String && rhs != String)
+                                {
+                                    std::cout << "Error: Cannot assign " << rhs << " to string\n";
+                                }
+                                else if (type == Char && rhs != Char)
+                                {
+                                    std::cout << "Error: Cannot assign " << rhs << " to char\n";
+                                }
+                                else if (type == Dataset && rhs != Dataset)
+                                {
+                                    std::cout << "Error: Cannot assign " << rhs << " to dataset\n";
+                                }
+                                else if (type == Array && rhs != Array)
+                                {
+                                    std::cout << "Error: Cannot assign " << rhs << " to array\n";
+                                }
+                            }
+                            // type checking in case of array
+
+                            else
+                            {
+                                symtab.insert(name, type, scope, 0, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 // function to do semantic checks on the loop statement
 void traverse_loop_statement(Start *root)
 {
@@ -413,13 +494,19 @@ DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpr
     std::string scope = singleChainExpression->get_scope();
     std::string identifier_str = std::string(identifier);
     SymbolTableEntry *entry = symtab.search(identifier_str, scope);
+    if (entry == nullptr){
+        cout << "Error: Identifier " << identifier << " not declared\n";
+        return Unknown;
+    }
     DataType currentDataType = entry->dataType;
-
-    // loop over the function calls
     for(auto &funcPair : *(singleChainExpression->functionCallList)){
         FunctionCall *functionCall = funcPair.first;
         std::string functionName = std::string(functionCall->identifier);
         SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
+        if(functionEntry==nullptr){
+            cout << "Error: Function " << functionName << " not declared\n";
+            return Unknown;
+        }
         vector<DataType> *inputParameters = functionEntry->inputParameters;
         vector<DataType> *returnParameters = functionEntry->returnParameters;
         traverse_function_call(functionCall,functionEntry);
@@ -444,6 +531,10 @@ vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, v
             FunctionCall *functionCall = funcPair.first;
             std::string functionName = std::string(functionCall->identifier);
             SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
+            if(functionEntry==nullptr){
+                cout << "Error: Function " << functionName << " not declared\n";
+                return currentDataType;
+            }
             vector<DataType> *inputParameters = functionEntry->inputParameters;
             vector<DataType> *returnParameters = functionEntry->returnParameters;
             if(inputParameters->size()!=currentDataType.size()){
@@ -474,6 +565,10 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
         }
         std::string scope = string(scope);
         SymbolTableEntry *entry = symtab.search(functionCallName,scope);
+        if(entry==nullptr){
+            cout << "Error: Function " << functionCallName << " not declared\n";
+            return vector<DataType>();
+        }
         traverse_function_call(multiChainExpression->functionCall,entry);
         return traverse_function_call_list_multi(*multiChainExpression->functionCallList,*entry->returnParameters,scope);
     } else {
@@ -498,6 +593,10 @@ DataType traverse_operations(Expression *root){
             std::string identifier = std::string(unaryExpression->identifier);
             std::string scope = unaryExpression->get_scope();
             SymbolTableEntry *entry = symtab.search(identifier, scope);
+            if (entry == nullptr){
+                cout << "Error: Identifier " << identifier << " not declared\n";
+                return Unknown;
+            }
             DataType datatype = entry->dataType;
             if (datatype == Integer) return Integer;
             else if (datatype == Float){
@@ -722,10 +821,84 @@ DataType traverse_operations(Expression *root){
         }
     } else if (root->castType == 3){
         return traverse_single_chain_expression(dynamic_cast<SingleChainExpression *>(root));
-    } else if (root->castType == 4){
+    }
+    else if (root->castType == 4)
+    {
         vector<DataType> v = traverse_multi_chain_expression(dynamic_cast<MultiChainExpression *>(root));
         return Dataset;
-    } else{
+    }
+    else
+    {
         return DataType::Unknown;
+    }
+}
+
+void traverse_assignment(Start *root)
+{
+    if (root == nullptr)
+    {
+        return;
+    }
+    if (root->StatementList == nullptr)
+    {
+        return;
+    }
+    for (auto *each_statement : *(root->StatementList))
+    {
+        if (each_statement->statementType == 2)
+        {
+            AssignmentStatement *assignmentStatement = each_statement->assignmentStatement;
+            if (assignmentStatement->declarator == nullptr)
+            {
+                cout << "Error: Declarator is missing in assignment statement\n";
+                return;
+            }
+            if (assignmentStatement->expression == nullptr)
+            {
+                cout << "Error: Expression is missing in assignment statement\n";
+                return;
+            }
+            DataType lhs = traverse_single_chain_expression(assignmentStatement->declarator);
+            DataType rhs = traverse_operations(assignmentStatement->expression);
+            if (lhs != rhs)
+            {
+                cout << "Error: Assignment is invalid\n";
+            }
+        }
+    }
+}
+
+void traverse_if_statement(Start *root)
+{
+    if (root->StatementList != nullptr)
+    {
+        for (auto *statement : *(root->StatementList))
+        {
+            if (statement->statementType == 3)
+            {
+                // conditional
+                ConditionalStatement *cond_stmt = statement->conditionalStatement;
+                if (cond_stmt->ConditionStatements != nullptr)
+                {
+                    for (auto &[expr, stmt_list] : *(cond_stmt->ConditionStatements))
+                    {
+                        // check if the expression is of type boolean
+                        if (expr != nullptr)
+                        {
+                            DataType temp = traverse_operations(expr);
+                            if (temp != Boolean || temp != Integer)
+                            {
+                                std::cout << "Error: Expression in conditional statement is not of type boolean\n";
+                            }
+                        }
+                        for (auto &in_stmt : *stmt_list)
+                        {
+                            // do the same for the statements in the conditional statement
+                            traverse_if_statement(dynamic_cast<Start *>(in_stmt));
+                        }
+                    }
+                }
+            }
+        }
     }
 }
