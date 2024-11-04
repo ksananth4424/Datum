@@ -11,7 +11,7 @@
 
     class Start* root;
     extern int yylex();
-    extern void yyerror(char*);
+    extern void yyerror(const char*);
     // SymbolTable symtab;
 %}
 
@@ -418,7 +418,7 @@ statement_list
 
 // structure of loops should be adhered to this control of loop is handled by 'from_to_also_expression'
 loop_statement 
-    : LOOP IDENTIFIER from_to_also_expression compound_statement    {cout << $2 << endl; $$ = new LoopStatement($2, $3, $4);}
+    : LOOP IDENTIFIER from_to_also_expression compound_statement    {$$ = new LoopStatement($2, $3, $4);}
     ;
 
  // this is how loop control is handled
@@ -452,7 +452,7 @@ int yywrap() {
 	return 1;
 }
 
-void yyerror( char* s) { 
+void yyerror(const char* s) { 
 	printf("%s\n",s);
 }
 

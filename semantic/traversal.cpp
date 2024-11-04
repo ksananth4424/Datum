@@ -79,22 +79,22 @@ string mapInbuiltFunctionToString(InbuiltFunctions func){
     default: return "none";
     }
 }
-void traverse(Start *start)
+void traverse_statement(Statement *stmt)
 {
     if (stmt == nullptr) {
         return;
     }
-    cout << stmt->statementType << endl;
+    // cout << stmt->statementType << endl;
     switch (stmt->statementType)
     {
     case 1:
         // declaration
-        cout << "declaration" << endl;
+        // cout << "declaration" << endl;
         traverse_declaration(dynamic_cast<DeclarationStatement *>(stmt->declarationStatement));
         break;
     case 2:
         // assignment
-        cout << "assignment" << endl;
+        // cout << "assignment" << endl;
         traverse_assignment(dynamic_cast<AssignmentStatement *>(stmt->assignmentStatement));
         break;
     case 5:
@@ -109,18 +109,18 @@ void traverse(Start *start)
 
     case 3:
         // conditional
-        cout << "conditional" << endl;
+        // cout << "conditional" << endl;
         traverse_if_statement(stmt->conditionalStatement);
         break;
     case 4:
         // loop
-        cout << "loop" << endl;
+        // cout << "loop" << endl;
         traverse_loop_statement(stmt->loopStatement);
         break;
     default:
         // compound
         {
-            cout << "compound" << endl;
+            // cout << "compound" << endl;
             auto comp_stmt = stmt->compoundStatement;
             for (auto &in_stmt : *comp_stmt)
             {
@@ -133,7 +133,7 @@ void traverse(Start *start)
 
 void buildScope(Node *node, string scope)
 {
-    cout << "entering buildscope" << endl;
+    // cout << "entering buildscope" << endl;
     if (node == nullptr)
         return;
     int child_scope = 0;
@@ -246,9 +246,9 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
             if (init_decl->declarator != nullptr)
             {
                 std::string name = init_decl->declarator->identifier;
-                cout << name << endl;
+                // cout << name << endl;
                 std::string scope = decl_stmt->get_scope();
-                cout << scope << endl;
+                // cout << scope << endl;
                 DataType type = mapTypeToDataType(decl_stmt->type->type->at(0));
                 SymbolTableEntry *entry = symtab.search(name, scope);
                 if (entry != nullptr)
@@ -262,60 +262,61 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                 //  type checking here. example: int a = 5.1 should give error here
                 // if (init_decl->initializer->assignmentExpression != nullptr)
                 // {
-                //     DataType rhs = traverse_operations(init_decl->initializer->assignmentExpression->expression);
-                //     if (type == Integer)
-                //     {
-                //         if (rhs != Integer && rhs != Boolean)
-                //         {
-                //             std::cout << "Error: Cannot assign " << rhs << " to integer\n";
-                //         }
-                //     }
-                //     else if (type == Float)
-                //     {
-                //         if (rhs != Float && rhs != Integer && rhs != Boolean)
-                //         {
-                //             std::cout << "Error: Cannot assign " << rhs << " to float\n";
-                //         }
-                //     }
-                //     else if (type == Boolean)
-                //     {
-                //         if (rhs != Boolean && rhs != Integer)
-                //         {
-                //             std::cout << "Error: Cannot assign " << rhs << " to boolean\n";
-                //         }
-                //     }
-                //     else if (type == String && rhs != String)
-                //     {
-                //         std::cout << "Error: Cannot assign " << rhs << " to string\n";
-                //     }
-                //     else if (type == Char && rhs != Char)
-                //     {
-                //         std::cout << "Error: Cannot assign " << rhs << " to char\n";
-                //     }
-                //     else if (type == Dataset && rhs != Dataset)
-                //     {
-                //         std::cout << "Error: Cannot assign " << rhs << " to dataset\n";
-                //     }
-                //     else if (type == Array && rhs != Array)
-                //     {
-                //         std::cout << "Error: Cannot assign " << rhs << " to array\n";
-                //     }
+                    // printf("assignment expression\n");
+                    // DataType rhs = traverse_operations(init_decl->initializer->assignmentExpression->expression);
+                    // if (type == Integer)
+                    // {
+                    //     if (rhs != Integer && rhs != Boolean)
+                    //     {
+                    //         std::cout << "Error: Cannot assign " << rhs << " to integer\n";
+                    //     }
+                    // }
+                    // else if (type == Float)
+                    // {
+                    //     if (rhs != Float && rhs != Integer && rhs != Boolean)
+                    //     {
+                    //         std::cout << "Error: Cannot assign " << rhs << " to float\n";
+                    //     }
+                    // }
+                    // else if (type == Boolean)
+                    // {
+                    //     if (rhs != Boolean && rhs != Integer)
+                    //     {
+                    //         std::cout << "Error: Cannot assign " << rhs << " to boolean\n";
+                    //     }
+                    // }
+                    // else if (type == String && rhs != String)
+                    // {
+                    //     std::cout << "Error: Cannot assign " << rhs << " to string\n";
+                    // }
+                    // else if (type == Char && rhs != Char)
+                    // {
+                    //     std::cout << "Error: Cannot assign " << rhs << " to char\n";
+                    // }
+                    // else if (type == Dataset && rhs != Dataset)
+                    // {
+                    //     std::cout << "Error: Cannot assign " << rhs << " to dataset\n";
+                    // }
+                    // else if (type == Array && rhs != Array)
+                    // {
+                    //     std::cout << "Error: Cannot assign " << rhs << " to array\n";
+                    // }
                 // }
                 // type checking in case of array
 
             }
         }
     }
-    cout << "exiting declaration" << endl;
+    // cout << "exiting declaration" << endl;
 }
 
 // function to do semantic checks on the loop statement
 void traverse_loop_statement(LoopStatement *loop_stmt)
 {
-    cout << "entering loop" << endl;
+    // cout << "entering loop" << endl;
     std::string name = loop_stmt->identifier;
     std::string scope = loop_stmt->scope;
-    cout << scope << endl;
+    // cout << scope << endl;
     SymbolTableEntry *entry = symtab.search(name, scope);
     if (entry != nullptr)
     {
@@ -333,21 +334,21 @@ void traverse_loop_statement(LoopStatement *loop_stmt)
             // check if the from and to expressions are of type integer
             if (std::get<0>(pair) != nullptr)
             {
-                if (std::get<0>(pair)->castType != 0)
+                if (traverse_operations(std::get<0>(pair)) != 0)
                 {
                     std::cout << "Error: From expression in loop statement is not of type integer\n";
                 }
             }
             if (std::get<1>(pair) != nullptr)
             {
-                if (std::get<1>(pair)->castType != 0)
+                if (traverse_operations(std::get<1>(pair)) != 0)
                 {
                     std::cout << "Error: To expression in loop statement is not of type integer\n";
                 }
             }
             if (std::get<2>(pair) != nullptr)
             {
-                if (std::get<2>(pair)->castType != 0)
+                if (traverse_operations(std::get<2>(pair)) != 0)
                 {
                     std::cout << "Error: Step expression in loop statement is not of type integer\n";
                 }
@@ -363,7 +364,7 @@ void traverse_loop_statement(LoopStatement *loop_stmt)
             traverse_statement(dynamic_cast<Statement *>(stmt));
         }
     }
-    cout << "exiting loop" << endl;
+    // cout << "exiting loop" << endl;
 }
 
 void traverse_function_declaration(FunctionDeclaration *func_dec)
@@ -536,11 +537,12 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
 }
 
 DataType traverse_operations(Expression *root){
+    // cout << "entering traverse_operations" << endl;
     if (root == nullptr)
         return DataType::Unknown;
     if (root->castType == 1)
     {
-        cout << "UnaryExpression\n";
+        // cout << "UnaryExpression\n";
         UnaryExpression *unaryExpression = dynamic_cast<UnaryExpression *>(root);
         if(unaryExpression->constantValue==nullptr){
             std::string identifier = std::string(unaryExpression->identifier);
@@ -780,10 +782,7 @@ DataType traverse_operations(Expression *root){
         vector<DataType> v = traverse_multi_chain_expression(dynamic_cast<MultiChainExpression *>(root));
         return Dataset;
     }
-    else
-    {
-        return DataType::Unknown;
-    }
+    return DataType::Unknown;
 }
 
 void traverse_assignment(AssignmentStatement *assignmentStatement)
@@ -808,7 +807,7 @@ void traverse_assignment(AssignmentStatement *assignmentStatement)
 
 void traverse_if_statement(ConditionalStatement *cond_stmt)
 {
-    cout << "entering if" << endl;
+    // cout << "entering if" << endl;
     if (cond_stmt->ConditionStatements != nullptr)
     {
         for (auto &[expr, stmt_list] : *(cond_stmt->ConditionStatements))
@@ -830,7 +829,7 @@ void traverse_if_statement(ConditionalStatement *cond_stmt)
             }
         }
     }
-    cout << "exiting if" << endl;
+    // cout << "exiting if" << endl;
 }
 
 void traverse(Start *start)
@@ -846,5 +845,5 @@ void traverse(Start *start)
     {
         traverse_statement(dynamic_cast<Statement *>(stmt));
     }
-    cout << "exiting traverse" << endl;
+    // cout << "exiting traverse" << endl;
 }

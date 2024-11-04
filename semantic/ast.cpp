@@ -92,6 +92,7 @@ Initializer::Initializer(AssignmentStatement *assignmentExpression) {
 
 Initializer::Initializer(vector<Initializer *> *initializerList) {
     this->initializerList = initializerList;
+    this->assignmentExpression = nullptr;
 }
 
 //Declarator
