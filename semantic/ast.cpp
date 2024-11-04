@@ -159,6 +159,7 @@ MultiChainExpression::MultiChainExpression(FunctionCall* functionCall, vector<Ex
     this->functionCall = functionCall;
     this->access = access;
     this->functionCallList = functionCallList;
+    this->inbuiltFunc = InbuiltFunctions::none;
 }
 MultiChainExpression::MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList){
     this->inbuiltFunc = inbuiltFunc;
@@ -169,6 +170,8 @@ MultiChainExpression::MultiChainExpression(pair<char*,vector<Expression*>*> func
     this->functionCallStart = functionCallStart;
     this->access = access;
     this->functionCallList = functionCallList;
+    this->inbuiltFunc = InbuiltFunctions::none;
+
 }
 
 // Statements

@@ -51,7 +51,35 @@ string dataTypeToString(DataType type)
     }
 }
 
-void traverse_statement(Statement *stmt)
+string mapInbuiltFunctionToString(InbuiltFunctions func){
+    switch (func){
+    case func_show_bar: return "show_bar";
+    case func_show_line: return "show_line";
+    case func_show_scatter: return "show_scatter";
+    case func_show_box: return "show_box";
+    case func_row: return "row";
+    case func_col: return "col";
+    case func_filter: return "filter";
+    case func_sum: return "sum";
+    case func_max: return "max";
+    case func_min: return "min";
+    case func_mean: return "mean";
+    case func_join: return "join";
+    case func_read: return "read";
+    case func_write: return "write";
+    case func_unique: return "unique";
+    case func_show: return "show";
+    case func_split: return "split";
+    case func_sort: return "sort";
+    case func_shuffle: return "shuffle";
+    case func_add: return "add";
+    case func_shape: return "shape";
+    case func_drop: return "drop";
+    case none: return "none";
+    default: return "none";
+    }
+}
+void traverse(Start *start)
 {
     if (stmt == nullptr) {
         return;
@@ -409,404 +437,348 @@ void traverse_function_declaration(FunctionDeclaration *func_dec)
     }
 }
 
+void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
+
+}
+
 DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpression)
 {
     char *identifier = singleChainExpression->identifier;
     std::string scope = singleChainExpression->get_scope();
     std::string identifier_str = std::string(identifier);
     SymbolTableEntry *entry = symtab.search(identifier_str, scope);
-    if (entry == nullptr)
-    {
+    if (entry == nullptr){
         cout << "Error: Identifier " << identifier << " not declared\n";
         return Unknown;
     }
     DataType currentDataType = entry->dataType;
-    DataType tempDataType = entry->dataType;
-    // loop over the function calls
-    for (auto &functionCall : *(singleChainExpression->functionCallList))
-    {
-        // checking if the function is declared
-        if (functionCall.first->identifier != nullptr)
-        {
-            std::string function_name = std::string(functionCall.first->identifier);
-            std::string temp_scope = functionCall.first->get_scope();
-            SymbolTableEntry *function_entry = symtab.search(function_name, temp_scope);
-            if (function_entry == nullptr)
-            {
-                cout << "Error: Function " << function_name << " not declared\n";
-                return Unknown;
+    for(auto &funcPair : *(singleChainExpression->functionCallList)){
+        FunctionCall *functionCall = funcPair.first;
+        std::string functionName = std::string(functionCall->identifier);
+        SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
+        if(functionEntry==nullptr){
+            cout << "Error: Function " << functionName << " not declared\n";
+            return Unknown;
+        }
+        vector<DataType> *inputParameters = functionEntry->inputParameters;
+        vector<DataType> *returnParameters = functionEntry->returnParameters;
+        traverse_function_call(functionCall,functionEntry);
+        if (functionEntry->inputParameters->size()!=1){
+            cout << "Error: Function " << functionName << " expects more than one input parameter\n";
+        } else if(returnParameters->size()!=1){
+            cout << "Error: Function " << functionName << " returns more than one return parameter\n";
+        } else {
+            DataType functionInputParameter = functionEntry->inputParameters->at(0);
+            if (functionInputParameter != currentDataType){
+                cout << "Error: Function " << functionName << " input parameter is not of the same type as the identifier\n"<<functionName<<" expects "<<dataTypeToString(functionInputParameter)<<" but input is of type "<<dataTypeToString(currentDataType)<<"\n";
+            } 
+            currentDataType = returnParameters->at(0);
+        }
+    }
+    return currentDataType;
+}
+
+vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, vector<Expression *>*>> functionCallList,vector<DataType> currentDataType,string scope)
+{
+    for(auto &funcPair : (functionCallList)){
+            FunctionCall *functionCall = funcPair.first;
+            std::string functionName = std::string(functionCall->identifier);
+            SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
+            if(functionEntry==nullptr){
+                cout << "Error: Function " << functionName << " not declared\n";
+                return currentDataType;
             }
-            // checking if the function is called with the correct number of arguments
-            if (functionCall.second->size() != function_entry->inputParameters->size())
-            {
-                cout << "Error: Function " << function_name << " called with incorrect number of arguments\n";
-                return Unknown;
-            }
-            // checking if the arguments are of the correct type
-            for (int i = 0; i < functionCall.second->size(); i++)
-            {
-                Expression *argument = functionCall.second->at(i);
-                DataType argumentDataType = traverse_operations(argument);
-                if (argumentDataType != function_entry->inputParameters->at(i))
-                {
-                    cout << "Error: Argument " << i << " of function " << function_name << " is of incorrect type\n";
-                    return Unknown;
+            vector<DataType> *inputParameters = functionEntry->inputParameters;
+            vector<DataType> *returnParameters = functionEntry->returnParameters;
+            if(inputParameters->size()!=currentDataType.size()){
+                cout << "Error: Function " << functionName << " expects more than the provided input parameter\n";
+
+            } else {
+                for(int i=0;i<inputParameters->size();i++){
+                    if(inputParameters->at(i)!=currentDataType.at(i)){
+                        cout << "Error: Function " << functionName << " input parameter is not of the same type as the "<<functionName<<" expects "<<dataTypeToString(inputParameters->at(i))<<" but input is of type "<<dataTypeToString(currentDataType.at(i))<<"\n";
+                    }
                 }
             }
-            // checking if the return type of the function is the same as the current data type
-            if (function_entry->returnParameters->size() > 0)
-            {
-                if (function_entry->returnParameters->at(0) != tempDataType)
-                {
-                    cout << "Error: Function " << function_name << " returns a value of incorrect type\n";
-                    return Unknown;
-                }
-            }
-            tempDataType = function_entry->dataType;
+            currentDataType.clear();
+            currentDataType = *returnParameters;
+    }
+    return currentDataType;
+}
+
+//intbuilt functions must be initialized by default in symbol table
+vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChainExpression)
+{
+    if(multiChainExpression->functionCall!=nullptr || multiChainExpression->inbuiltFunc!=InbuiltFunctions::none){
+        std::string functionCallName;
+        if(multiChainExpression->functionCall!=nullptr){
+            functionCallName = string(multiChainExpression->functionCall->identifier) ;
+        } else {
+            functionCallName = string(mapInbuiltFunctionToString(multiChainExpression->inbuiltFunc));
         }
-        else
-        {
-            // checking if the inbuilt function is called with the correct number of arguments
-            //  incorrect condition in the loop statement fix this
-            if (functionCall.second->size() != functionCall.first->argumentList->size())
-            {
-                cout << "Error: Inbuilt function called with incorrect number of arguments\n";
-                return Unknown;
-            }
-            // checking if the argument is of the correct type
-            Expression *argument = functionCall.second->at(0);
-            DataType argumentDataType = traverse_operations(argument);
-            if (argumentDataType != tempDataType)
-            {
-                cout << "Error: Argument of inbuilt function is of incorrect type\n";
-                return Unknown;
-            }
-            // check this once!!
-            tempDataType = Dataset;
+        std::string scope = string(scope);
+        SymbolTableEntry *entry = symtab.search(functionCallName,scope);
+        if(entry==nullptr){
+            cout << "Error: Function " << functionCallName << " not declared\n";
+            return vector<DataType>();
         }
+        traverse_function_call(multiChainExpression->functionCall,entry);
+        return traverse_function_call_list_multi(*multiChainExpression->functionCallList,*entry->returnParameters,scope);
+    } else {
+        vector<Expression*> *inputList = multiChainExpression->functionCallStart.second;
+        vector<DataType> inputTypes;
+        for(auto &expr : *inputList){
+            DataType exprType = traverse_operations(expr);
+            inputTypes.push_back(exprType);
+        }
+        return traverse_function_call_list_multi(*(multiChainExpression->functionCallList),inputTypes,multiChainExpression->get_scope());
     }
 }
 
-DataType traverse_multi_chain_expression(MultiChainExpression *multiChainExpression)
-{
-}
-
-DataType traverse_operations(Expression *root)
-{
+DataType traverse_operations(Expression *root){
     if (root == nullptr)
         return DataType::Unknown;
     if (root->castType == 1)
     {
         cout << "UnaryExpression\n";
         UnaryExpression *unaryExpression = dynamic_cast<UnaryExpression *>(root);
-        DataType datatype = mapTypeToDataType(unaryExpression->constantValue->type->type->at(0));
-        if (datatype == Integer)
-        {
-            return Integer;
-        }
-        else if (datatype == Float)
-        {
-            return Float;
-        }
-        else if (datatype == String)
-        {
-            for (auto &o : *(unaryExpression->op))
-            {
-                if (o == minus_op)
-                {
-                    cout << "Error: Cannot \"-\" perform operation on string\n";
+        if(unaryExpression->constantValue==nullptr){
+            std::string identifier = std::string(unaryExpression->identifier);
+            std::string scope = unaryExpression->get_scope();
+            SymbolTableEntry *entry = symtab.search(identifier, scope);
+            if (entry == nullptr){
+                cout << "Error: Identifier " << identifier << " not declared\n";
+                return Unknown;
+            }
+            DataType datatype = entry->dataType;
+            if (datatype == Integer) return Integer;
+            else if (datatype == Float){
+                for(auto &o:*(unaryExpression->op)){
+                    if (o==not_op) cout << "Error: Cannot \"!\" perform operation on float\n";
+                    return Float;
+                    }
+            } else if (datatype == String){
+                for (auto &o : *(unaryExpression->op)){
+                    if (o == minus_op){
+                        cout << "Error: Cannot \"-\" perform operation on string\n";
+                    }else if (o == plus_op){
+                        cout << "Error: Cannot \"+\" perform operation on string\n";
+                    }
                 }
-                else if (o == plus_op)
-                {
+                return String;
+            } else if (datatype == Char){
+                for (auto &o : *(unaryExpression->op)){
+                    if (o == minus_op){
+                        cout << "Error: Cannot \"-\" perform operation on string\n";
+                    } else if (o == plus_op){
+                        cout << "Error: Cannot \"+\" perform operation on string\n";
+                    }
+                }
+                return Char;
+            } else if (datatype == Boolean)
+            {
+                for (auto &o : *(unaryExpression->op)){
+                    if (o == minus_op){
+                        cout << "Error: Cannot \"-\" perform operation on string\n";
+                    } else if (o == plus_op){
+                        cout << "Error: Cannot \"+\" perform operation on string\n";
+                    }
+                }
+                return Boolean;
+            } else if (datatype == Dataset){
+                if (unaryExpression->op->size() > 0){
+                    cout << "Error: Cannot perform Unary operations on dataset\n";
+                }
+                return Dataset;
+            } else if (datatype == Array){
+                if (unaryExpression->op->size() > 0){
+                    cout << "Error: Cannot perform Unary operations on array\n";
+                }
+                return Array;
+            } else {
+                return DataType::Unknown;
+            }  
+        } else {
+        DataType datatype = mapTypeToDataType(unaryExpression->constantValue->type->type->at(0));
+        if (datatype == Integer) {
+            return Integer;
+        } else if (datatype == Float) {
+            return Float;
+        } else if (datatype == String) {
+            for (auto &o : *(unaryExpression->op)){
+                if (o == minus_op){
+                    cout << "Error: Cannot \"-\" perform operation on string\n";
+                }else if (o == plus_op){
                     cout << "Error: Cannot \"+\" perform operation on string\n";
                 }
             }
             return String;
-        }
-        else if (datatype == Char)
-        {
-            for (auto &o : *(unaryExpression->op))
-            {
-                if (o == minus_op)
-                {
+        } else if (datatype == Char) {
+            for (auto &o : *(unaryExpression->op)){
+                if (o == minus_op) {
                     cout << "Error: Cannot \"-\" perform operation on string\n";
-                }
-                else if (o == plus_op)
-                {
+                } else if (o == plus_op){
                     cout << "Error: Cannot \"+\" perform operation on string\n";
                 }
             }
             return Char;
-        }
-        else if (datatype == Boolean)
-        {
+        } else if (datatype == Boolean){
             for (auto &o : *(unaryExpression->op))
             {
-                if (o == minus_op)
-                {
+                if (o == minus_op){
                     cout << "Error: Cannot \"-\" perform operation on string\n";
-                }
-                else if (o == plus_op)
-                {
+                } else if (o == plus_op){
                     cout << "Error: Cannot \"+\" perform operation on string\n";
                 }
             }
             return Boolean;
-        }
-        else if (datatype == Dataset)
-        {
-            if (unaryExpression->op->size() > 0)
-            {
+        } else if (datatype == Dataset){
+            if (unaryExpression->op->size() > 0){
                 cout << "Error: Cannot perform Unary operations on dataset\n";
             }
             return Dataset;
-        }
-        else if (datatype == Array)
-        {
-            if (unaryExpression->op->size() > 0)
-            {
+        } else if (datatype == Array){
+            if (unaryExpression->op->size() > 0){
                 cout << "Error: Cannot perform Unary operations on array\n";
             }
             return Array;
         }
-    }
-    else if (root->castType == 2)
-    {
+        }
+    } else if (root->castType == 2){
         BinaryExpression *binaryExpression = dynamic_cast<BinaryExpression *>(root);
         DataType lhs = traverse_operations(binaryExpression->lhs);
         DataType rhs = traverse_operations(binaryExpression->rhs);
-        if (binaryExpression->op == add_op)
-        {
-            if (lhs == Integer && rhs == Integer)
-            {
+        if (binaryExpression->op == add_op){
+            if (lhs == Integer && rhs == Integer){
                 return Integer;
-            }
-            else if (lhs == Float && rhs == Float)
-            {
+            } else if (lhs == Float && rhs == Float){
                 return Float;
-            }
-            else if (lhs == String && rhs == String)
-            {
+            } else if (lhs == String && rhs == String){
                 return String;
-            }
-            else if (lhs == String && rhs == Char)
-            {
+            } else if (lhs == String && rhs == Char){
                 return String;
-            }
-            else if (lhs == Boolean && rhs == Boolean)
-            {
+            } else if (lhs == Boolean && rhs == Boolean){
                 return Boolean;
-            }
-            else if (lhs == Integer && rhs == Float)
-            {
+            } else if (lhs == Integer && rhs == Float){
                 return Float;
-            }
-            else if (lhs == Float && rhs == Integer)
-            {
+            } else if (lhs == Float && rhs == Integer){
                 return Float;
-            }
-            else if (lhs == Boolean && rhs == Integer)
-            {
+            } else if (lhs == Boolean && rhs == Integer){
                 return Integer;
-            }
-            else if (lhs == Integer && rhs == Boolean)
-            {
+            } else if (lhs == Integer && rhs == Boolean){
                 return Integer;
-            }
-            else if (lhs == Boolean && rhs == Float)
-            {
+            } else if (lhs == Boolean && rhs == Float){
                 return Float;
-            }
-            else if (lhs == Float && rhs == Boolean)
-            {
+            } else if (lhs == Float && rhs == Boolean){
                 return Float;
-            }
-            else if (lhs == Dataset && rhs == Dataset)
-            {
+            } else if (lhs == Dataset && rhs == Dataset){
                 return Dataset;
-            }
-            else if (lhs == Array && rhs == Array)
-            {
+            } else if (lhs == Array && rhs == Array){
                 return Array;
-            }
-            else
-            {
+            } else {
                 cout << "Error: Cannot perform \"+\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
                 return Unknown;
             }
         }
         else if (binaryExpression->op == sub_op)
         {
-            if (lhs == Integer && rhs == Integer)
-            {
+            if (lhs == Integer && rhs == Integer){
                 return Integer;
-            }
-            else if (lhs == Float && rhs == Float)
-            {
+            } else if (lhs == Float && rhs == Float){
                 return Float;
-            }
-            else
-            {
+            } else {
                 cout << "Error: Cannot perform \"-\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
                 return Unknown;
             }
-        }
-        else if (binaryExpression->op == mul_op)
-        {
-            if (lhs == Integer && rhs == Integer)
-            {
+        } else if (binaryExpression->op == mul_op){
+            if (lhs == Integer && rhs == Integer){
                 return Integer;
-            }
-            else if (lhs == Float && rhs == Float)
-            {
+            } else if (lhs == Float && rhs == Float){
                 return Float;
-            }
-            else
-            {
+            } else{
                 cout << "Error: Cannot perform \"*\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
                 return Unknown;
             }
-        }
-        else if (binaryExpression->op == div_op)
-        {
-            if (lhs == Integer && rhs == Integer)
-            {
+        } else if (binaryExpression->op == div_op){
+            if (lhs == Integer && rhs == Integer){
                 return Integer;
-            }
-            else if (lhs == Float && rhs == Float)
-            {
+            } else if (lhs == Float && rhs == Float){
                 return Float;
-            }
-            else
-            {
+            } else{
                 cout << "Error: Cannot perform \"/\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
                 return Unknown;
             }
-        }
-        else if (binaryExpression->op == mod_op)
-        {
-            if (lhs == Integer && rhs == Integer)
-            {
+        } else if (binaryExpression->op == mod_op){
+            if (lhs == Integer && rhs == Integer){
                 return Integer;
-            }
-            else
-            {
+            } else {
                 cout << "Error: Cannot perform \"%\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
                 return Unknown;
             }
-        }
-        else if (binaryExpression->op == and_op)
-        {
-            if (lhs == Boolean && rhs == Boolean)
-            {
+        } else if (binaryExpression->op == and_op){
+            if (lhs == Boolean && rhs == Boolean){
                 return Boolean;
-            }
-            else if (lhs == Integer && rhs == Integer)
-            {
+            } else if (lhs == Integer && rhs == Integer){
                 return Integer;
-            }
-            else
-            {
+            } else {
                 cout << "Error: Cannot perform \"&&\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
                 return Unknown;
             }
-        }
-        else if (binaryExpression->op == or_op)
-        {
-            if (lhs == Boolean && rhs == Boolean)
-            {
+        } else if (binaryExpression->op == or_op){
+            if (lhs == Boolean && rhs == Boolean){
                 return Boolean;
-            }
-            else if (lhs == Integer && rhs == Integer)
-            {
+            } else if (lhs == Integer && rhs == Integer){
                 return Integer;
-            }
-            else
-            {
+            } else{
                 cout << "Error: Cannot perform \"||\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
                 return Unknown;
             }
-        }
-        else if (binaryExpression->op == eq_op)
-        {
-            if (lhs == Integer && rhs == Integer)
-            {
+        } else if (binaryExpression->op == eq_op){
+            if (lhs == Integer && rhs == Integer){
                 return Boolean;
-            }
-            else if (lhs == Float && rhs == Float)
-            {
+            } else if (lhs == Float && rhs == Float){
                 return Boolean;
-            }
-            else if (lhs == String && rhs == String)
-            {
+            } else if (lhs == String && rhs == String){
                 return Boolean;
-            }
-            else if (lhs == Char && rhs == Char)
-            {
+            } else if (lhs == Char && rhs == Char){
                 return Boolean;
-            }
-            else if (lhs == Boolean && rhs == Boolean)
-            {
+            } else if (lhs == Boolean && rhs == Boolean){
                 return Boolean;
-            }
-            else if (lhs == Dataset && rhs == Dataset)
-            {
+            } else if (lhs == Dataset && rhs == Dataset){
                 return Boolean;
-            }
-            else if (lhs == Array && rhs == Array)
-            {
+            } else if (lhs == Array && rhs == Array){
                 return Boolean;
-            }
-            else
-            {
+            } else{
                 cout << "Error: Cannot perform \"==\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
                 return Unknown;
             }
-        }
-        else if (binaryExpression->op == neq_op)
-        {
-            if (lhs == Integer && rhs == Integer)
-            {
+        } else if (binaryExpression->op == neq_op){
+            if (lhs == Integer && rhs == Integer){
                 return Boolean;
-            }
-            else if (lhs == Float && rhs == Float)
-            {
+            } else if (lhs == Float && rhs == Float){
                 return Boolean;
-            }
-            else if (lhs == String && rhs == String)
-            {
+            } else if (lhs == String && rhs == String){
                 return Boolean;
-            }
-            else if (lhs == Char && rhs == Char)
-            {
+            } else if (lhs == Char && rhs == Char){
                 return Boolean;
-            }
-            else if (lhs == Boolean && rhs == Boolean)
-            {
+            } else if (lhs == Boolean && rhs == Boolean){
                 return Boolean;
-            }
-            else if (lhs == Dataset && rhs == Dataset)
-            {
+            } else if (lhs == Dataset && rhs == Dataset){
                 return Boolean;
-            }
-            else if (lhs == Array && rhs == Array)
-            {
+            } else if (lhs == Array && rhs == Array){
                 return Boolean;
-            }
-            else
-            {
+            } else{
                 cout << "Error: Cannot perform \"!=\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
                 return Unknown;
             }
         }
-    }
-    else if (root->castType == 3)
-    {
+    } else if (root->castType == 3){
         return traverse_single_chain_expression(dynamic_cast<SingleChainExpression *>(root));
     }
     else if (root->castType == 4)
     {
-        return traverse_multi_chain_expression(dynamic_cast<MultiChainExpression *>(root));
+        vector<DataType> v = traverse_multi_chain_expression(dynamic_cast<MultiChainExpression *>(root));
+        return Dataset;
     }
     else
     {
