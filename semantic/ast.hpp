@@ -34,7 +34,8 @@ enum InbuiltFunctions
     func_shuffle,
     func_add,
     func_shape,
-    func_drop
+    func_drop,
+    none
 };
 
 enum AssignmentOperator
