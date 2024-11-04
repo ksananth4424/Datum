@@ -234,7 +234,7 @@ DeclarationStatement::DeclarationStatement(TypeSpecifier *type){
 }
 
 DeclarationStatement::DeclarationStatement(TypeSpecifier *type, vector<class InitDeclaration *> *initDeclarations) {
-    this->type;
+    this->type = type;
     this->initDeclarations = initDeclarations;
 }
 

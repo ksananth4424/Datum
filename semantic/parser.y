@@ -21,6 +21,7 @@
     char cval;
     bool bval;
     char* sval;
+    char* strval;
 
     InbuiltFunctions AstInbuiltFunctions;
     AssignmentOperator AstAssignmentOperator;
@@ -84,7 +85,7 @@
 %token AND OR NOT
 %token IF ELSE LOOP BREAK CONTINUE RETURN FUNCTION
 %token  STRING  BOOL DATASET ARRAY
-%token<sval> STRING_LITERAL
+%token<strval> STRING_LITERAL
 %token<sval> IDENTIFIER
 %token<ival> CONST_INTEGER
 %token<fval> CONST_FLOAT
@@ -402,7 +403,7 @@ statement
     | compound_statement        {$$ = new Statement($1);}
     | conditional_statement     {$$ = new Statement($1);}
     | loop_statement            {$$ = new Statement($1);}
-    | declaration              {$$ = new Statement($1);}
+    | declaration               {$$ = new Statement($1);}
     | RETURN expression ';'     {$$ = new Statement(new ReturnStatement($2));}
     | RETURN ';'                {$$ = new Statement(new ReturnStatement());}
     | BREAK ';'                 {$$ = new Statement(new BreakStatement());}
@@ -417,14 +418,14 @@ statement_list
 
 // structure of loops should be adhered to this control of loop is handled by 'from_to_also_expression'
 loop_statement 
-    : LOOP IDENTIFIER from_to_also_expression compound_statement    {$$ = new LoopStatement($2, $3, $4);}
+    : LOOP IDENTIFIER from_to_also_expression compound_statement    {cout << $2 << endl; $$ = new LoopStatement($2, $3, $4);}
     ;
 
  // this is how loop control is handled
 from_to_also_expression
     : TO expression optional_step                                                   {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple(nullptr,$2,$3));}
     | FROM expression optional_step                                                 {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple($2,nullptr,$3));}           
-    | FROM expression TO expression optional_step                                   {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple($2,$4,$5));}
+    | FROM expression TO expression optional_step                                   {$$ = new vector<tuple<Expression*,Expression*,Expression*>> (); $$->push_back(make_tuple($2,$4,$5)); }
     | from_to_also_expression ALSO TO expression optional_step                      {$$ = $1; $1->push_back(make_tuple(nullptr,$4,$5));}
     | from_to_also_expression ALSO FROM expression optional_step                    {$$ = $1; $1->push_back(make_tuple($4,nullptr,$5));}
     | from_to_also_expression ALSO FROM expression TO expression optional_step      {$$ = $1; $1->push_back(make_tuple($4,$6,$7));}
@@ -467,6 +468,8 @@ int main(int argc, char* argv[]) {
     }
 	yyparse(); 
     /* buildScope(root); */
-    symtab.print();
     traverse(root);
+    /* traverse_declaration(root); */
+    /* traverse_loop_statement(root); */
+    symtab.print();
 }

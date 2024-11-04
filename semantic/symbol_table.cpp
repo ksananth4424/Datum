@@ -3,7 +3,7 @@
 bool SymbolTable::insert(std::string& name, DataType dataType, std::string& scope, int rowNum, int colNum) {
     SymbolTableEntry symEntry(name, dataType, scope, rowNum, colNum);
 
-    if (SymbolTable::search(name, scope) == nullptr) {
+    if (SymbolTable::search(name, scope) != nullptr) {
         return false;
     }
 
@@ -15,7 +15,7 @@ bool SymbolTable::insert(std::string& name, DataType dataType, std::string& scop
 bool SymbolTable::insert(std::string& name, std::vector<DataType>* inputParameters, std::vector<DataType>* otherParameters, std::vector<DataType>* returnParameters, std::string& scope, int colNum, int rowNum) {
     SymbolTableEntry symEntry(name, inputParameters, otherParameters, returnParameters, scope, rowNum, colNum);
 
-    if (SymbolTable::search(name, scope) == nullptr) {
+    if (SymbolTable::search(name, scope) != nullptr) {
         return false;
     }
 

@@ -14,13 +14,13 @@ extern SymbolTable symtab;
 
 extern char filename[100];
 
-void traverse_declaration(Start* root);
+void traverse_declaration(DeclarationStatement* root);
 
-void traverse_function_declaration(Node* root);
+void traverse_function_declaration(FunctionDeclaration* root);
 
-void traverse_if_statement(Start* root);
+void traverse_if_statement(ConditionalStatement* root);
 
-void traverse_loop_statement(Start* root);
+void traverse_loop_statement(LoopStatement* root);
 
 void traverse_return_statement(Start* root);
 
@@ -30,7 +30,7 @@ DataType traverse_multi_chain_expression(MultiChainExpression* multiChainExpress
 
 DataType traverse_operations(Expression* root);
 
-void traverse_assignment(Start* root);
+void traverse_assignment(AssignmentStatement* root);
 
 std::string get_line_number(int);
 

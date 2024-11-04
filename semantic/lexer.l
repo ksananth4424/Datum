@@ -65,14 +65,14 @@ L			[a-zA-Z_]
 "function_declarations:"    {count(); return (FUNC_LABEL);}
 "start:"                    {count(); return (START_LABEL);}
 
-"true"                  {count(); return (BOOL_TRUE);}
-"false"                 {count(); return (BOOL_FALSE);}
-{L}({L}|{D})*           {count(); return (IDENTIFIER);}	
-\"(\\.|[^\\"])*\"       {count(); return (STRING_LITERAL);}
-'(\\.|[^\\'])'	        {count(); return (CONST_CHAR);}
-{D}+                    {count(); return (CONST_INTEGER);}
-{D}*"."{D}+             {count(); return (CONST_FLOAT);}
-{D}+"."{D}*             {count(); return (CONST_FLOAT);}
+"true"                  {count();  yylval.bval = 1; return (BOOL_TRUE);}
+"false"                 {count();  yylval.bval = 0; return (BOOL_FALSE);}
+{L}({L}|{D})*           {count();  yylval.sval = strdup(yytext); return (IDENTIFIER);}
+\"(\\.|[^\\"])*\"       {count();  yylval.strval = strdup(yytext); return (STRING_LITERAL);}
+'(\\.|[^\\'])'	        {count();  yylval.cval = yytext[0]; return (CONST_CHAR);}
+{D}+                    {count();  yylval.ival = atoi(yytext); return (CONST_INTEGER);}
+{D}*"."{D}+             {count();  yylval.fval = atof(yytext); return (CONST_FLOAT);}
+{D}+"."{D}*             {count();  yylval.fval = atof(yytext); return (CONST_FLOAT);}
 
 "+="        {count(); return (ADD_ASSIGN);}
 "-="        {count(); return (SUB_ASSIGN);}
@@ -108,6 +108,7 @@ L			[a-zA-Z_]
 %%
 
 void count() {
-    ECHO;
-    printf("\t");
+    /* ECHO; */
+    /* printf("\t"); */
+    /* yylval.sval = yytext; */
 }
