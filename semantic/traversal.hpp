@@ -24,11 +24,11 @@ void traverse_loop_statement(LoopStatement* root);
 
 void traverse_return_statement(Start* root);
 
-DataType traverse_single_chain_expression(SingleChainExpression* singleChainExpression);
+DataType traverse_single_chain_expression(SingleChainExpression* singleChainExpression,string scope);
 
-vector<DataType> traverse_multi_chain_expression(MultiChainExpression* multiChainExpression);
+vector<DataType> traverse_multi_chain_expression(MultiChainExpression* multiChainExpression,string scope);
 
-DataType traverse_operations(Expression* root);
+DataType traverse_operations(Expression* root,string scope);
 
 void traverse_assignment(AssignmentStatement* root);
 

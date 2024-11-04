@@ -47,8 +47,8 @@ UnaryExpression::UnaryExpression(ConstantValue *constantValue) {
     this->expr = nullptr;
     this->op = new vector<UnaryOperator>();
     this->constantValue = constantValue;
+    this->inbuiltFunction = InbuiltFunctions::none;
 }
-
 UnaryExpression::UnaryExpression(Expression *expr) {
     this->expr = expr;
     this->op = new vector<UnaryOperator>();

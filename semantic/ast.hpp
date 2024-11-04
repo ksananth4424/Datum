@@ -203,6 +203,10 @@ public:
     vector<UnaryOperator> *op ;
     ConstantValue *constantValue;
     InbuiltFunctions inbuiltFunction;
+    // SingleChainExpression *singleChainExpression;
+    // MultiChainExpression *multiChainExpression;
+    // UnaryExpression(SingleChainExpression *singleChainExpression);
+    // UnaryExpression(MultiChainExpression *multiChainExpression);
     UnaryExpression(Expression *expr, vector<UnaryOperator> *op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction);
     UnaryExpression(Expression *expr);
     UnaryExpression(ConstantValue *constantValue);

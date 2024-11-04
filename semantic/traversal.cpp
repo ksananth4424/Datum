@@ -260,53 +260,52 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                     symtab.insert(name, type, scope, 0, 0);
                 }
                 //  type checking here. example: int a = 5.1 should give error here
-                // if (init_decl->initializer->assignmentExpression != nullptr)
-                // {
-                    // printf("assignment expression\n");
-                    // DataType rhs = traverse_operations(init_decl->initializer->assignmentExpression->expression);
-                    // if (type == Integer)
-                    // {
-                    //     if (rhs != Integer && rhs != Boolean)
-                    //     {
-                    //         std::cout << "Error: Cannot assign " << rhs << " to integer\n";
-                    //     }
-                    // }
-                    // else if (type == Float)
-                    // {
-                    //     if (rhs != Float && rhs != Integer && rhs != Boolean)
-                    //     {
-                    //         std::cout << "Error: Cannot assign " << rhs << " to float\n";
-                    //     }
-                    // }
-                    // else if (type == Boolean)
-                    // {
-                    //     if (rhs != Boolean && rhs != Integer)
-                    //     {
-                    //         std::cout << "Error: Cannot assign " << rhs << " to boolean\n";
-                    //     }
-                    // }
-                    // else if (type == String && rhs != String)
-                    // {
-                    //     std::cout << "Error: Cannot assign " << rhs << " to string\n";
-                    // }
-                    // else if (type == Char && rhs != Char)
-                    // {
-                    //     std::cout << "Error: Cannot assign " << rhs << " to char\n";
-                    // }
-                    // else if (type == Dataset && rhs != Dataset)
-                    // {
-                    //     std::cout << "Error: Cannot assign " << rhs << " to dataset\n";
-                    // }
-                    // else if (type == Array && rhs != Array)
-                    // {
-                    //     std::cout << "Error: Cannot assign " << rhs << " to array\n";
-                    // }
-                // }
+                if (init_decl->initializer != nullptr && init_decl->initializer->assignmentExpression!=nullptr && init_decl->initializer->assignmentExpression->expression!=nullptr){
+                    Expression* expr = init_decl->initializer->assignmentExpression->expression;
+                    DataType rhs = traverse_operations(expr,scope);
+                    if (type == Integer)
+                    {
+                        if (rhs != Integer && rhs != Boolean)
+                        {
+                            std::cout << "Error: Cannot assign " << dataTypeToString(rhs) << " to integer\n";
+                        }
+                    }
+                    else if (type == Float)
+                    {
+                        if (rhs != Float && rhs != Integer && rhs != Boolean)
+                        {
+                            std::cout << "Error: Cannot assign " << dataTypeToString(rhs) << " to float\n";
+                        }
+                    }
+                    else if (type == Boolean)
+                    {
+                        if (rhs != Boolean && rhs != Integer)
+                        {
+                            std::cout << "Error: Cannot assign " << dataTypeToString(rhs) << " to boolean\n";
+                        }
+                    }
+                    else if (type == String && rhs != String)
+                    {
+                        std::cout << "Error: Cannot assign " << dataTypeToString(rhs) << " to string\n";
+                    }
+                    else if (type == Char && rhs != Char)
+                    {
+                        std::cout << "Error: Cannot assign " << dataTypeToString(rhs) << " to char\n";
+                    }
+                    else if (type == Dataset && rhs != Dataset)
+                    {
+                        std::cout << "Error: Cannot assign " << dataTypeToString(rhs) << " to dataset\n";
+                    }
+                    else if (type == Array && rhs != Array)
+                    {
+                        std::cout << "Error: Cannot assign " << dataTypeToString(rhs) << " to array\n";
+                    }
+                }
                 // type checking in case of array
 
+                } else cout<<"initilizer is null"<<endl;
             }
         }
-    }
     // cout << "exiting declaration" << endl;
 }
 
@@ -334,21 +333,21 @@ void traverse_loop_statement(LoopStatement *loop_stmt)
             // check if the from and to expressions are of type integer
             if (std::get<0>(pair) != nullptr)
             {
-                if (traverse_operations(std::get<0>(pair)) != 0)
+                if (traverse_operations(std::get<0>(pair),scope) != 0)
                 {
                     std::cout << "Error: From expression in loop statement is not of type integer\n";
                 }
             }
             if (std::get<1>(pair) != nullptr)
             {
-                if (traverse_operations(std::get<1>(pair)) != 0)
+                if (traverse_operations(std::get<1>(pair),scope) != 0)
                 {
                     std::cout << "Error: To expression in loop statement is not of type integer\n";
                 }
             }
             if (std::get<2>(pair) != nullptr)
             {
-                if (traverse_operations(std::get<2>(pair)) != 0)
+                if (traverse_operations(std::get<2>(pair),scope) != 0)
                 {
                     std::cout << "Error: Step expression in loop statement is not of type integer\n";
                 }
@@ -442,14 +441,17 @@ void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
 
 }
 
-DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpression)
+DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpression,string scope)
 {
+    if(singleChainExpression==nullptr){
+        cout << "Error: SingleChainExpression is null\n";
+        return Unknown;
+    }
     char *identifier = singleChainExpression->identifier;
-    std::string scope = singleChainExpression->get_scope();
     std::string identifier_str = std::string(identifier);
     SymbolTableEntry *entry = symtab.search(identifier_str, scope);
     if (entry == nullptr){
-        cout << "Error: Identifier " << identifier << " not declared\n";
+        cout << "Error: Identifier " << identifier_str << " not declared\n";
         return Unknown;
     }
     DataType currentDataType = entry->dataType;
@@ -471,7 +473,7 @@ DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpr
         } else {
             DataType functionInputParameter = functionEntry->inputParameters->at(0);
             if (functionInputParameter != currentDataType){
-                cout << "Error: Function " << functionName << " input parameter is not of the same type as the identifier\n"<<functionName<<" expects "<<dataTypeToString(functionInputParameter)<<" but input is of type "<<dataTypeToString(currentDataType)<<"\n";
+                cout << "Error: Function " << functionName << " input parameter is not of the same type as the identifier\n"<<functionName<<" expects "<<dataTypeToString(functionInputParameter)<<" but input is of type "<<dataTypeToString(currentDataType)<<"!\n";
             } 
             currentDataType = returnParameters->at(0);
         }
@@ -497,7 +499,7 @@ vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, v
             } else {
                 for(int i=0;i<inputParameters->size();i++){
                     if(inputParameters->at(i)!=currentDataType.at(i)){
-                        cout << "Error: Function " << functionName << " input parameter is not of the same type as the "<<functionName<<" expects "<<dataTypeToString(inputParameters->at(i))<<" but input is of type "<<dataTypeToString(currentDataType.at(i))<<"\n";
+                        cout << "Error: Function " << functionName << " input parameter is not of the same type as the "<<functionName<<" expects "<<dataTypeToString(inputParameters->at(i))<<" but input is of type "<<dataTypeToString(currentDataType.at(i))<<"!\n";
                     }
                 }
             }
@@ -508,7 +510,7 @@ vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, v
 }
 
 //intbuilt functions must be initialized by default in symbol table
-vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChainExpression)
+vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChainExpression,string scope)
 {
     if(multiChainExpression->functionCall!=nullptr || multiChainExpression->inbuiltFunc!=InbuiltFunctions::none){
         std::string functionCallName;
@@ -517,7 +519,6 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
         } else {
             functionCallName = string(mapInbuiltFunctionToString(multiChainExpression->inbuiltFunc));
         }
-        std::string scope = string(scope);
         SymbolTableEntry *entry = symtab.search(functionCallName,scope);
         if(entry==nullptr){
             cout << "Error: Function " << functionCallName << " not declared\n";
@@ -529,24 +530,21 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
         vector<Expression*> *inputList = multiChainExpression->functionCallStart.second;
         vector<DataType> inputTypes;
         for(auto &expr : *inputList){
-            DataType exprType = traverse_operations(expr);
+            DataType exprType = traverse_operations(expr,scope);
             inputTypes.push_back(exprType);
         }
-        return traverse_function_call_list_multi(*(multiChainExpression->functionCallList),inputTypes,multiChainExpression->get_scope());
+        return traverse_function_call_list_multi(*(multiChainExpression->functionCallList),inputTypes,scope);
     }
 }
 
-DataType traverse_operations(Expression *root){
-    // cout << "entering traverse_operations" << endl;
+DataType traverse_operations(Expression *root,string scope){
     if (root == nullptr)
         return DataType::Unknown;
     if (root->castType == 1)
     {
-        // cout << "UnaryExpression\n";
         UnaryExpression *unaryExpression = dynamic_cast<UnaryExpression *>(root);
         if(unaryExpression->constantValue==nullptr){
             std::string identifier = std::string(unaryExpression->identifier);
-            std::string scope = unaryExpression->get_scope();
             SymbolTableEntry *entry = symtab.search(identifier, scope);
             if (entry == nullptr){
                 cout << "Error: Identifier " << identifier << " not declared\n";
@@ -648,8 +646,8 @@ DataType traverse_operations(Expression *root){
         }
     } else if (root->castType == 2){
         BinaryExpression *binaryExpression = dynamic_cast<BinaryExpression *>(root);
-        DataType lhs = traverse_operations(binaryExpression->lhs);
-        DataType rhs = traverse_operations(binaryExpression->rhs);
+        DataType lhs = traverse_operations(binaryExpression->lhs,scope);
+        DataType rhs = traverse_operations(binaryExpression->rhs,scope);
         if (binaryExpression->op == add_op){
             if (lhs == Integer && rhs == Integer){
                 return Integer;
@@ -678,7 +676,7 @@ DataType traverse_operations(Expression *root){
             } else if (lhs == Array && rhs == Array){
                 return Array;
             } else {
-                cout << "Error: Cannot perform \"+\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
+                cout << "Error: Cannot perform \"+\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 return Unknown;
             }
         }
@@ -689,7 +687,7 @@ DataType traverse_operations(Expression *root){
             } else if (lhs == Float && rhs == Float){
                 return Float;
             } else {
-                cout << "Error: Cannot perform \"-\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
+                cout << "Error: Cannot perform \"-\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 return Unknown;
             }
         } else if (binaryExpression->op == mul_op){
@@ -698,7 +696,7 @@ DataType traverse_operations(Expression *root){
             } else if (lhs == Float && rhs == Float){
                 return Float;
             } else{
-                cout << "Error: Cannot perform \"*\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
+                cout << "Error: Cannot perform \"*\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 return Unknown;
             }
         } else if (binaryExpression->op == div_op){
@@ -707,14 +705,14 @@ DataType traverse_operations(Expression *root){
             } else if (lhs == Float && rhs == Float){
                 return Float;
             } else{
-                cout << "Error: Cannot perform \"/\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
+                cout << "Error: Cannot perform \"/\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 return Unknown;
             }
         } else if (binaryExpression->op == mod_op){
             if (lhs == Integer && rhs == Integer){
                 return Integer;
             } else {
-                cout << "Error: Cannot perform \"%\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
+                cout << "Error: Cannot perform \"%\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 return Unknown;
             }
         } else if (binaryExpression->op == and_op){
@@ -723,7 +721,7 @@ DataType traverse_operations(Expression *root){
             } else if (lhs == Integer && rhs == Integer){
                 return Integer;
             } else {
-                cout << "Error: Cannot perform \"&&\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
+                cout << "Error: Cannot perform \"&&\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 return Unknown;
             }
         } else if (binaryExpression->op == or_op){
@@ -732,7 +730,7 @@ DataType traverse_operations(Expression *root){
             } else if (lhs == Integer && rhs == Integer){
                 return Integer;
             } else{
-                cout << "Error: Cannot perform \"||\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
+                cout << "Error: Cannot perform \"||\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 return Unknown;
             }
         } else if (binaryExpression->op == eq_op){
@@ -751,7 +749,7 @@ DataType traverse_operations(Expression *root){
             } else if (lhs == Array && rhs == Array){
                 return Boolean;
             } else{
-                cout << "Error: Cannot perform \"==\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
+                cout << "Error: Cannot perform \"==\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 return Unknown;
             }
         } else if (binaryExpression->op == neq_op){
@@ -770,16 +768,20 @@ DataType traverse_operations(Expression *root){
             } else if (lhs == Array && rhs == Array){
                 return Boolean;
             } else{
-                cout << "Error: Cannot perform \"!=\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "\n";
+                cout << "Error: Cannot perform \"!=\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 return Unknown;
             }
         }
     } else if (root->castType == 3){
-        return traverse_single_chain_expression(dynamic_cast<SingleChainExpression *>(root));
+        UnaryExpression *unaryExpression = dynamic_cast<UnaryExpression *>(root);
+        Expression *expr = unaryExpression->expr;
+        return traverse_single_chain_expression(dynamic_cast<SingleChainExpression *>(expr),scope);
     }
     else if (root->castType == 4)
     {
-        vector<DataType> v = traverse_multi_chain_expression(dynamic_cast<MultiChainExpression *>(root));
+        UnaryExpression *unaryExpression = dynamic_cast<UnaryExpression *>(root);
+        Expression *expr = unaryExpression->expr;
+        vector<DataType> v = traverse_multi_chain_expression(dynamic_cast<MultiChainExpression *>(expr),scope);
         return Dataset;
     }
     return DataType::Unknown;
@@ -797,11 +799,12 @@ void traverse_assignment(AssignmentStatement *assignmentStatement)
         cout << "Error: Expression is missing in assignment statement\n";
         return;
     }
-    DataType lhs = traverse_single_chain_expression(assignmentStatement->declarator);
-    DataType rhs = traverse_operations(assignmentStatement->expression);
+    string scope = assignmentStatement->get_scope();    
+    DataType lhs = traverse_single_chain_expression(assignmentStatement->declarator,scope);
+    DataType rhs = traverse_operations(assignmentStatement->expression,scope);
     if (lhs != rhs)
     {
-        cout << "Error: Assignment is invalid\n";
+        cout << "Error: Cannot assign " << dataTypeToString(rhs) << " to " << dataTypeToString(lhs) << "!\n";
     }
 }
 
@@ -815,7 +818,8 @@ void traverse_if_statement(ConditionalStatement *cond_stmt)
             // check if the expression is of type boolean
             if (expr != nullptr)
             {
-                DataType temp = traverse_operations(expr);
+                string scope = string(cond_stmt->get_scope());
+                DataType temp = traverse_operations(expr,scope);
                 if (temp != Boolean || temp != Integer)
                 {
                     std::cout << "Error: Expression in conditional statement is not of type boolean\n";

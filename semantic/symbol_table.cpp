@@ -33,8 +33,7 @@ SymbolTableEntry* SymbolTable::search(std::string& name, std::string& scope) {
 }
 
 void SymbolTable::print() {
-    std::cout << "Symbol Table: ";
-    std::cout << SymbolTable::symtab.size() << "\n";
+    std::cout << "\n<-------------------Symbol Table:"<<SymbolTable::symtab.size()<<" ------------------->\n";
     printf("Name\tScope\tDatatype\tVartype\tRow\tCol\n");
     for (const auto &x : SymbolTable::symtab)
     {
@@ -64,5 +63,6 @@ void SymbolTable::print() {
         std::cout << std::setw(10) << x.second.colNum;
         std::cout << "\n";
     }
+    std::cout<<"<----------------------------------------------------->\n";
     std::cout << "\n";
 }

@@ -5,6 +5,7 @@ EXEC = parser.o
 
 $(EXEC): y.tab.c ast.cpp traversal.cpp symbol_table.cpp
 	g++ -o $(EXEC) y.tab.c ast.cpp traversal.cpp symbol_table.cpp
+	./parser.o input.txt
 
 y.tab.c y.tab.h: parser.y lex.yy.c
 	yacc -d parser.y

@@ -151,7 +151,7 @@
 
 start : program {
     $$ = $1; root = $$;
-    puts("success!!");
+    puts("<-----------Program is syntactically correct--------->");
 } 
 //parsing starts from here this triggers 'program'.
 
@@ -253,8 +253,8 @@ parameter_declaration
 primary_expression 
     : CONST_INTEGER           { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{0}),$1); }
     | CONST_FLOAT             { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{1}),$1); }
-    | CONST_CHAR              { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{2}),$1); }
-    | STRING_LITERAL          { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{3}),$1); }
+    | CONST_CHAR              { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{3}),$1); }
+    | STRING_LITERAL          { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{2}),$1); }
     | BOOL_TRUE               { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{4}),$1); }
     | BOOL_FALSE              { $$ = new ConstantValue(new TypeSpecifier(new vector<int>{5}),$1); }
     ;
