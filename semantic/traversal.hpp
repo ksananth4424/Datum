@@ -36,4 +36,4 @@ std::string get_line_number(int);
 
 void traverse(Start* start);
 
-void buildScope(Node*, std::string scope="g");
+void buildScope(Node*, std::string);

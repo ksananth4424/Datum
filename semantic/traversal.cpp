@@ -79,26 +79,29 @@ string mapInbuiltFunctionToString(InbuiltFunctions func){
     default: return "none";
     }
 }
+
 void traverse_statement(Statement *stmt)
 {
+    cout << "entering statement" << endl;
     if (stmt == nullptr) {
         return;
     }
-    // cout << stmt->statementType << endl;
+    cout << stmt->statementType << endl;
     switch (stmt->statementType)
     {
     case 1:
         // declaration
-        // cout << "declaration" << endl;
+        cout << "declaration" << endl;
         traverse_declaration(dynamic_cast<DeclarationStatement *>(stmt->declarationStatement));
         break;
     case 2:
         // assignment
-        // cout << "assignment" << endl;
+        cout << "assignment" << endl;
         traverse_assignment(dynamic_cast<AssignmentStatement *>(stmt->assignmentStatement));
         break;
     case 5:
         // return
+        cout << "Error: Return statement outside function\n";
         break;
     case 6:
         // break
@@ -109,18 +112,18 @@ void traverse_statement(Statement *stmt)
 
     case 3:
         // conditional
-        // cout << "conditional" << endl;
+        cout << "conditional" << endl;
         traverse_if_statement(stmt->conditionalStatement);
         break;
     case 4:
         // loop
-        // cout << "loop" << endl;
+        cout << "loop" << endl;
         traverse_loop_statement(stmt->loopStatement);
         break;
     default:
         // compound
         {
-            // cout << "compound" << endl;
+            cout << "compound" << endl;
             auto comp_stmt = stmt->compoundStatement;
             for (auto &in_stmt : *comp_stmt)
             {
@@ -133,7 +136,7 @@ void traverse_statement(Statement *stmt)
 
 void buildScope(Node *node, string scope)
 {
-    // cout << "entering buildscope" << endl;
+    cout << "entering buildscope" << endl;
     if (node == nullptr)
         return;
     int child_scope = 0;
@@ -229,14 +232,14 @@ void buildScope(Node *node, string scope)
             }
         }
     }
-    else
-    {
+    else {
         node->scope = scope;
     }
 }
 
 void traverse_declaration(DeclarationStatement *decl_stmt)
 {
+    cout << "entering declaration" << endl;
     if (decl_stmt == nullptr)
         return; 
     if (decl_stmt->initDeclarations != nullptr)
@@ -257,6 +260,7 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                     continue;
                 }else
                 {
+                    cout << "inserting into symbol table" << endl;
                     symtab.insert(name, type, scope, 0, 0);
                 }
                 //  type checking here. example: int a = 5.1 should give error here
@@ -306,16 +310,15 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                 } else cout<<"initilizer is null"<<endl;
             }
         }
-    // cout << "exiting declaration" << endl;
+    cout << "exiting declaration" << endl;
 }
 
 // function to do semantic checks on the loop statement
 void traverse_loop_statement(LoopStatement *loop_stmt)
 {
-    // cout << "entering loop" << endl;
+    cout << "entering loop" << endl;
     std::string name = loop_stmt->identifier;
     std::string scope = loop_stmt->scope;
-    // cout << scope << endl;
     SymbolTableEntry *entry = symtab.search(name, scope);
     if (entry != nullptr)
     {
@@ -363,86 +366,122 @@ void traverse_loop_statement(LoopStatement *loop_stmt)
             traverse_statement(dynamic_cast<Statement *>(stmt));
         }
     }
-    // cout << "exiting loop" << endl;
+    cout << "exiting loop" << endl;
 }
 
-void traverse_function_declaration(FunctionDeclaration *func_dec)
-{
+// need to check the return statement
+void traverse_function_declaration(FunctionDeclaration *func_dec) {
+    cout << "entering function declaration" << endl;
     if (func_dec == nullptr)
         return;
     
-    // add all the function declarations to the symbol table
-    // symbol table format: name, input parameters, other parameters, return parameters, scope, row number, column number
-
-    std::cout << func_dec->identifier << std::endl;
     // get the input parameters
-    std::vector<DataType> *inputParameters;
-    for (auto *param : *(func_dec->inpParameter))
-    {
+    std::vector<DataType> *inputParameters = new std::vector<DataType>();
+    for (auto *param : *(func_dec->inpParameter)) {
         // map the type (which is a number)to DataType enum
         DataType dataType = mapTypeToDataType(param->type->type->at(0));
         inputParameters->push_back(dataType);
+        string scope = param->get_scope();
+        if (param->identifier == nullptr) {
+            cout << "error: identifier name missing in function declaration input parameter" << endl;
+        } else {
+            string name = param->identifier->identifier;
+            symtab.insert(name, dataType, scope, 0, 0);
+        }
     }
     // get the other parameters
-    std::vector<DataType> *otherParameters;
-    for (auto *param : *(func_dec->otherParameter))
-    {
+    std::vector<DataType> *otherParameters = new std::vector<DataType>();
+    for (auto *param : *(func_dec->otherParameter)) {
         // map the type (which is a number)to DataType enum
         DataType dataType = mapTypeToDataType(param->type->type->at(0));
         otherParameters->push_back(dataType);
+        string scope = param->get_scope();
+        if (param->identifier == nullptr) {
+            cout << "error: identifier name missing in function declaration other parameter" << endl;
+        } else {
+            string name = param->identifier->identifier;
+            symtab.insert(name, dataType, scope, 0, 0);
+        }
     }
     // get the return parameters
-    std::vector<DataType> *returnParameters;
-    for (auto *param : *(func_dec->outParameter))
-    {
+    std::vector<DataType> *returnParameters = new std::vector<DataType>();
+    for (auto *param : *(func_dec->outParameter)) {
         // map the type (which is a number)to DataType enum
         DataType dataType = mapTypeToDataType(param->type->type->at(0));
         returnParameters->push_back(dataType);
+        if (param->identifier != nullptr) {
+            cout << "error: unecessary identifier missing in function declaration return parameter" << endl;
+        }
     }
-    if (func_dec->identifier != nullptr)
-    {
+    if (func_dec->identifier != nullptr) {
         std::string name = func_dec->identifier;
         std::string scope = func_dec->get_scope();
         symtab.insert(name, inputParameters, otherParameters, returnParameters, scope, 0, 0);
-    }        
-   
-    for (auto &param : *(func_dec->inpParameter))
-    {
-        if (param->identifier == nullptr)
-        {
-            cout << "error: identifier name missing in function declaration input parameter" << endl;
-        }
+    } else {
+        cout << "error: identifier name missing in function declaration" << endl;
     }
-    for (auto &param : *(func_dec->otherParameter))
-    {
-        if (param->identifier == nullptr)
-        {
-            cout << "error: identifier name missing in function declaration input parameter" << endl;
+    
+    for (auto *stmt : *(func_dec->statements)) {
+        if (stmt->returnStatement != nullptr) {
+            // check if the return statement is valid
+            auto returnExpression = stmt->returnStatement->expression;
+            auto returnDataType = traverse_operations(returnExpression, stmt->get_scope());
+            // TODO: match returnDataType with returnParameters
+            // traverse_return_statement(stmt->returnStatement);
+        } else {
+            // check if the statements in the function are valid
+            traverse_statement(dynamic_cast<Statement *>(stmt));
         }
-    }
-
-    std::cout << func_dec->identifier << std::endl;
-
-    for (auto *param : *(func_dec->outParameter))
-    {
-        if (param->identifier == nullptr)
-        {
-            cout << "error: unecessary identifier name in function declaration output parameter" << endl;
-        }
-    }
-
-    for (auto *stmt : *(func_dec->statements))
-    {
-        traverse_statement(dynamic_cast<Statement *>(stmt));
     }
 }
 
 void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
+    cout << "Entering function call" << endl;
+    vector<Argument *> *argumentList = functionCall->argumentList;
+    vector<DataType> *otherParameters = entry->otherParameters;
+    // vector<DataType> *outParameters = entry->returnParameters;
 
+    if (argumentList->size() != otherParameters->size()) {
+        cout << "Error: Function " << entry->name << " expects " << otherParameters->size() << " arguments but " << argumentList->size() << " provided\n";
+    } else {
+        for (int i = 0; i < argumentList->size(); i++) {
+            Argument *argument = argumentList->at(i);
+            if (argument->expression != nullptr) {
+                Expression *expr = argument->expression;
+                DataType exprType = traverse_operations(expr, entry->scope);
+                if (exprType == Boolean) {
+                    cout << "Expression is boolean\n";
+                }
+                if (exprType != otherParameters->at(i)) {
+                    cout << "Error: Function " << entry->name << " expects " << dataTypeToString(otherParameters->at(i)) << " but " << dataTypeToString(exprType) << " provided\n";
+                }
+            } else if (argument->fromToAlsoExpression != nullptr) {
+                for (auto &tuple : *(argument->fromToAlsoExpression)) {
+                    Expression *from = std::get<0>(tuple);
+                    Expression *to = std::get<1>(tuple);
+                    Expression *also = std::get<2>(tuple);
+                    DataType fromType = traverse_operations(from, entry->scope);
+                    DataType toType = traverse_operations(to, entry->scope);
+                    DataType alsoType = traverse_operations(also, entry->scope);
+                    if (fromType != Integer || toType != Integer || alsoType != Integer) {
+                        cout << "Error: Function " << entry->name << " expects integer arguments\n";
+                    }
+                }
+            } else if (argument->statements != nullptr) {
+                for (auto &stmt : *(argument->statements)) {
+                    traverse_statement(dynamic_cast<Statement *>(stmt));
+                }
+            } else {
+                cout << "Error: Argument is null\n";
+            }
+        }
+    }
+    
 }
 
 DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpression,string scope)
 {
+    cout << "Entering single chain expression" << endl;
     if(singleChainExpression==nullptr){
         cout << "Error: SingleChainExpression is null\n";
         return Unknown;
@@ -450,6 +489,7 @@ DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpr
     char *identifier = singleChainExpression->identifier;
     std::string identifier_str = std::string(identifier);
     SymbolTableEntry *entry = symtab.search(identifier_str, scope);
+    cout << "Identifier: " << identifier_str << endl;
     if (entry == nullptr){
         cout << "Error: Identifier " << identifier_str << " not declared\n";
         return Unknown;
@@ -457,7 +497,15 @@ DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpr
     DataType currentDataType = entry->dataType;
     for(auto &funcPair : *(singleChainExpression->functionCallList)){
         FunctionCall *functionCall = funcPair.first;
-        std::string functionName = std::string(functionCall->identifier);
+        cout << "Function call: " << endl;
+    
+        std::string functionName;
+        if (functionCall->identifier != nullptr){
+            functionName = std::string(functionCall->identifier);
+        } else {
+            functionName = mapInbuiltFunctionToString(functionCall->inbuiltFunc);
+        }
+
         SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
         if(functionEntry==nullptr){
             cout << "Error: Function " << functionName << " not declared\n";
@@ -478,11 +526,13 @@ DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpr
             currentDataType = returnParameters->at(0);
         }
     }
+    cout << "Exiting single chain expression\n";
     return currentDataType;
 }
 
 vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, vector<Expression *>*>> functionCallList,vector<DataType> currentDataType,string scope)
 {
+    cout << "Entering function call list multi" << endl;
     for(auto &funcPair : (functionCallList)){
             FunctionCall *functionCall = funcPair.first;
             std::string functionName = std::string(functionCall->identifier);
@@ -506,16 +556,23 @@ vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, v
             currentDataType.clear();
             currentDataType = *returnParameters;
     }
+    cout << "Exiting function call list multi\n";
     return currentDataType;
 }
 
 //intbuilt functions must be initialized by default in symbol table
+// CHECK: init of functionCallName
 vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChainExpression,string scope)
 {
+    cout << "Entering multi chain expression" << endl;
     if(multiChainExpression->functionCall!=nullptr || multiChainExpression->inbuiltFunc!=InbuiltFunctions::none){
         std::string functionCallName;
         if(multiChainExpression->functionCall!=nullptr){
-            functionCallName = string(multiChainExpression->functionCall->identifier) ;
+            if (multiChainExpression->functionCall->identifier != nullptr) {
+                functionCallName = string(multiChainExpression->functionCall->identifier);
+            } else {
+                functionCallName = string(mapInbuiltFunctionToString(multiChainExpression->inbuiltFunc));
+            }
         } else {
             functionCallName = string(mapInbuiltFunctionToString(multiChainExpression->inbuiltFunc));
         }
@@ -538,6 +595,7 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
 }
 
 DataType traverse_operations(Expression *root,string scope){
+    cout << "Entering traverse operations" << endl;
     if (root == nullptr)
         return DataType::Unknown;
     if (root->castType == 1)
@@ -789,6 +847,7 @@ DataType traverse_operations(Expression *root,string scope){
 
 void traverse_assignment(AssignmentStatement *assignmentStatement)
 {
+    cout << "entering assignment" << endl;
     if (assignmentStatement->declarator == nullptr)
     {
         cout << "Error: Declarator is missing in assignment statement\n";
@@ -810,7 +869,7 @@ void traverse_assignment(AssignmentStatement *assignmentStatement)
 
 void traverse_if_statement(ConditionalStatement *cond_stmt)
 {
-    // cout << "entering if" << endl;
+    cout << "entering if" << endl;
     if (cond_stmt->ConditionStatements != nullptr)
     {
         for (auto &[expr, stmt_list] : *(cond_stmt->ConditionStatements))
@@ -840,7 +899,7 @@ void traverse(Start *start)
 {
     if (start == nullptr)
         return;
-    buildScope(start, "g");
+    buildScope(start, ".g");
     for (auto &func_dec : *(start->FunctionList))
     {
         traverse_function_declaration(dynamic_cast<FunctionDeclaration *>(func_dec));
