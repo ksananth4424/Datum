@@ -20,9 +20,9 @@ void traverse_declaration(DeclarationStatement* root);
 
 void traverse_function_declaration(FunctionDeclaration* root);
 
-void traverse_if_statement(ConditionalStatement* root);
+void traverse_if_statement(ConditionalStatement* root,bool isFunction=false,bool isLoop=false);
 
-void traverse_loop_statement(LoopStatement* root);
+void traverse_loop_statement(LoopStatement* root,bool isFunction=false);
 
 void traverse_return_statement(Start* root);
 
@@ -38,4 +38,4 @@ std::string get_line_number(int);
 
 void traverse(Start* start);
 
-void buildScope(Node*, std::string scope="g");
+void buildScope(Node*, std::string);
