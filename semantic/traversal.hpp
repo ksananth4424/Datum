@@ -10,6 +10,8 @@
 #include <string>
 #include <algorithm>
 
+extern int error_count;
+
 extern SymbolTable symtab;
 
 extern char filename[100];

@@ -472,4 +472,13 @@ int main(int argc, char* argv[]) {
     /* traverse_declaration(root); */
     /* traverse_loop_statement(root); */
     symtab.print();
+
+    if(error_count == 0) {
+        puts("<-----------Program is semantically correct--------->\n");
+    }
+    else if (error_count == 1) {
+        printf("Total %d error found\n", error_count);
+    }else{
+        printf("Total %d errors found\n", error_count);
+    }
 }

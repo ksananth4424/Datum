@@ -3,7 +3,7 @@ EXEC = parser.o
 .SILENT: test run
 .PHONY: clean build test run
 
-$(EXEC): y.tab.c ast.cpp traversal.cpp symbol_table.cpp
+$(EXEC): y.tab.c ast.cpp traversal.cpp symbol_table.cpp input.txt
 	g++ -o $(EXEC) y.tab.c ast.cpp traversal.cpp symbol_table.cpp
 	./parser.o input.txt
 
