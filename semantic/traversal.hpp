@@ -20,7 +20,7 @@ void traverse_function_declaration(FunctionDeclaration* root);
 
 void traverse_if_statement(ConditionalStatement* root);
 
-void traverse_loop_statement(LoopStatement* root);
+void traverse_loop_statement(LoopStatement* root,bool isFunction=false);
 
 void traverse_return_statement(Start* root);
 

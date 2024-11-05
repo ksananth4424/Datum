@@ -79,7 +79,7 @@ string mapInbuiltFunctionToString(InbuiltFunctions func){
     default: return "none";
     }
 }
-void traverse_statement(Statement *stmt)
+void traverse_statement(Statement *stmt,bool isFunction=false)
 {
     if (stmt == nullptr) {
         return;
@@ -115,7 +115,7 @@ void traverse_statement(Statement *stmt)
     case 4:
         // loop
         // cout << "loop" << endl;
-        traverse_loop_statement(stmt->loopStatement);
+        traverse_loop_statement(stmt->loopStatement,isFunction);
         break;
     default:
         // compound
@@ -286,7 +286,7 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                     }
                     else if (type == String && rhs != String)
                     {
-                        std::cout << "Error: Cannot assign " << dataTypeToString(rhs) << " to string\n";
+                        std::cout << "Error: Cannot assign " << dataTypeToString(rhs) << " to string!\n";
                     }
                     else if (type == Char && rhs != Char)
                     {
@@ -310,7 +310,7 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
 }
 
 // function to do semantic checks on the loop statement
-void traverse_loop_statement(LoopStatement *loop_stmt)
+void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
 {
     // cout << "entering loop" << endl;
     std::string name = loop_stmt->identifier;
@@ -360,6 +360,10 @@ void traverse_loop_statement(LoopStatement *loop_stmt)
     {
         for (auto &stmt : *(loop_stmt->statements))
         {
+            Statement *statement = dynamic_cast<Statement *>(stmt);
+            if(!isFunction && statement->statementType==5){
+                cout<<"Error: Return statement is not allowed outside of function!\n";
+            }
             traverse_statement(dynamic_cast<Statement *>(stmt));
         }
     }
@@ -433,7 +437,14 @@ void traverse_function_declaration(FunctionDeclaration *func_dec)
 
     for (auto *stmt : *(func_dec->statements))
     {
-        traverse_statement(dynamic_cast<Statement *>(stmt));
+        Statement *statement = dynamic_cast<Statement *>(stmt);
+        if(statement->statementType==6){
+            cout<<"Error: Break statement is not allowed outside of loop!\n";
+        } else if(statement->statementType==7){
+            cout<<"Error: Continue statement is not allowed outside of loop!\n";
+        } else {
+            traverse_statement(statement);
+        }
     }
 }
 
@@ -560,18 +571,18 @@ DataType traverse_operations(Expression *root,string scope){
             } else if (datatype == String){
                 for (auto &o : *(unaryExpression->op)){
                     if (o == minus_op){
-                        cout << "Error: Cannot \"-\" perform operation on string\n";
+                        cout << "Error: Cannot \"-\" perform operation on string!\n";
                     }else if (o == plus_op){
-                        cout << "Error: Cannot \"+\" perform operation on string\n";
+                        cout << "Error: Cannot \"+\" perform operation on string!\n";
                     }
                 }
                 return String;
             } else if (datatype == Char){
                 for (auto &o : *(unaryExpression->op)){
                     if (o == minus_op){
-                        cout << "Error: Cannot \"-\" perform operation on string\n";
+                        cout << "Error: Cannot \"-\" perform operation on string!\n";
                     } else if (o == plus_op){
-                        cout << "Error: Cannot \"+\" perform operation on string\n";
+                        cout << "Error: Cannot \"+\" perform operation on string!\n";
                     }
                 }
                 return Char;
@@ -579,9 +590,9 @@ DataType traverse_operations(Expression *root,string scope){
             {
                 for (auto &o : *(unaryExpression->op)){
                     if (o == minus_op){
-                        cout << "Error: Cannot \"-\" perform operation on string\n";
+                        cout << "Error: Cannot \"-\" perform operation on string!\n";
                     } else if (o == plus_op){
-                        cout << "Error: Cannot \"+\" perform operation on string\n";
+                        cout << "Error: Cannot \"+\" perform operation on string!\n";
                     }
                 }
                 return Boolean;
@@ -607,18 +618,18 @@ DataType traverse_operations(Expression *root,string scope){
         } else if (datatype == String) {
             for (auto &o : *(unaryExpression->op)){
                 if (o == minus_op){
-                    cout << "Error: Cannot \"-\" perform operation on string\n";
+                    cout << "Error: Cannot \"-\" perform operation on string!\n";
                 }else if (o == plus_op){
-                    cout << "Error: Cannot \"+\" perform operation on string\n";
+                    cout << "Error: Cannot \"+\" perform operation on string!\n";
                 }
             }
             return String;
         } else if (datatype == Char) {
             for (auto &o : *(unaryExpression->op)){
                 if (o == minus_op) {
-                    cout << "Error: Cannot \"-\" perform operation on string\n";
+                    cout << "Error: Cannot \"-\" perform operation on string!\n";
                 } else if (o == plus_op){
-                    cout << "Error: Cannot \"+\" perform operation on string\n";
+                    cout << "Error: Cannot \"+\" perform operation on string!\n";
                 }
             }
             return Char;
@@ -626,9 +637,9 @@ DataType traverse_operations(Expression *root,string scope){
             for (auto &o : *(unaryExpression->op))
             {
                 if (o == minus_op){
-                    cout << "Error: Cannot \"-\" perform operation on string\n";
+                    cout << "Error: Cannot \"-\" perform operation on string!\n";
                 } else if (o == plus_op){
-                    cout << "Error: Cannot \"+\" perform operation on string\n";
+                    cout << "Error: Cannot \"+\" perform operation on string!\n";
                 }
             }
             return Boolean;
@@ -791,12 +802,12 @@ void traverse_assignment(AssignmentStatement *assignmentStatement)
 {
     if (assignmentStatement->declarator == nullptr)
     {
-        cout << "Error: Declarator is missing in assignment statement\n";
+        cout << "Error: Declarator is missing in assignment statement!\n";
         return;
     }
     if (assignmentStatement->expression == nullptr)
     {
-        cout << "Error: Expression is missing in assignment statement\n";
+        cout << "Error: Expression is missing in assignment statement!\n";
         return;
     }
     string scope = assignmentStatement->get_scope();    
@@ -822,7 +833,7 @@ void traverse_if_statement(ConditionalStatement *cond_stmt)
                 DataType temp = traverse_operations(expr,scope);
                 if (temp != Boolean || temp != Integer)
                 {
-                    std::cout << "Error: Expression in conditional statement is not of type boolean\n";
+                    std::cout << "Error: Expression in conditional statement is not of type boolean!\n";
                 }
             }
             
@@ -847,7 +858,16 @@ void traverse(Start *start)
     }
     for (auto &stmt : *(start->StatementList))
     {
-        traverse_statement(dynamic_cast<Statement *>(stmt));
+        Statement* statement= dynamic_cast<Statement *>(stmt);
+        if(statement->statementType==6){
+            cout << "Error: Break statement not inside loop!\n";
+        } else if(statement->statementType==7){
+            cout << "Error: Continue statement not inside loop!\n";
+        } else if (statement->statementType==5){
+            cout << "Error: Return statement not inside function!\n";   
+        } else {
+            traverse_statement(statement);
+        }
     }
     // cout << "exiting traverse" << endl;
 }
