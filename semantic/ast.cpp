@@ -230,9 +230,9 @@ MultiChainExpression::MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<
     this->row = row;
     this->column = column;
 }
-MultiChainExpression::MultiChainExpression(pair<char*,vector<Expression*>*> functionCallStart, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column){
-    this->functionCallStart = functionCallStart;
+MultiChainExpression::MultiChainExpression(vector<Expression*> *inputExprList, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column){
     this->access = access;
+    this->inputExprList = inputExprList;    
     this->functionCallList = functionCallList;
     this->row = row;
     this->column = column;

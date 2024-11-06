@@ -193,8 +193,10 @@ inbuilt_function
 
 // grammer for make variable declarations, all declarations must end with ';' 
 declaration 
-    : type_specifier ';'                        {$$ = new DeclarationStatement($1, lineno, yycolumn);}
-    | type_specifier init_declarator_list ';'   {$$ = new DeclarationStatement($1, $2, lineno, yycolumn);}
+    : type_specifier ';'                                    {$$ = new DeclarationStatement($1, lineno, yycolumn);}
+    | type_specifier init_declarator_list ';'               {$$ = new DeclarationStatement($1, $2, lineno, yycolumn);}
+    | ARRAY '(' type_specifier ')' ';'                      {TypeSpecifier* type = new TypeSpecifier(new vector<int>{6}, lineno, yycolumn); type->type->push_back($3->type->at(0)); $$ = new DeclarationStatement(type,lineno, yycolumn);}
+    | ARRAY '(' type_specifier ')' init_declarator_list ';' {TypeSpecifier* type = new TypeSpecifier(new vector<int>{6}, lineno, yycolumn); type->type->push_back($3->type->at(0)); $$ = new DeclarationStatement(type, $5, lineno, yycolumn);}
     ;
 
 // all the types which can be used for the above "declarations"
@@ -205,7 +207,7 @@ type_specifier
     | CHAR                          {$$ = new TypeSpecifier(new vector<int>{3}, lineno, yycolumn);}
     | BOOL                          {$$ = new TypeSpecifier(new vector<int>{4}, lineno, yycolumn);}
     | DATASET                       {$$ = new TypeSpecifier(new vector<int>{5}, lineno, yycolumn);}
-    | ARRAY '(' type_specifier ')'  { $$ = $3; $$->type->insert($$->type->begin(),6); }
+    /* | ARRAY '(' type_specifier ')'  { $$ = $3; $$->type->insert($$->type->begin(),6); } */
     ;
 
 // for declaring multiple variables of same type in one declaration.
@@ -301,8 +303,8 @@ access_list
 
 // e.g {variable_name}.{function_name}(expression).{function_name}(expression)
 multi_chain_expression 
-	: '(' expression_list ')'                                                               { $$ = new MultiChainExpression(make_pair(nullptr,$2),nullptr,nullptr, lineno, yycolumn); }
-	| '(' expression_list ')' access_list                                                   { $$ = new MultiChainExpression(make_pair(nullptr,$2),$4,nullptr, lineno, yycolumn); }
+	: '(' expression_list ')'                                                               { $$ = new MultiChainExpression($2,nullptr,nullptr, lineno, yycolumn); }
+	| '(' expression_list ')' access_list                                                   { $$ = new MultiChainExpression($2,$4,nullptr, lineno, yycolumn); }
     | multi_chain_expression FLOW IDENTIFIER '(' ')'                                        { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,nullptr, lineno, yycolumn),nullptr)); }
     | multi_chain_expression FLOW IDENTIFIER '(' ')' access_list                            { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,nullptr, lineno, yycolumn),$6)); }
     | multi_chain_expression FLOW IDENTIFIER '(' argument_list ')'                          { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),nullptr)); }
@@ -470,10 +472,10 @@ int main(int argc, char* argv[]) {
     }
 	yyparse(); 
     /* buildScope(root); */
-    traverse(root);
+    /* traverse(root); */
     /* traverse_declaration(root); */
     /* traverse_loop_statement(root); */
-    symtab.print();
+    /* symtab.print();
 
     if(error_count == 0) {
         puts("<-----------Program is semantically correct--------->\n");
@@ -482,5 +484,5 @@ int main(int argc, char* argv[]) {
         printf("Total %d error found\n", error_count);
     }else{
         printf("Total %d errors found\n", error_count);
-    }
+    } */
 }

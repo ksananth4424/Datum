@@ -143,104 +143,106 @@ string mapInbuiltFunctionToString(InbuiltFunctions func){
 void insert_inbuiltfunction_symtab(FunctionCall* function, std::string func){
     std::string scope = "g";
     if(func == "show_bar"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "show_line"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "show_scatter"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "show_box"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "row"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        otherParameters->push_back(new std::vector<DataType>({Array_Integer}));
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "col"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        otherParameters->push_back(new std::vector<DataType>({Array_Integer}));
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "filter"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "sum"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "max"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "min"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "read"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "write"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "unique"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "show"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "split"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "sort"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "shuffle"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "add"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "shape"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "drop"){
-        std::vector<DataType> *inputParameters = new std::vector<DataType>();
-        std::vector<DataType> *otherParameters = new std::vector<DataType>();
-        std::vector<DataType> *returnParameters = new std::vector<DataType>();
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>();
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     }else{
         cout << "\e[31m Error: \e[0m Inbuilt function " << func << " not supported.\n";
@@ -272,7 +274,7 @@ void traverse_statement(Statement *stmt,bool isFunction=false,bool isLoop=false)
         // return
         if(!isFunction){
             cout<<"\e[31m Error: \e[0m Return statement is not allowed outside of function!\n";
-            printerror(stmt->returnStatement->row,stmt->returnStatement->column);
+            printerror(stmt->row,stmt->column);
             error_count++;
         }
         break;
@@ -280,7 +282,7 @@ void traverse_statement(Statement *stmt,bool isFunction=false,bool isLoop=false)
         // break
         if(!isLoop){
             cout<<"\e[31m Error: \e[0m Break statement is not allowed outside of loop!\n";
-            printerror(stmt->breakStatement->row,stmt->breakStatement->column);
+            printerror(stmt->row,stmt->column);
             error_count++;
         }
         break;
@@ -288,7 +290,7 @@ void traverse_statement(Statement *stmt,bool isFunction=false,bool isLoop=false)
         // continue
         if(!isLoop){
             cout<<"\e[31m Error: \e[0m Continue statement is not allowed outside of loop!\n";
-            printerror(stmt->continueStatement->row,stmt->continueStatement->column);
+            printerror(stmt->row,stmt->column);
             error_count++;
         }
         break;
@@ -601,11 +603,12 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
         }
     }
     // get the other parameters
-    std::vector<DataType> *otherParameters = new std::vector<DataType>();
+    std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>();
+    otherParameters->push_back(new std::vector<DataType>());
     for (auto *param : *(func_dec->otherParameter)) {
         // map the type (which is a number)to DataType enum
         DataType dataType = mapTypeToDataType(param->type->type->at(0));
-        otherParameters->push_back(dataType);
+        otherParameters->at(0)->push_back(dataType);
         string scope = param->get_scope();
         if (param->identifier == nullptr) {
             cout << "\e[31m Error: \e[0m identifier name missing in function declaration other parameter!" << endl;
@@ -652,10 +655,33 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
     }
 }
 
-void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
+vector<int> match_function_symb_entry(SymbolTableEntry* entry,vector<DataType>* inputP){
+    if(debug) {cout << "Entering match function symbol entry" << endl;}
+    vector<vector<DataType>*>* inputParameters = entry->inputParameters;
+    vector<int> matchedIndex = vector<int>();
+    for(int i=0;i<inputParameters->size();i++){
+        vector<DataType>* inputParameter = inputParameters->at(i);
+        if(inputParameter->size() == inputP->size()){
+            bool match = true;
+            for(int j=0;j<inputParameter->size();j++){
+                if(inputParameter->at(j) != inputP->at(j)){
+                    match = false;
+                    break;
+                }
+            }
+            if(match){
+                matchedIndex.push_back(i);
+            }
+        }
+    }
+    return matchedIndex;
+
+}
+//IT MUST RETURN TRUE IF THE FUNCTION CALL IS MATCHED CORRECTLY. Match the ith one
+bool traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry,int i){
     if(debug) {cout << "Entering function call" << endl;}
     vector<Argument *> *argumentList = functionCall->argumentList;
-    vector<DataType> *otherParameters = entry->otherParameters;
+    vector<DataType> *otherParameters = entry->otherParameters->at(0);
     // vector<DataType> *outParameters = entry->returnParameters;
 
     if (argumentList->size() != otherParameters->size()) {
@@ -702,6 +728,7 @@ void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
             }
         }
     }
+    return true;
     
 }
 
@@ -724,82 +751,140 @@ DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpr
         error_count++;
         return Unknown;
     }
-    DataType currentDataType = entry->dataType;
-    for(auto &funcPair : *(singleChainExpression->functionCallList)){
-        FunctionCall *functionCall = funcPair.first;
-        if(debug) {cout << "Function call: " << endl;}
+    vector<DataType> currentDataType = vector<DataType>({entry->dataType});
+    return traverse_function_call_list_multi(*singleChainExpression->functionCallList,currentDataType,scope)[0];
+    // for(auto &funcPair : *(singleChainExpression->functionCallList)){
+    //     FunctionCall *functionCall = funcPair.first;
+    //     if(debug) {cout << "Function call: " << endl;}
     
-        std::string functionName;
-        if (functionCall->identifier != nullptr){
-            functionName = std::string(functionCall->identifier);
-        } else {
-            functionName = mapInbuiltFunctionToString(functionCall->inbuiltFunc);
-            insert_inbuiltfunction_symtab(functionCall, functionName);
-        }
+    //     std::string functionName;
+    //     if (functionCall->identifier != nullptr){
+    //         functionName = std::string(functionCall->identifier);
+    //     } else {
+    //         functionName = mapInbuiltFunctionToString(functionCall->inbuiltFunc);
+    //         insert_inbuiltfunction_symtab(functionCall, functionName);
+    //     }
 
-        SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
-        if(functionEntry==nullptr){
-            cout << "\e[31m Error: \e[0m Function " << functionName << " not declared\n";
-            printerror(functionCall->row,functionCall->column);
-            error_count++;
-            return Unknown;
-        }
-        vector<DataType> *inputParameters = functionEntry->inputParameters;
-        vector<DataType> *returnParameters = functionEntry->returnParameters;
-        traverse_function_call(functionCall,functionEntry);
-        if (functionEntry->inputParameters->size()!=1){
-            cout << "\e[31m Error: \e[0m Function " << functionName << " expects more than one input parameter\n";
-            printerror(functionCall->row,functionCall->column);
-            error_count++;
-        } else if(returnParameters->size()!=1){
-            cout << "\e[31m Error: \e[0m Function " << functionName << " returns more than one return parameter\n";
-            printerror(functionCall->row,functionCall->column);
-            error_count++;
-        } else {
-            DataType functionInputParameter = functionEntry->inputParameters->at(0);
-            if (functionInputParameter != currentDataType){
-                cout << "\e[31m Error: \e[0m Function " << functionName << " input parameter is not of the same type as the identifier\n"<<functionName<<" expects "<<dataTypeToString(functionInputParameter)<<" but input is of type "<<dataTypeToString(currentDataType)<<"!\n";
-                printerror(functionCall->row,functionCall->column);
-                error_count++;
-            } 
-            currentDataType = returnParameters->at(0);
-        }
-    }
-    if(debug) {cout << "Exiting single chain expression\n";}
-    return currentDataType;
+    //     SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
+    //     if(functionEntry==nullptr){
+    //         cout << "\e[31m Error: \e[0m Function " << functionName << " not declared\n";
+    //         printerror(functionCall->row,functionCall->column);
+    //         error_count++;
+    //         return Unknown;
+    //     }
+    //     vector<int> funcIndex = match_function_symb_entry(functionEntry,&currentDataType);
+        // int funcIndex = match_function_symb_entry(functionEntry,&currentDataType);
+        // vector<DataType> *inputParameters = functionEntry->inputParameters;
+        // vector<DataType> *returnParameters = functionEntry->returnParameters;
+        // traverse_function_call(functionCall,functionEntry);
+        // if (functionEntry->inputParameters->size()!=1){
+        //     cout << "\e[31m Error: \e[0m Function " << functionName << " expects more than one input parameter\n";
+        //     printerror(functionCall->row,functionCall->column);
+        //     error_count++;
+        // } else if(returnParameters->size()!=1){
+        //     cout << "\e[31m Error: \e[0m Function " << functionName << " returns more than one return parameter\n";
+        //     printerror(functionCall->row,functionCall->column);
+        //     error_count++;
+        // } else {
+        //     DataType functionInputParameter = functionEntry->inputParameters->at(0);
+        //     if (functionInputParameter != currentDataType){
+        //         cout << "\e[31m Error: \e[0m Function " << functionName << " input parameter is not of the same type as the identifier\n"<<functionName<<" expects "<<dataTypeToString(functionInputParameter)<<" but input is of type "<<dataTypeToString(currentDataType)<<"!\n";
+        //         printerror(functionCall->row,functionCall->column);
+        //         error_count++;
+        //     } 
+        //     currentDataType = returnParameters->at(0);
+        // }
+    // }
+    if(debug) {cout << "Exiting single chain expression" << endl;}
+    return currentDataType.at(0);
 }
 
 vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, vector<Expression *>*>> functionCallList,vector<DataType> currentDataType,string scope)
 {
     if(debug) {cout << "Entering function call list multi" << endl;}
-    for(auto &funcPair : (functionCallList)){
-            FunctionCall *functionCall = funcPair.first;
-            std::string functionName = std::string(functionCall->identifier);
-            SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
-            if(functionEntry==nullptr){
-                cout << "\e[31m Error: \e[0m Function " << functionName << " not declared\n";
-                printerror(functionCall->row,functionCall->column);
-                error_count++;
-                return currentDataType;
+    for(int i=0;i<functionCallList.size();i++){
+        pair<FunctionCall *, vector<Expression *>*> funcPair = functionCallList.at(i);
+        FunctionCall *functionCall = funcPair.first;
+        std::string functionName = std::string(functionCall->identifier);
+        SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
+        if(functionEntry==nullptr){
+            cout << "\e[31m Error: \e[0m Function " << functionName << " not declared\n";
+            printerror(functionCall->row,functionCall->column);
+            error_count++;
+            return currentDataType;
+        }
+        vector<int> funcIndex = match_function_symb_entry(functionEntry,&currentDataType);
+        if(funcIndex.size()==0){
+            cout << "\e[31m Error: \e[0m Function " << functionName << " arguments have not matched\n";
+            printerror(functionCall->row,functionCall->column);
+            error_count++;
+            return currentDataType;
+        }
+        vector<int> matchedIndex = vector<int>();
+        //search for the function call in the list of functions
+        for(auto &i:funcIndex){
+            if(traverse_function_call(functionCall,functionEntry,i)){
+                matchedIndex.push_back(i);
+                break;
             }
-            vector<DataType> *inputParameters = functionEntry->inputParameters;
-            vector<DataType> *returnParameters = functionEntry->returnParameters;
-            if(inputParameters->size()!=currentDataType.size()){
-                cout << "\e[31m Error: \e[0m Function " << functionName << " expects more than the provided input parameter\n";
+        }
+        if(matchedIndex.size()==0){
+            cout << "\e[31m Error: \e[0m no matching call found for function " << functionName << "\n";
+            printerror(functionCall->row,functionCall->column);
+            error_count++;
+            return vector<DataType>({Unknown});
+        }
+        if(i<functionCallList.size()-1){
+            //match the return type of the function with the input type of the next function
+            int isMatched = 0;
+            string nextFunctionName = string(functionCallList.at(i+1).first->identifier);
+            SymbolTableEntry *nextFunctionEntry = symtab.search(nextFunctionName, scope);
+            if(nextFunctionEntry==nullptr){
+                cout << "\e[31m Error: \e[0m Function " << nextFunctionName << " not declared\n";
                 printerror(functionCall->row,functionCall->column);
                 error_count++;
-
-            } else {
-                for(int i=0;i<inputParameters->size();i++){
-                    if(inputParameters->at(i)!=currentDataType.at(i)){
-                        cout << "\e[31m Error: \e[0m Function " << functionName << " input parameter is not of the same type as the "<<functionName<<" expects "<<dataTypeToString(inputParameters->at(i))<<" but input is of type "<<dataTypeToString(currentDataType.at(i))<<"!\n";
-                        printerror(functionCall->row,functionCall->column);
-                        error_count++;
+                return vector<DataType>({Unknown});
+            }
+            for(auto &matchi:matchedIndex){
+                vector<DataType> *returnParameters = functionEntry->returnParameters->at(matchedIndex.at(matchi));
+                for (int j=0;i<nextFunctionEntry->inputParameters->size();j++){
+                    vector<DataType> *nextInputParameters = nextFunctionEntry->inputParameters->at(j);
+                    //check if the return type of the function matches the input type of the next function
+                    if(returnParameters->size()==nextInputParameters->size()){
+                        bool match = true;
+                        for(int k=0;k<returnParameters->size();k++){
+                            if(returnParameters->at(k)!=nextInputParameters->at(k)){
+                                match = false;
+                                break;
+                            }
+                        }
+                        if(match){
+                            isMatched = 1;
+                            break;
+                        }
                     }
                 }
+                if(isMatched==0){
+                    continue;
+                } else {
+                    currentDataType.clear();
+                    currentDataType = *returnParameters;
+                    break;
+                }
+                if(isMatched){
+                    break;
+                }
             }
-            currentDataType.clear();
-            currentDataType = *returnParameters;
+            if(isMatched==0){
+                cout<<"\e[31m Error: \e[0m Function calls to "<<functionName<<" and "<<nextFunctionName<<" do not match\n";
+                printerror(functionCall->row,functionCall->column);
+                error_count++;
+                return vector<DataType>({Unknown});
+            }
+            }
+            else {
+                return currentDataType;
+            }
     }
     if(debug) {cout << "Exiting function call list multi\n";}
     return currentDataType;
@@ -823,12 +908,25 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
             cout << "\e[31m Error: \e[0m Function " << functionCallName << " not declared\n";
             printerror(multiChainExpression->row,multiChainExpression->column);
             error_count++;
-            return vector<DataType>();
+            return vector<DataType>({Unknown});
         }
-        traverse_function_call(multiChainExpression->functionCall,entry);
-        return traverse_function_call_list_multi(*multiChainExpression->functionCallList,*entry->returnParameters,scope);
+        vector<int> funcIndex = match_function_symb_entry(entry,new vector<DataType>());
+        if(funcIndex.size()==0){
+            cout << "\e[31m Error: \e[0m Function " << functionCallName << " expects more than the provided input parameter\n";
+            printerror(multiChainExpression->row,multiChainExpression->column);
+            error_count++;
+            return vector<DataType>({Unknown});
+        }
+        //create a funtionCall object
+        //convert the function name to char* type
+        char* funcName = new char[functionCallName.length()+1];
+        strcpy(funcName,functionCallName.c_str());
+        pair<FunctionCall *, vector<Expression *>*> funcPair = make_pair(multiChainExpression->functionCall,multiChainExpression->access);
+        multiChainExpression->functionCallList->insert(multiChainExpression->functionCallList->begin(),funcPair);
+
+        return traverse_function_call_list_multi(*multiChainExpression->functionCallList,vector<DataType>(),scope);
     } else {
-        vector<Expression*> *inputList = multiChainExpression->functionCallStart.second;
+        vector<Expression*> *inputList = multiChainExpression->inputExprList;
         vector<DataType> inputTypes;
         for(auto &expr : *inputList){
             DataType exprType = traverse_operations(expr,scope);

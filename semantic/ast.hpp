@@ -397,14 +397,15 @@ class MultiChainExpression : public Expression
 {
 public:
     FunctionCall* functionCall;
-    pair<char*,vector<Expression*>*> functionCallStart;
     InbuiltFunctions inbuiltFunc;
     vector<Expression*> *access;
+    vector<Expression*> *inputExprList;
+
 
     vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList;
     MultiChainExpression(FunctionCall* functionCall, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);
     MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);;
-    MultiChainExpression(pair<char*,vector<Expression*>*> functionCallStart, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);
+    MultiChainExpression(vector<Expression*> *inputExprList, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);
     virtual ~MultiChainExpression() = default;
 };
 

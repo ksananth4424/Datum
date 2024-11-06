@@ -11,7 +11,7 @@ bool SymbolTable::insert(std::string& name, DataType dataType, std::string scope
     return true;
 }
 
-bool SymbolTable::insert(std::string& name, std::vector<DataType>* inputParameters, std::vector<DataType>* otherParameters, std::vector<DataType>* returnParameters, std::string scope, int colNum, int rowNum) {
+bool SymbolTable::insert(std::string& name, std::vector<std::vector<DataType>*> * inputParameters, std::vector<std::vector<DataType>*> * otherParameters, std::vector<std::vector<DataType>*> * returnParameters, std::string scope, int colNum, int rowNum) {
     SymbolTableEntry symEntry(name, inputParameters, otherParameters, returnParameters, scope, rowNum, colNum);
 
     if (SymbolTable::search(name, scope) != nullptr) {
@@ -55,7 +55,7 @@ void SymbolTable::print() {
         std::cout << std::setw(15) << x.second.dataType;
         // loop through the input parameters and print them
         if (x.second.inputParameters != nullptr) {
-            for (auto &param : *(x.second.inputParameters)) {
+            for (auto &param : *(x.second.inputParameters->at(0))) {
                 std::cout << std::setw(15) << param;
             }
         } else {
@@ -63,7 +63,7 @@ void SymbolTable::print() {
         }
         // loop through the other parameters and print them
         if (x.second.otherParameters != nullptr) {
-            for (auto &param : *(x.second.otherParameters)) {
+            for (auto &param : *(x.second.otherParameters->at(0))) {
                 std::cout << std::setw(15) << param;
             }
         } else {
@@ -71,7 +71,7 @@ void SymbolTable::print() {
         }
         // loop through the return parameters and print them
         if (x.second.returnParameters != nullptr) {
-            for (auto &param : *(x.second.returnParameters)) {
+            for (auto &param : *(x.second.returnParameters->at(0))) {
                 std::cout << std::setw(15) << param;
             }
         } else {

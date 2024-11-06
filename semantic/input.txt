@@ -6,9 +6,11 @@ loop i from 1 to 10 {
         integer f;
     }
     integer x=1;
-    bool z;
+    bool x;
     loop y from 2 to 20 {
         integer f;
     }
+    return;
 }
+break;
 string b = "hi";

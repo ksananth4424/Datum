@@ -16,6 +16,11 @@ enum DataType {
     Boolean,
     Dataset,
     Array,
+    Array_Integer,
+    Array_Float,
+    Array_String,
+    Array_Char,
+    Array_Boolean,
     Function,
     Unknown
 };
@@ -25,9 +30,9 @@ public:
     std::string name;
     DataType dataType;
     std::string scope;
-    std::vector<DataType> *returnParameters;
-    std::vector<DataType> *inputParameters;
-    std::vector<DataType> *otherParameters;
+    std::vector<std::vector<DataType>*> *returnParameters;
+    std::vector<std::vector<DataType>*> *inputParameters;
+    std::vector<std::vector<DataType>*> *otherParameters;
 
     int rowNum;
 	int colNum;
@@ -45,7 +50,7 @@ public:
         this->colNum = colNum;
     }
 
-    SymbolTableEntry(std::string& name, std::vector<DataType> *inputParameters, std::vector<DataType> *otherParameters, std::vector<DataType> *returnParameters, std::string& scope, int rowNum, int colNum) {
+    SymbolTableEntry(std::string& name, std::vector<std::vector<DataType>*> *inputParameters, std::vector<std::vector<DataType>*> *otherParameters, std::vector<std::vector<DataType>*> *returnParameters, std::string& scope, int rowNum, int colNum) {
         this->name = name;
         this->dataType = DataType::Function;
         this->inputParameters = inputParameters;
@@ -72,7 +77,7 @@ private:
 public:
     SymbolTable() {}
     bool insert(std::string&, DataType, std::string, int, int);
-    bool insert(std::string&, std::vector<DataType>*, std::vector<DataType>*, std::vector<DataType>*, std::string, int, int);
+    bool insert(std::string&, std::vector<std::vector<DataType>*>*,std::vector<std::vector<DataType>*>*,std::vector<std::vector<DataType>*>*, std::string, int, int);
     SymbolTableEntry* search(std::string&, std::string);
     void print();
 };
