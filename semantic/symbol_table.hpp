@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SYMBOL_TABLE_HPP
+#define SYMBOL_TABLE_HPP
+
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -74,3 +76,5 @@ public:
     SymbolTableEntry* search(std::string&, std::string);
     void print();
 };
+
+#endif

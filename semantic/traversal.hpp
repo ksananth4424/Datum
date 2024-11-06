@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TRAVERSAL_HPP
+#define TRAVERSAL_HPP
 
 #include <iostream>
 #include "ast.hpp"
@@ -11,6 +12,10 @@
 #include <algorithm>
 
 extern int error_count;
+
+extern int yycolumn;
+
+extern int lineno;
 
 extern SymbolTable symtab;
 
@@ -39,3 +44,5 @@ std::string get_line_number(int);
 void traverse(Start* start);
 
 void buildScope(Node*, std::string);
+
+#endif

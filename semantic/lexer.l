@@ -1,6 +1,10 @@
 %{
 #include <stdio.h>
 #include "y.tab.h"
+#include "traversal.hpp"
+
+int lineno = 1;
+int yycolumn = 0;
 
 void count();
 %}
@@ -101,8 +105,8 @@ L			[a-zA-Z_]
 "["         {count(); return ('[');}
 "]"         {count(); return (']');}
 
-
-[ \t\v\n\f] {}
+[\n]        {lineno++; yycolumn = 0;}
+[ \t\v\f]   {}
 .           {puts("error in lexing"); /* ignore */}
 
 %%
@@ -111,4 +115,14 @@ void count() {
     /* ECHO; */
     /* printf("\t"); */
     /* yylval.sval = yytext; */
+    // count linenumber and column number
+	int i;
+
+	for (i = 0; yytext[i] != '\0'; i++)
+		if (yytext[i] == '\n')
+			yycolumn = 0;
+		else if (yytext[i] == '\t')
+			yycolumn += 8 - (yycolumn % 8);
+		else
+			yycolumn++;
 }

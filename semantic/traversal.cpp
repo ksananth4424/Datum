@@ -81,108 +81,108 @@ string mapInbuiltFunctionToString(InbuiltFunctions func){
     }
 }
 
-void insert_inbuiltfunction_symtab(std::string func){
+void insert_inbuiltfunction_symtab(FunctionCall* function, std::string func){
     std::string scope = "g";
     if(func == "show_bar"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "show_line"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "show_scatter"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "show_box"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "row"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "col"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "filter"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "sum"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "max"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "min"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "read"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "write"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "unique"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "show"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "split"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "sort"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "shuffle"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "add"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "shape"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "drop"){
         std::vector<DataType> *inputParameters = new std::vector<DataType>();
         std::vector<DataType> *otherParameters = new std::vector<DataType>();
         std::vector<DataType> *returnParameters = new std::vector<DataType>();
-        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope,0,0);
+        symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     }else{
         cout << "\e[31m Error: \e[0m Inbuilt function " << func << " not supported.\n";
         error_count++;
@@ -211,19 +211,19 @@ void traverse_statement(Statement *stmt,bool isFunction=false,bool isLoop=false)
     case 5:
         // return
         if(!isFunction){
-            cout<<"Error: Return statement is not allowed outside of function!\n";
+            cout<<"\e[31m Error: \e[0m Return statement is not allowed outside of function!\n";
         }
         break;
     case 6:
         // break
         if(!isLoop){
-            cout<<"Error: Break statement is not allowed outside of loop!\n";
+            cout<<"\e[31m Error: \e[0m Break statement is not allowed outside of loop!\n";
         }
         break;
     case 7:
         // continue
         if(!isLoop){
-            cout<<"Error: Continue statement is not allowed outside of loop!\n";
+            cout<<"\e[31m Error: \e[0m Continue statement is not allowed outside of loop!\n";
         }
         break;
 
@@ -379,7 +379,7 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                 }else
                 {
                     cout << "inserting into symbol table" << endl;
-                    symtab.insert(name, type, scope, 0, 0);
+                    symtab.insert(name, type, scope, decl_stmt->row, decl_stmt->column);
                 }
                 //  type checking here. example: int a = 5.1 should give error here
                 if (init_decl->initializer != nullptr && init_decl->initializer->assignmentExpression!=nullptr && init_decl->initializer->assignmentExpression->expression!=nullptr){
@@ -451,7 +451,7 @@ void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
         error_count++;
     }else{
         DataType dataType = Integer;
-        symtab.insert(name, dataType, scope, 0, 0);
+        symtab.insert(name, dataType, scope, loop_stmt->row, loop_stmt->column);
     }                
     
     // fromtopair check
@@ -513,10 +513,10 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
         inputParameters->push_back(dataType);
         string scope = param->get_scope();
         if (param->identifier == nullptr) {
-            cout << "Error: identifier name missing in function declaration input parameter!" << endl;
+            cout << "\e[31m Error: \e[0m identifier name missing in function declaration input parameter!" << endl;
         } else {
             string name = param->identifier->identifier;
-            symtab.insert(name, dataType, scope, 0, 0);
+            symtab.insert(name, dataType, scope, param->identifier->row, param->identifier->column);
         }
     }
     // get the other parameters
@@ -527,10 +527,10 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
         otherParameters->push_back(dataType);
         string scope = param->get_scope();
         if (param->identifier == nullptr) {
-            cout << "Error: identifier name missing in function declaration other parameter!" << endl;
+            cout << "\e[31m Error: \e[0m identifier name missing in function declaration other parameter!" << endl;
         } else {
             string name = param->identifier->identifier;
-            symtab.insert(name, dataType, scope, 0, 0);
+            symtab.insert(name, dataType, scope, param->identifier->row, param->identifier->column);
         }
     }
     // get the return parameters
@@ -540,15 +540,15 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
         DataType dataType = mapTypeToDataType(param->type->type->at(0));
         returnParameters->push_back(dataType);
         if (param->identifier != nullptr) {
-            cout << "Error: unecessary identifier missing in function declaration return parameter!" << endl;
+            cout << "\e[31m Error: \e[0m unecessary identifier missing in function declaration return parameter!" << endl;
         }
     }
     if (func_dec->identifier != nullptr) {
         std::string name = func_dec->identifier;
         std::string scope = func_dec->get_scope();
-        symtab.insert(name, inputParameters, otherParameters, returnParameters, scope, 0, 0);
+        symtab.insert(name, inputParameters, otherParameters, returnParameters, scope, func_dec->row, func_dec->column);
     } else {
-        cout << "Error: identifier name missing in function declaration!" << endl;
+        cout << "\e[31m Error: \e[0m identifier name missing in function declaration!" << endl;
     }
     
     for (auto *stmt : *(func_dec->statements)) {
@@ -572,7 +572,7 @@ void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
     // vector<DataType> *outParameters = entry->returnParameters;
 
     if (argumentList->size() != otherParameters->size()) {
-        cout << "Error: Function " << entry->name << " expects " << otherParameters->size() << " arguments but " << argumentList->size() << " provided\n";
+        cout << "\e[31m Error: \e[0m Function " << entry->name << " expects " << otherParameters->size() << " arguments but " << argumentList->size() << " provided\n";
     } else {
         for (int i = 0; i < argumentList->size(); i++) {
             Argument *argument = argumentList->at(i);
@@ -583,7 +583,7 @@ void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
                     cout << "Expression is boolean\n";
                 }
                 if (exprType != otherParameters->at(i)) {
-                    cout << "Error: Function " << entry->name << " expects " << dataTypeToString(otherParameters->at(i)) << " but " << dataTypeToString(exprType) << " provided\n";
+                    cout << "\e[31m Error: \e[0m Function " << entry->name << " expects " << dataTypeToString(otherParameters->at(i)) << " but " << dataTypeToString(exprType) << " provided\n";
                 }
             } else if (argument->fromToAlsoExpression != nullptr) {
                 for (auto &tuple : *(argument->fromToAlsoExpression)) {
@@ -594,7 +594,7 @@ void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
                     DataType toType = traverse_operations(to, entry->scope);
                     DataType alsoType = traverse_operations(also, entry->scope);
                     if (fromType != Integer || toType != Integer || alsoType != Integer) {
-                        cout << "Error: Function " << entry->name << " expects integer arguments\n";
+                        cout << "\e[31m Error: \e[0m Function " << entry->name << " expects integer arguments\n";
                     }
                 }
             } else if (argument->statements != nullptr) {
@@ -603,7 +603,7 @@ void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
                     traverse_statement(statement,true,false);
                 }
             } else {
-                cout << "Error: Argument is null\n";
+                cout << "\e[31m Error: \e[0m Argument is null\n";
             }
         }
     }
@@ -637,6 +637,7 @@ DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpr
             functionName = std::string(functionCall->identifier);
         } else {
             functionName = mapInbuiltFunctionToString(functionCall->inbuiltFunc);
+            insert_inbuiltfunction_symtab(functionCall, functionName);
         }
 
         SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
@@ -706,6 +707,7 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
 {
     cout << "Entering multi chain expression" << endl;
     if(multiChainExpression->functionCall!=nullptr || multiChainExpression->inbuiltFunc!=InbuiltFunctions::none){
+        cout << "hi" << endl;
         std::string functionCallName;
         if(multiChainExpression->functionCall!=nullptr){
             functionCallName = string(multiChainExpression->functionCall->identifier) ;
@@ -759,9 +761,9 @@ DataType traverse_operations(Expression *root,string scope){
             } else if (datatype == String){
                 for (auto &o : *(unaryExpression->op)){
                     if (o == minus_op){
-                        cout << "Error: Cannot \"-\" perform operation on string\n";
+                        cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
                     }else if (o == plus_op){
-                        cout << "Error: Cannot \"+\" perform operation on string\n";
+                        cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
                     }
                 }
                 return String;
@@ -1076,11 +1078,11 @@ void traverse(Start *start)
     {
         Statement* statement= dynamic_cast<Statement *>(stmt);
         if(statement->statementType==6){
-            cout << "Error: Break statement not inside loop!\n";
+            cout << "\e[31m Error: \e[0m Break statement not inside loop!\n";
         } else if(statement->statementType==7){
-            cout << "Error: Continue statement not inside loop!\n";
+            cout << "\e[31m Error: \e[0m Continue statement not inside loop!\n";
         } else if (statement->statementType==5){
-            cout << "Error: Return statement not inside function!\n";   
+            cout << "\e[31m Error: \e[0m Return statement not inside function!\n";   
         } else {
             traverse_statement(statement,false,false);
         }
