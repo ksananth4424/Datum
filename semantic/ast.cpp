@@ -329,8 +329,8 @@ DeclarationStatement::DeclarationStatement(TypeSpecifier *type, vector<class Ini
     this->column = column;
 }
 
-LoopStatement::LoopStatement(char* identifier, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements, int row, int column) {
-    this->identifier = identifier;
+LoopStatement::LoopStatement(Declarator* variable, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements, int row, int column) {
+    this->variable = variable;    
     this->fromToPairs = fromToPairs;
     this->statements = statements;
     this->row = row;

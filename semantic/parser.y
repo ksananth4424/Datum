@@ -420,7 +420,7 @@ statement_list
 
 // structure of loops should be adhered to this control of loop is handled by 'from_to_also_expression'
 loop_statement 
-    : LOOP IDENTIFIER from_to_also_expression compound_statement    {$$ = new LoopStatement($2, $3, $4, lineno, yycolumn);}
+    : LOOP declarator from_to_also_expression compound_statement    {$$ = new LoopStatement($2, $3, $4, lineno, yycolumn);}
     ;
 
  // this is how loop control is handled

@@ -6,8 +6,9 @@ loop i from 1 to 10 {
         integer f;
     }
     integer x=1;
-    loop b from 2 to 20 {
+    bool x;
+    loop x from 2.0 to 20 {
         integer f;
     }
 }
-bool b = a;
+string b = a;

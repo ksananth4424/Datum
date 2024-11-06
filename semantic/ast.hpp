@@ -276,11 +276,11 @@ public:
 class LoopStatement : public Node
 {
 public:
-    char* identifier;
+    Declarator* variable;
     vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs;
     vector<class Statement *> *statements;
 
-    LoopStatement(char* identifier, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements, int row, int column);
+    LoopStatement(Declarator* variable, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements, int row, int column);
 
     virtual ~LoopStatement() = default;
 };

@@ -1,10 +1,69 @@
 #include <iostream>
 #include "symbol_table.hpp"
+#include <unistd.h>
+#include <limits.h>
+#include <cstring>
 #include "traversal.hpp"
 using namespace std;
 
+// I want a variable that can be triggered by the makefile to print the error messages
+#ifdef DEBUG
+bool debug = true;
+#else
+bool debug = false;
+#endif
+
+extern FILE *yyin;
+
 SymbolTable symtab;
 int error_count = 0;
+
+void printerror(int row, int column){
+    int fd = fileno(yyin);
+    if (fd == -1) {
+        perror("fileno");
+        return;
+    }
+    char filename[PATH_MAX];
+    snprintf(filename, sizeof(filename), "/proc/self/fd/%d", fd);
+    char actual_filename[PATH_MAX];
+    ssize_t len = readlink(filename, actual_filename, sizeof(actual_filename) - 1);
+    if (len == -1) {
+        perror("readlink");
+        return;
+    }
+    actual_filename[len] = '\0';
+
+    fprintf(stderr, "In File %s:%d:%d\n", actual_filename, row, column);
+
+    long current_pos = ftell(yyin);
+
+    fseek(yyin, 0, SEEK_SET);
+
+    char line[1024];
+    int current_line = 1;
+    while (fgets(line, sizeof(line), yyin)) {
+        if (current_line == row) {
+            break;
+        }
+        current_line++;
+    }
+
+    fseek(yyin, current_pos, SEEK_SET);
+    line[strcspn(line, "\n")] = '\0';
+
+    //remove all spaces at the start of the line
+    int i = 0;
+    while (line[i] == ' ' || line[i] == '\t') {
+        i++;
+    }
+    fprintf(stderr, "%s\n", line + i);
+
+    for(int i=0; i<column;i++){
+        std::cout << "\e[31m-\e[0m";
+    }
+    std::cout << "\e[31m^\e[0m\n";
+}
 
 DataType mapTypeToDataType(int type)
 {
@@ -185,62 +244,69 @@ void insert_inbuiltfunction_symtab(FunctionCall* function, std::string func){
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     }else{
         cout << "\e[31m Error: \e[0m Inbuilt function " << func << " not supported.\n";
+        printerror(function->row, function->column);
         error_count++;
     }
 }
 
 void traverse_statement(Statement *stmt,bool isFunction=false,bool isLoop=false)
 {
-    cout << "entering statement" << endl;
+    if(debug) {cout << "entering statement" << endl;}
     if (stmt == nullptr) {
         return;
     }
-    cout << stmt->statementType << endl;
+    if(debug) {cout << stmt->statementType << endl;}
     switch (stmt->statementType)
     {
     case 1:
         // declaration
-        cout << "declaration" << endl;
+        if(debug) {cout << "declaration" << endl;}
         traverse_declaration(dynamic_cast<DeclarationStatement *>(stmt->declarationStatement));
         break;
     case 2:
         // assignment
-        cout << "assignment" << endl;
+        if(debug) {cout << "assignment" << endl;}
         traverse_assignment(dynamic_cast<AssignmentStatement *>(stmt->assignmentStatement));
         break;
     case 5:
         // return
         if(!isFunction){
             cout<<"\e[31m Error: \e[0m Return statement is not allowed outside of function!\n";
+            printerror(stmt->returnStatement->row,stmt->returnStatement->column);
+            error_count++;
         }
         break;
     case 6:
         // break
         if(!isLoop){
             cout<<"\e[31m Error: \e[0m Break statement is not allowed outside of loop!\n";
+            printerror(stmt->breakStatement->row,stmt->breakStatement->column);
+            error_count++;
         }
         break;
     case 7:
         // continue
         if(!isLoop){
             cout<<"\e[31m Error: \e[0m Continue statement is not allowed outside of loop!\n";
+            printerror(stmt->continueStatement->row,stmt->continueStatement->column);
+            error_count++;
         }
         break;
 
     case 3:
         // conditional
-        cout << "conditional" << endl;
+        if(debug) {cout << "conditional" << endl;}
         traverse_if_statement(stmt->conditionalStatement,isFunction,isLoop);
         break;
     case 4:
         // loop
-        // cout << "loop" << endl;
+        if(debug) {cout << "loop" << endl;}
         traverse_loop_statement(stmt->loopStatement,isFunction);
         break;
     default:
         // compound
         {
-            cout << "compound" << endl;
+            if(debug) {cout << "compound" << endl;}
             auto comp_stmt = stmt->compoundStatement;
             for (auto &in_stmt : *comp_stmt)
             {
@@ -253,7 +319,7 @@ void traverse_statement(Statement *stmt,bool isFunction=false,bool isLoop=false)
 
 void buildScope(Node *node, string scope)
 {
-    cout << "entering buildscope" << endl;
+    if(debug) {cout << "entering buildscope" << endl;}
     if (node == nullptr)
         return;
     int child_scope = 0;
@@ -356,7 +422,7 @@ void buildScope(Node *node, string scope)
 
 void traverse_declaration(DeclarationStatement *decl_stmt)
 {
-    cout << "entering declaration" << endl;
+    if(debug) {cout << "entering declaration" << endl;}
     if (decl_stmt == nullptr)
         return; 
     if (decl_stmt->initDeclarations != nullptr)
@@ -374,11 +440,12 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                 if (entry != nullptr)
                 {
                     std::cout << "\e[31m Error: \e[0m Identifier " << name << " in declaration statement is already declared\n";
+                    printerror(decl_stmt->row,decl_stmt->column);
                     error_count++;
                     continue;
                 }else
                 {
-                    cout << "inserting into symbol table" << endl;
+                    if(debug) {cout << "inserting into symbol table" << endl;}
                     symtab.insert(name, type, scope, decl_stmt->row, decl_stmt->column);
                 }
                 //  type checking here. example: int a = 5.1 should give error here
@@ -390,6 +457,7 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                         if (rhs != Integer && rhs != Boolean)
                         {
                             std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to integer\n";
+                            printerror(init_decl->initializer->row,init_decl->initializer->column);
                             error_count++;
                         }
                     }
@@ -398,6 +466,7 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                         if (rhs != Float && rhs != Integer && rhs != Boolean)
                         {
                             std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to float\n";
+                            printerror(init_decl->initializer->row,init_decl->initializer->column);
                             error_count++;
                         }
                     }
@@ -406,27 +475,33 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                         if (rhs != Boolean && rhs != Integer)
                         {
                             std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to boolean\n";
+                            printerror(init_decl->initializer->row,init_decl->initializer->column);
                             error_count++;
                         }
                     }
                     else if (type == String && rhs != String)
                     {
                         std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to string\n";
+                        printerror(init_decl->initializer->row,init_decl->initializer->column);
                         error_count++;
                     }
                     else if (type == Char && rhs != Char)
                     {
                         std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to char\n";
+                        printerror(init_decl->initializer->row,init_decl->initializer->column);
                         error_count++;
                     }
                     else if (type == Dataset && rhs != Dataset)
                     {
                         std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to dataset\n";
+                        printerror(init_decl->initializer->row,init_decl->initializer->column);
                         error_count++;
                     }
                     else if (type == Array && rhs != Array)
                     {
                         std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to array\n";
+                        //print the error line by opening the file given as arugment
+                        printerror(init_decl->initializer->row,init_decl->initializer->column);
                         error_count++;
                     }
                 }
@@ -435,19 +510,20 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                 } else cout<<"initilizer is null"<<endl;
             }
         }
-    cout << "exiting declaration" << endl;
+    if(debug) {cout << "exiting declaration" << endl;}
 }
 
 // function to do semantic checks on the loop statement
 void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
 {
-    cout << "entering loop" << endl;
-    std::string name = loop_stmt->identifier;
+    if(debug) {cout << "entering loop" << endl;}
+    std::string name = loop_stmt->variable->identifier;
     std::string scope = loop_stmt->scope;
     SymbolTableEntry *entry = symtab.search(name, scope);
     if (entry != nullptr)
     {
         std::cout << "\e[31m Error: \e[0m Identifier in loop statement is already declared\n";
+        printerror(loop_stmt->variable->row,loop_stmt->variable->column);
         error_count++;
     }else{
         DataType dataType = Integer;
@@ -465,6 +541,7 @@ void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
                 if (traverse_operations(std::get<0>(pair),scope) != 0)
                 {
                     std::cout << "\e[31m Error: \e[0m From expression in loop statement is not of type integer\n";
+                    printerror(std::get<0>(pair)->row,std::get<0>(pair)->column);
                     error_count++;
                 }
             }
@@ -473,6 +550,7 @@ void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
                 if (traverse_operations(std::get<1>(pair),scope) != 0)
                 {
                     std::cout << "\e[31m Error: \e[0m To expression in loop statement is not of type integer\n";
+                    printerror(std::get<1>(pair)->row,std::get<1>(pair)->column);
                     error_count++;
                 }
             }
@@ -481,6 +559,7 @@ void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
                 if (traverse_operations(std::get<2>(pair),scope) != 0)
                 {
                     std::cout << "\e[31m Error: \e[0m Step expression in loop statement is not of type integer\n";
+                    printerror(std::get<2>(pair)->row,std::get<2>(pair)->column);
                     error_count++;
                 }
             }
@@ -496,12 +575,12 @@ void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
             traverse_statement(statement,isFunction,true);
         }
     }
-    cout << "exiting loop" << endl;
+    if(debug) {cout << "exiting loop" << endl;}
 }
 
 // need to check the return statement
 void traverse_function_declaration(FunctionDeclaration *func_dec) {
-    cout << "entering function declaration" << endl;
+    if(debug) {cout << "entering function declaration" << endl;}
     if (func_dec == nullptr)
         return;
     
@@ -514,6 +593,8 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
         string scope = param->get_scope();
         if (param->identifier == nullptr) {
             cout << "\e[31m Error: \e[0m identifier name missing in function declaration input parameter!" << endl;
+            printerror(param->row,param->column);
+            error_count++;
         } else {
             string name = param->identifier->identifier;
             symtab.insert(name, dataType, scope, param->identifier->row, param->identifier->column);
@@ -528,6 +609,8 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
         string scope = param->get_scope();
         if (param->identifier == nullptr) {
             cout << "\e[31m Error: \e[0m identifier name missing in function declaration other parameter!" << endl;
+            printerror(param->row,param->column);
+            error_count++;
         } else {
             string name = param->identifier->identifier;
             symtab.insert(name, dataType, scope, param->identifier->row, param->identifier->column);
@@ -541,6 +624,8 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
         returnParameters->push_back(dataType);
         if (param->identifier != nullptr) {
             cout << "\e[31m Error: \e[0m unecessary identifier missing in function declaration return parameter!" << endl;
+            printerror(param->row,param->column);
+            error_count++;
         }
     }
     if (func_dec->identifier != nullptr) {
@@ -549,6 +634,8 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
         symtab.insert(name, inputParameters, otherParameters, returnParameters, scope, func_dec->row, func_dec->column);
     } else {
         cout << "\e[31m Error: \e[0m identifier name missing in function declaration!" << endl;
+        printerror(func_dec->row,func_dec->column);
+        error_count++;
     }
     
     for (auto *stmt : *(func_dec->statements)) {
@@ -566,13 +653,15 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
 }
 
 void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
-    cout << "Entering function call" << endl;
+    if(debug) {cout << "Entering function call" << endl;}
     vector<Argument *> *argumentList = functionCall->argumentList;
     vector<DataType> *otherParameters = entry->otherParameters;
     // vector<DataType> *outParameters = entry->returnParameters;
 
     if (argumentList->size() != otherParameters->size()) {
         cout << "\e[31m Error: \e[0m Function " << entry->name << " expects " << otherParameters->size() << " arguments but " << argumentList->size() << " provided\n";
+        printerror(functionCall->row,functionCall->column);
+        error_count++;
     } else {
         for (int i = 0; i < argumentList->size(); i++) {
             Argument *argument = argumentList->at(i);
@@ -584,6 +673,8 @@ void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
                 }
                 if (exprType != otherParameters->at(i)) {
                     cout << "\e[31m Error: \e[0m Function " << entry->name << " expects " << dataTypeToString(otherParameters->at(i)) << " but " << dataTypeToString(exprType) << " provided\n";
+                    printerror(argument->row,argument->column);
+                    error_count++;
                 }
             } else if (argument->fromToAlsoExpression != nullptr) {
                 for (auto &tuple : *(argument->fromToAlsoExpression)) {
@@ -595,6 +686,8 @@ void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
                     DataType alsoType = traverse_operations(also, entry->scope);
                     if (fromType != Integer || toType != Integer || alsoType != Integer) {
                         cout << "\e[31m Error: \e[0m Function " << entry->name << " expects integer arguments\n";
+                        printerror(argument->row,argument->column);
+                        error_count++;
                     }
                 }
             } else if (argument->statements != nullptr) {
@@ -604,6 +697,8 @@ void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
                 }
             } else {
                 cout << "\e[31m Error: \e[0m Argument is null\n";
+                printerror(argument->row,argument->column);
+                error_count++;
             }
         }
     }
@@ -612,25 +707,27 @@ void traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry){
 
 DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpression,string scope)
 {
-    cout << "Entering single chain expression" << endl;
+    if(debug) {cout << "Entering single chain expression" << endl;}
     if(singleChainExpression==nullptr){
         cout << "\e[31m Error: \e[0m SingleChainExpression is null\n";
+        printerror(singleChainExpression->row,singleChainExpression->column);
         error_count++;
         return Unknown;
     }
     char *identifier = singleChainExpression->identifier;
     std::string identifier_str = std::string(identifier);
     SymbolTableEntry *entry = symtab.search(identifier_str, scope);
-    cout << "Identifier: " << identifier_str << endl;
+    if(debug) {cout << "Identifier: " << identifier_str << endl;}
     if (entry == nullptr){
         cout << "\e[31m Error: \e[0m Identifier " << identifier_str << " not declared\n";
+        printerror(singleChainExpression->row,singleChainExpression->column);
         error_count++;
         return Unknown;
     }
     DataType currentDataType = entry->dataType;
     for(auto &funcPair : *(singleChainExpression->functionCallList)){
         FunctionCall *functionCall = funcPair.first;
-        cout << "Function call: " << endl;
+        if(debug) {cout << "Function call: " << endl;}
     
         std::string functionName;
         if (functionCall->identifier != nullptr){
@@ -643,6 +740,7 @@ DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpr
         SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
         if(functionEntry==nullptr){
             cout << "\e[31m Error: \e[0m Function " << functionName << " not declared\n";
+            printerror(functionCall->row,functionCall->column);
             error_count++;
             return Unknown;
         }
@@ -651,32 +749,36 @@ DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpr
         traverse_function_call(functionCall,functionEntry);
         if (functionEntry->inputParameters->size()!=1){
             cout << "\e[31m Error: \e[0m Function " << functionName << " expects more than one input parameter\n";
+            printerror(functionCall->row,functionCall->column);
             error_count++;
         } else if(returnParameters->size()!=1){
             cout << "\e[31m Error: \e[0m Function " << functionName << " returns more than one return parameter\n";
+            printerror(functionCall->row,functionCall->column);
             error_count++;
         } else {
             DataType functionInputParameter = functionEntry->inputParameters->at(0);
             if (functionInputParameter != currentDataType){
                 cout << "\e[31m Error: \e[0m Function " << functionName << " input parameter is not of the same type as the identifier\n"<<functionName<<" expects "<<dataTypeToString(functionInputParameter)<<" but input is of type "<<dataTypeToString(currentDataType)<<"!\n";
+                printerror(functionCall->row,functionCall->column);
                 error_count++;
             } 
             currentDataType = returnParameters->at(0);
         }
     }
-    cout << "Exiting single chain expression\n";
+    if(debug) {cout << "Exiting single chain expression\n";}
     return currentDataType;
 }
 
 vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, vector<Expression *>*>> functionCallList,vector<DataType> currentDataType,string scope)
 {
-    cout << "Entering function call list multi" << endl;
+    if(debug) {cout << "Entering function call list multi" << endl;}
     for(auto &funcPair : (functionCallList)){
             FunctionCall *functionCall = funcPair.first;
             std::string functionName = std::string(functionCall->identifier);
             SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
             if(functionEntry==nullptr){
                 cout << "\e[31m Error: \e[0m Function " << functionName << " not declared\n";
+                printerror(functionCall->row,functionCall->column);
                 error_count++;
                 return currentDataType;
             }
@@ -684,12 +786,14 @@ vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, v
             vector<DataType> *returnParameters = functionEntry->returnParameters;
             if(inputParameters->size()!=currentDataType.size()){
                 cout << "\e[31m Error: \e[0m Function " << functionName << " expects more than the provided input parameter\n";
+                printerror(functionCall->row,functionCall->column);
                 error_count++;
 
             } else {
                 for(int i=0;i<inputParameters->size();i++){
                     if(inputParameters->at(i)!=currentDataType.at(i)){
                         cout << "\e[31m Error: \e[0m Function " << functionName << " input parameter is not of the same type as the "<<functionName<<" expects "<<dataTypeToString(inputParameters->at(i))<<" but input is of type "<<dataTypeToString(currentDataType.at(i))<<"!\n";
+                        printerror(functionCall->row,functionCall->column);
                         error_count++;
                     }
                 }
@@ -697,7 +801,7 @@ vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, v
             currentDataType.clear();
             currentDataType = *returnParameters;
     }
-    cout << "Exiting function call list multi\n";
+    if(debug) {cout << "Exiting function call list multi\n";}
     return currentDataType;
 }
 
@@ -705,9 +809,9 @@ vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, v
 // CHECK: init of functionCallName
 vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChainExpression,string scope)
 {
-    cout << "Entering multi chain expression" << endl;
+    if(debug) {cout << "Entering multi chain expression" << endl;}
     if(multiChainExpression->functionCall!=nullptr || multiChainExpression->inbuiltFunc!=InbuiltFunctions::none){
-        cout << "hi" << endl;
+        if(debug) {cout << "hi" << endl;}
         std::string functionCallName;
         if(multiChainExpression->functionCall!=nullptr){
             functionCallName = string(multiChainExpression->functionCall->identifier) ;
@@ -717,6 +821,7 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
         SymbolTableEntry *entry = symtab.search(functionCallName,scope);
         if(entry==nullptr){
             cout << "\e[31m Error: \e[0m Function " << functionCallName << " not declared\n";
+            printerror(multiChainExpression->row,multiChainExpression->column);
             error_count++;
             return vector<DataType>();
         }
@@ -734,7 +839,7 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
 }
 
 DataType traverse_operations(Expression *root,string scope){
-    cout << "Entering traverse operations" << endl;
+    if(debug) {cout << "Entering traverse operations" << endl;}
     if (root == nullptr)
         return DataType::Unknown;
     if (root->castType == 1)
@@ -745,6 +850,7 @@ DataType traverse_operations(Expression *root,string scope){
             SymbolTableEntry *entry = symtab.search(identifier, scope);
             if (entry == nullptr){
                 cout << "\e[31m Error: \e[0m Identifier " << identifier << " not declared\n";
+                printerror(unaryExpression->row,unaryExpression->column);
                 error_count++;
                 return Unknown;
             }
@@ -754,6 +860,7 @@ DataType traverse_operations(Expression *root,string scope){
                 for(auto &o:*(unaryExpression->op)){
                     if (o==not_op) {
                         cout << "\e[31m Error: \e[0m Cannot \"!\" perform operation on float\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
                         error_count++;
                     }
                     return Float;
@@ -762,8 +869,12 @@ DataType traverse_operations(Expression *root,string scope){
                 for (auto &o : *(unaryExpression->op)){
                     if (o == minus_op){
                         cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
+                        error_count++;
                     }else if (o == plus_op){
                         cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
+                        error_count++;
                     }
                 }
                 return String;
@@ -771,9 +882,11 @@ DataType traverse_operations(Expression *root,string scope){
                 for (auto &o : *(unaryExpression->op)){
                     if (o == minus_op){
                         cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
                         error_count++;
                     } else if (o == plus_op){
                         cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
                         error_count++;
                     }
                 }
@@ -783,9 +896,11 @@ DataType traverse_operations(Expression *root,string scope){
                 for (auto &o : *(unaryExpression->op)){
                     if (o == minus_op){
                         cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
                         error_count++;
                     } else if (o == plus_op){
                         cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
                         error_count++;
                     }
                 }
@@ -793,12 +908,14 @@ DataType traverse_operations(Expression *root,string scope){
             } else if (datatype == Dataset){
                 if (unaryExpression->op->size() > 0){
                     cout << "\e[31m Error: \e[0m Cannot perform Unary operations on dataset\n";
+                    printerror(unaryExpression->row,unaryExpression->column);
                     error_count++;
                 }
                 return Dataset;
             } else if (datatype == Array){
                 if (unaryExpression->op->size() > 0){
                     cout << "\e[31m Error: \e[0m Cannot perform Unary operations on array\n";
+                    printerror(unaryExpression->row,unaryExpression->column);
                     error_count++;
                 }
                 return Array;
@@ -815,9 +932,11 @@ DataType traverse_operations(Expression *root,string scope){
             for (auto &o : *(unaryExpression->op)){
                 if (o == minus_op){
                     cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
+                    printerror(unaryExpression->row,unaryExpression->column);
                     error_count++;
                 }else if (o == plus_op){
                     cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+                    printerror(unaryExpression->row,unaryExpression->column);
                     error_count++;
                 }
             }
@@ -826,9 +945,11 @@ DataType traverse_operations(Expression *root,string scope){
             for (auto &o : *(unaryExpression->op)){
                 if (o == minus_op) {
                     cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
+                    printerror(unaryExpression->row,unaryExpression->column);
                     error_count++;
                 } else if (o == plus_op){
                     cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+                    printerror(unaryExpression->row,unaryExpression->column);
                     error_count++;
                 }
             }
@@ -838,9 +959,11 @@ DataType traverse_operations(Expression *root,string scope){
             {
                 if (o == minus_op){
                     cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
+                    printerror(unaryExpression->row,unaryExpression->column);
                     error_count++;
                 } else if (o == plus_op){
                     cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+                    printerror(unaryExpression->row,unaryExpression->column);
                     error_count++;
                 }
             }
@@ -848,12 +971,14 @@ DataType traverse_operations(Expression *root,string scope){
         } else if (datatype == Dataset){
             if (unaryExpression->op->size() > 0){
                 cout << "\e[31m Error: \e[0m Cannot perform Unary operations on dataset\n";
+                printerror(unaryExpression->row,unaryExpression->column);
                 error_count++;
             }
             return Dataset;
         } else if (datatype == Array){
             if (unaryExpression->op->size() > 0){
                 cout << "\e[31m Error: \e[0m Cannot perform Unary operations on array\n";
+                printerror(unaryExpression->row,unaryExpression->column);
                 error_count++;
             }
             return Array;
@@ -892,6 +1017,7 @@ DataType traverse_operations(Expression *root,string scope){
                 return Array;
             } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"+\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
@@ -904,6 +1030,7 @@ DataType traverse_operations(Expression *root,string scope){
                 return Float;
             } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"-\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
@@ -914,6 +1041,7 @@ DataType traverse_operations(Expression *root,string scope){
                 return Float;
             } else{
                 cout << "\e[31m Error: \e[0m Cannot perform \"*\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
@@ -924,6 +1052,7 @@ DataType traverse_operations(Expression *root,string scope){
                 return Float;
             } else{
                 cout << "\e[31m Error: \e[0m Cannot perform \"/\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
@@ -932,6 +1061,7 @@ DataType traverse_operations(Expression *root,string scope){
                 return Integer;
             } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"%\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
@@ -942,6 +1072,7 @@ DataType traverse_operations(Expression *root,string scope){
                 return Integer;
             } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"&&\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
@@ -952,6 +1083,7 @@ DataType traverse_operations(Expression *root,string scope){
                 return Integer;
             } else{
                 cout << "\e[31m Error: \e[0m Cannot perform \"||\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
@@ -972,6 +1104,7 @@ DataType traverse_operations(Expression *root,string scope){
                 return Boolean;
             } else{
                 cout << "\e[31m Error: \e[0m Cannot perform \"==\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
@@ -992,6 +1125,7 @@ DataType traverse_operations(Expression *root,string scope){
                 return Boolean;
             } else{
                 cout << "\e[31m Error: \e[0m Cannot perform \"!=\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
@@ -1013,16 +1147,18 @@ DataType traverse_operations(Expression *root,string scope){
 
 void traverse_assignment(AssignmentStatement *assignmentStatement)
 {
-    cout << "entering assignment" << endl;
+    if(debug) {cout << "entering assignment" << endl;}
     if (assignmentStatement->declarator == nullptr)
     {
         cout << "\e[31m Error: \e[0m Declarator is missing in assignment statement\n";
+        printerror(assignmentStatement->row,assignmentStatement->column);
         error_count++;
         return;
     }
     if (assignmentStatement->expression == nullptr)
     {
         cout << "\e[31m Error: \e[0m Expression is missing in assignment statement\n";
+        printerror(assignmentStatement->row,assignmentStatement->column);
         error_count++;
         return;
     }
@@ -1032,13 +1168,14 @@ void traverse_assignment(AssignmentStatement *assignmentStatement)
     if (lhs != rhs)
     {
         cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to " << dataTypeToString(lhs) << "!\n";
+        printerror(assignmentStatement->row,assignmentStatement->column);
         error_count++;
     }
 }
 
 void traverse_if_statement(ConditionalStatement *cond_stmt,bool isFunction,bool isLoop)
 {
-    cout << "entering if" << endl;
+    if(debug) {cout << "entering if" << endl;}
     if (cond_stmt->ConditionStatements != nullptr)
     {
         for (auto &[expr, stmt_list] : *(cond_stmt->ConditionStatements))
@@ -1051,6 +1188,7 @@ void traverse_if_statement(ConditionalStatement *cond_stmt,bool isFunction,bool 
                 if (temp != Boolean || temp != Integer)
                 {
                     std::cout << "\e[31m Error: \e[0m Expression in conditional statement is not of type boolean\n";
+                    printerror(cond_stmt->row,cond_stmt->column);
                     error_count++;
                 }
             }
@@ -1062,7 +1200,7 @@ void traverse_if_statement(ConditionalStatement *cond_stmt,bool isFunction,bool 
             }
         }
     }
-    // cout << "exiting if" << endl;
+    if(debug) {cout << "exiting if" << endl;}
 }
 
 void traverse(Start *start)
@@ -1079,13 +1217,19 @@ void traverse(Start *start)
         Statement* statement= dynamic_cast<Statement *>(stmt);
         if(statement->statementType==6){
             cout << "\e[31m Error: \e[0m Break statement not inside loop!\n";
+            printerror(statement->row,statement->column);
+            error_count++;
         } else if(statement->statementType==7){
             cout << "\e[31m Error: \e[0m Continue statement not inside loop!\n";
+            printerror(statement->row,statement->column);
+            error_count++;
         } else if (statement->statementType==5){
             cout << "\e[31m Error: \e[0m Return statement not inside function!\n";   
+            printerror(statement->row,statement->column);
+            error_count++;
         } else {
             traverse_statement(statement,false,false);
         }
     }
-    // cout << "exiting traverse" << endl;
+    if(debug) {cout << "exiting traverse" << endl;}
 }
