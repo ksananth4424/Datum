@@ -20,6 +20,8 @@ test: lexer parser semantic
 	$(MAKE) --no-print-directory -C $(LEXERDIR) test
 	@echo "\e[33m\nRunning parser tests\e[0m"
 	$(MAKE) --no-print-directory -C $(PARSERDIR) test
+	@echo "\e[33m\nRunning semantic tests\e[0m"
+	$(MAKE) --no-print-directory -C $(SEMANTICDIR) test
 
 clean:
 	$(MAKE) --no-print-directory -C $(LEXERDIR) clean

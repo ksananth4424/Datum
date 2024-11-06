@@ -2,7 +2,7 @@
     #include <iostream>
     #include <fstream>
     int yylex();
-    extern void yyerror(char*);
+    extern void yyerror(const char*);
 
 %}
 
@@ -17,7 +17,7 @@
 %token FROM TO STEP ALSO
 %token AND OR NOT
 %token IF ELSE LOOP BREAK CONTINUE RETURN FUNCTION
-%token STRING BOOL DATASET ARRAY CONST_INTEGER CONST_FLOAT CONST_CHAR
+%token STRING BOOL DATASET ARRAY CONST_INT CONST_FLOAT CONST_CHAR
 
 %left '*'
 %left '/'
@@ -134,7 +134,7 @@ initializer_list
 
 // intuitive
 primary_expression 
-    : CONST_INTEGER
+    : CONST_INT
     | CONST_FLOAT
     | STRING_LITERAL
     | CONST_CHAR
@@ -322,7 +322,7 @@ int yywrap() {
 	return 1;
 }
 
-void yyerror( char* s) { 
+void yyerror(const char* s) { 
 	printf("%s\n",s);
 }
 
