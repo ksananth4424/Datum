@@ -1227,11 +1227,99 @@ void traverse_assignment(AssignmentStatement *assignmentStatement)
     string scope = assignmentStatement->get_scope();    
     DataType lhs = traverse_single_chain_expression(assignmentStatement->declarator,scope);
     DataType rhs = traverse_operations(assignmentStatement->expression,scope);
-    if (lhs != rhs)
+    AssignmentOperator operator_type = assignmentStatement->op;
+    if(operator_type == assign)
     {
-        cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to " << dataTypeToString(lhs) << "!\n";
-        printerror(assignmentStatement->row,assignmentStatement->column);
-        error_count++;
+        if (lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+    }else if(operator_type == add_assign)
+    {
+        if(lhs != Integer && lhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"+=\" operation on " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+        if(rhs != Integer && rhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"+=\" operation with " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+        if(lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"+=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+    }else if(operator_type == sub_assign)
+    {
+        if(lhs != Integer && lhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"-=\" operation on " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+        if(rhs != Integer && rhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"-=\" operation on " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+        if(lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"-=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+    }else if(operator_type == mul_assign)
+    {
+        if(lhs != Integer && lhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"*=\" operation on " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+        if(rhs != Integer && rhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"*=\" operation on " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+        if(lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"*=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+    }else if(operator_type == div_assign)
+    {
+        if(lhs != Integer && lhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"/=\" operation on " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+        if(rhs != Integer && rhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"/=\" operation on " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+        if(lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"/=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+    }else if(operator_type == mod_assign)
+    {
+        if(lhs != Integer && lhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"%=\" operation on " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+        if(rhs != Integer && rhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"%=\" operation on " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+        if(lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"%=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
     }
 }
 
