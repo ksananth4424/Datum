@@ -450,7 +450,7 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                     if(debug) {cout << "inserting into symbol table" << endl;}
                     symtab.insert(name, type, scope, decl_stmt->row, decl_stmt->column);
                 }
-                //  type checking here. example: int a = 5.1 should give error here
+                //  type checking here
                 if (init_decl->initializer != nullptr && init_decl->initializer->assignmentExpression!=nullptr && init_decl->initializer->assignmentExpression->expression!=nullptr){
                     Expression* expr = init_decl->initializer->assignmentExpression->expression;
                     DataType rhs = traverse_operations(expr,scope);
@@ -508,10 +508,72 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                     }
                 }
                 // type checking in case of array
-
-                } else cout<<"initilizer is null"<<endl;
+                else if (init_decl->initializer != nullptr && init_decl->initializer->initializerList != nullptr)
+                {
+                    for (auto *initializer : *(init_decl->initializer->initializerList))
+                    {
+                        if (initializer->assignmentExpression != nullptr && initializer->assignmentExpression->expression != nullptr)
+                        {
+                            Expression *expr = initializer->assignmentExpression->expression;
+                            DataType rhs = traverse_operations(expr,scope);
+                            if (type == Integer)
+                            {
+                                if (rhs != Integer && rhs != Boolean)
+                                {
+                                    std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to integer\n";
+                                    printerror(initializer->row,initializer->column);
+                                    error_count++;
+                                }
+                            }
+                            else if (type == Float)
+                            {
+                                if (rhs != Float && rhs != Integer && rhs != Boolean)
+                                {
+                                    std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to float\n";
+                                    printerror(initializer->row,initializer->column);
+                                    error_count++;
+                                }
+                            }
+                            else if (type == Boolean)
+                            {
+                                if (rhs != Boolean && rhs != Integer)
+                                {
+                                    std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to boolean\n";
+                                    printerror(initializer->row,initializer->column);
+                                    error_count++;
+                                }
+                            }
+                            else if (type == String && rhs != String)
+                            {
+                                std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to string\n";
+                                printerror(initializer->row,initializer->column);
+                                error_count++;
+                            }
+                            else if (type == Char && rhs != Char)
+                            {
+                                std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to char\n";
+                                printerror(initializer->row,initializer->column);
+                                error_count++;
+                            }
+                            else if (type == Dataset && rhs != Dataset)
+                            {
+                                std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to dataset\n";
+                                printerror(initializer->row,initializer->column);
+                                error_count++;
+                            }
+                            else if (type == Array && rhs != Array)
+                            {
+                                std::cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to array\n";
+                                printerror(initializer->row,initializer->column);
+                                error_count++;
+                            }
+                        }
+                    }
+                } 
+                else cout<<"initilizer is null"<<endl;
             }
         }
+    }
     if(debug) {cout << "exiting declaration" << endl;}
 }
 
@@ -1263,11 +1325,99 @@ void traverse_assignment(AssignmentStatement *assignmentStatement)
     string scope = assignmentStatement->get_scope();    
     DataType lhs = traverse_single_chain_expression(assignmentStatement->declarator,scope);
     DataType rhs = traverse_operations(assignmentStatement->expression,scope);
-    if (lhs != rhs)
+    AssignmentOperator operator_type = assignmentStatement->op;
+    if(operator_type == assign)
     {
-        cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to " << dataTypeToString(lhs) << "!\n";
-        printerror(assignmentStatement->row,assignmentStatement->column);
-        error_count++;
+        if (lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+    }else if(operator_type == add_assign)
+    {
+        if(lhs != Integer && lhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"+=\" operation on " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+        if(rhs != Integer && rhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"+=\" operation with " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+        if(lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"+=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+    }else if(operator_type == sub_assign)
+    {
+        if(lhs != Integer && lhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"-=\" operation on " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+        if(rhs != Integer && rhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"-=\" operation on " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+        if(lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"-=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+    }else if(operator_type == mul_assign)
+    {
+        if(lhs != Integer && lhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"*=\" operation on " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+        if(rhs != Integer && rhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"*=\" operation on " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+        if(lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"*=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+    }else if(operator_type == div_assign)
+    {
+        if(lhs != Integer && lhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"/=\" operation on " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+        if(rhs != Integer && rhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"/=\" operation on " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+        if(lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"/=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+    }else if(operator_type == mod_assign)
+    {
+        if(lhs != Integer && lhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"%=\" operation on " << dataTypeToString(lhs) << "!\n";
+            error_count++;
+        }
+        if(rhs != Integer && rhs != Float)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"%=\" operation on " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
+        if(lhs != rhs)
+        {
+            cout << "\e[31m Error: \e[0m Cannot perform \"%=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+            error_count++;
+        }
     }
 }
 
