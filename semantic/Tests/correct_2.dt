@@ -10,7 +10,7 @@ function (dataset ds)->my_func(dataset ds1, dataset ds2, integer i)->dataset{
     ds->col("'height'") *= 10;
     (ds1,ds2)->join({
         integer i;
-    })-> row () -> show ();
+    })-> Row () -> show ();
     string st = "string'f";
     return ds3;
 }

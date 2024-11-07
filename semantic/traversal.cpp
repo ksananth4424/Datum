@@ -271,12 +271,38 @@ void traverse_statement(Statement *stmt,bool isFunction=false,bool isLoop=false)
         traverse_assignment(dynamic_cast<AssignmentStatement *>(stmt->assignmentStatement));
         break;
     case 5:
-        // return
-        if(!isFunction){
-            cout<<"\e[31m Error: \e[0m Return statement is not allowed outside of function!\n";
+        // return NOT DONE
+        if (!isFunction){
+            cout<<"\e[31m Error: \e[0m Return statement is not allowed outside of function\n";
             printerror(stmt->row,stmt->column);
             error_count++;
+            break;
         }
+        {
+            SymbolTableEntry* function = symtab.searchFunction(stmt->scope);
+            if (function != nullptr){
+                if (function->returnParameters->size() == 0 and stmt->returnStatement->expression != nullptr){
+                    cout<<"\e[31m Error: \e[0m Function expects no return type\n";
+                    printerror(stmt->row,stmt->column);
+                    error_count++;
+                } else {
+                    if (stmt->returnStatement->expression != nullptr){
+                        Expression* expr = stmt->returnStatement->expression;
+                        DataType rhs = traverse_operations(expr,stmt->scope);
+                        if (rhs != function->returnParameters->at(0)->at(0)){
+                            std::cout << "\e[31m Error: \e[0m Cannot return " << dataTypeToString(rhs) << " from function with return type " << dataTypeToString(function->returnParameters->at(0)->at(0)) << "\n";
+                            printerror(stmt->returnStatement->row,stmt->returnStatement->column);
+                            error_count++;
+                        }
+                    }
+                }
+            } else {
+                cout<<"\e[31m Error: \e[0m Return statement is not allowed outside of function\n";
+                printerror(stmt->row,stmt->column);
+                error_count++;
+            }
+        }
+
         break;
     case 6:
         // break
@@ -438,20 +464,18 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                 std::string scope = decl_stmt->get_scope();
                 // cout << scope << endl;
                 DataType type = mapTypeToDataType(decl_stmt->type->type->at(0));
-                SymbolTableEntry *entry = symtab.search(name, scope);
-                if (entry != nullptr)
+                if (!symtab.insert(name, type, scope, decl_stmt->row, decl_stmt->column))
                 {
                     std::cout << "\e[31m Error: \e[0m Identifier " << name << " in declaration statement is already declared\n";
                     printerror(decl_stmt->row,decl_stmt->column);
                     error_count++;
                     continue;
-                }else
-                {
+                } else {
                     if(debug) {cout << "inserting into symbol table" << endl;}
-                    symtab.insert(name, type, scope, decl_stmt->row, decl_stmt->column);
                 }
                 //  type checking here
                 if (init_decl->initializer != nullptr && init_decl->initializer->assignmentExpression!=nullptr && init_decl->initializer->assignmentExpression->expression!=nullptr){
+                    if (debug) {cout << "checking type" << endl;}
                     Expression* expr = init_decl->initializer->assignmentExpression->expression;
                     DataType rhs = traverse_operations(expr,scope);
                     if (type == Integer)
@@ -583,16 +607,16 @@ void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
     if(debug) {cout << "entering loop" << endl;}
     std::string name = loop_stmt->variable->identifier;
     std::string scope = loop_stmt->scope;
-    SymbolTableEntry *entry = symtab.search(name, scope);
-    if (entry != nullptr)
+    DataType dataType = Integer;
+    
+    if (!symtab.insert(name, dataType, scope, loop_stmt->row, loop_stmt->column))
     {
         std::cout << "\e[31m Error: \e[0m Identifier in loop statement is already declared\n";
         printerror(loop_stmt->variable->row,loop_stmt->variable->column);
         error_count++;
-    }else{
-        DataType dataType = Integer;
-        symtab.insert(name, dataType, scope, loop_stmt->row, loop_stmt->column);
-    }                
+    } else {
+        if(debug) {cout << "inserting into symbol table" << endl;}
+    }
     
     // fromtopair check
     if (loop_stmt->fromToPairs != nullptr)
@@ -661,7 +685,11 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
             error_count++;
         } else {
             string name = param->identifier->identifier;
-            symtab.insert(name, dataType, scope, param->identifier->row, param->identifier->column);
+            if (!symtab.insert(name, dataType, scope, param->identifier->row, param->identifier->column)) {
+                cout << "\e[31m Error: \e[0m Identifier " << name << " in function declaration is already declared\n";
+                printerror(param->identifier->row,param->identifier->column);
+                error_count++;
+            }
         }
     }
     // get the other parameters
@@ -678,7 +706,11 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
             error_count++;
         } else {
             string name = param->identifier->identifier;
-            symtab.insert(name, dataType, scope, param->identifier->row, param->identifier->column);
+            if (!symtab.insert(name, dataType, scope, param->identifier->row, param->identifier->column)) {
+                cout << "\e[31m Error: \e[0m Identifier " << name << " in function declaration is already declared\n";
+                printerror(param->identifier->row,param->identifier->column);
+                error_count++;
+            }
         }
     }
     // get the return parameters
@@ -696,7 +728,8 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
     if (func_dec->identifier != nullptr) {
         std::string name = func_dec->identifier;
         std::string scope = func_dec->get_scope();
-        symtab.insert(name, inputParameters, otherParameters, returnParameters, scope, func_dec->row, func_dec->column);
+        // symtab.insert(name, inputParameters, otherParameters, returnParameters, scope, func_dec->row, func_dec->column);
+        symtab.insert(name, new std::vector<std::vector<DataType>*>({inputParameters}), otherParameters, new std::vector<std::vector<DataType>*>({returnParameters}), scope, func_dec->row, func_dec->column);
     } else {
         cout << "\e[31m Error: \e[0m identifier name missing in function declaration!" << endl;
         printerror(func_dec->row,func_dec->column);
@@ -704,16 +737,8 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
     }
     
     for (auto *stmt : *(func_dec->statements)) {
-        if (stmt->returnStatement != nullptr) {
-            // check if the return statement is valid
-            auto returnExpression = stmt->returnStatement->expression;
-            auto returnDataType = traverse_operations(returnExpression, stmt->get_scope());
-            // TODO: match returnDataType with returnParameters
-            // traverse_return_statement(stmt->returnStatement);
-        } else {
-            Statement *statement = dynamic_cast<Statement *>(stmt);
-            traverse_statement(statement,true,false);
-        }
+        Statement *statement = dynamic_cast<Statement *>(stmt);
+        traverse_statement(statement,true,false);
     }
 }
 
@@ -740,10 +765,10 @@ vector<int> match_function_symb_entry(SymbolTableEntry* entry,vector<DataType>* 
 
 }
 //IT MUST RETURN TRUE IF THE FUNCTION CALL IS MATCHED CORRECTLY. Match the ith one
-bool traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry,int i){
+bool traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry, int index){
     if(debug) {cout << "Entering function call" << endl;}
     vector<Argument *> *argumentList = functionCall->argumentList;
-    vector<DataType> *otherParameters = entry->otherParameters->at(0);
+    vector<DataType> *otherParameters = entry->otherParameters->at(index);
     // vector<DataType> *outParameters = entry->returnParameters;
 
     if (argumentList->size() != otherParameters->size()) {
@@ -756,9 +781,6 @@ bool traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry,i
             if (argument->expression != nullptr) {
                 Expression *expr = argument->expression;
                 DataType exprType = traverse_operations(expr, entry->scope);
-                if (exprType == Boolean) {
-                    cout << "Expression is boolean\n";
-                }
                 if (exprType != otherParameters->at(i)) {
                     cout << "\e[31m Error: \e[0m Function " << entry->name << " expects " << dataTypeToString(otherParameters->at(i)) << " but " << dataTypeToString(exprType) << " provided\n";
                     printerror(argument->row,argument->column);
@@ -792,73 +814,6 @@ bool traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry,i
     }
     return true;
     
-}
-
-DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpression,string scope)
-{
-    if(debug) {cout << "Entering single chain expression" << endl;}
-    if(singleChainExpression==nullptr){
-        cout << "\e[31m Error: \e[0m SingleChainExpression is null\n";
-        printerror(singleChainExpression->row,singleChainExpression->column);
-        error_count++;
-        return Unknown;
-    }
-    char *identifier = singleChainExpression->identifier;
-    std::string identifier_str = std::string(identifier);
-    SymbolTableEntry *entry = symtab.search(identifier_str, scope);
-    if(debug) {cout << "Identifier: " << identifier_str << endl;}
-    if (entry == nullptr){
-        cout << "\e[31m Error: \e[0m Identifier " << identifier_str << " not declared\n";
-        printerror(singleChainExpression->row,singleChainExpression->column);
-        error_count++;
-        return Unknown;
-    }
-    vector<DataType> currentDataType = vector<DataType>({entry->dataType});
-    return traverse_function_call_list_multi(*singleChainExpression->functionCallList,currentDataType,scope)[0];
-    // for(auto &funcPair : *(singleChainExpression->functionCallList)){
-    //     FunctionCall *functionCall = funcPair.first;
-    //     if(debug) {cout << "Function call: " << endl;}
-    
-    //     std::string functionName;
-    //     if (functionCall->identifier != nullptr){
-    //         functionName = std::string(functionCall->identifier);
-    //     } else {
-    //         functionName = mapInbuiltFunctionToString(functionCall->inbuiltFunc);
-    //         insert_inbuiltfunction_symtab(functionCall, functionName);
-    //     }
-
-    //     SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
-    //     if(functionEntry==nullptr){
-    //         cout << "\e[31m Error: \e[0m Function " << functionName << " not declared\n";
-    //         printerror(functionCall->row,functionCall->column);
-    //         error_count++;
-    //         return Unknown;
-    //     }
-    //     vector<int> funcIndex = match_function_symb_entry(functionEntry,&currentDataType);
-        // int funcIndex = match_function_symb_entry(functionEntry,&currentDataType);
-        // vector<DataType> *inputParameters = functionEntry->inputParameters;
-        // vector<DataType> *returnParameters = functionEntry->returnParameters;
-        // traverse_function_call(functionCall,functionEntry);
-        // if (functionEntry->inputParameters->size()!=1){
-        //     cout << "\e[31m Error: \e[0m Function " << functionName << " expects more than one input parameter\n";
-        //     printerror(functionCall->row,functionCall->column);
-        //     error_count++;
-        // } else if(returnParameters->size()!=1){
-        //     cout << "\e[31m Error: \e[0m Function " << functionName << " returns more than one return parameter\n";
-        //     printerror(functionCall->row,functionCall->column);
-        //     error_count++;
-        // } else {
-        //     DataType functionInputParameter = functionEntry->inputParameters->at(0);
-        //     if (functionInputParameter != currentDataType){
-        //         cout << "\e[31m Error: \e[0m Function " << functionName << " input parameter is not of the same type as the identifier\n"<<functionName<<" expects "<<dataTypeToString(functionInputParameter)<<" but input is of type "<<dataTypeToString(currentDataType)<<"!\n";
-        //         printerror(functionCall->row,functionCall->column);
-        //         error_count++;
-        //     } 
-        //     currentDataType = returnParameters->at(0);
-        // }
-    // }
-    if(debug) {cout << "Exiting single chain expression" << endl;}
-    return currentDataType.at(0);
 }
 
 vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, vector<Expression *>*>> functionCallList,vector<DataType> currentDataType,string scope)
@@ -951,6 +906,75 @@ vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, v
     if(debug) {cout << "Exiting function call list multi\n";}
     return currentDataType;
 }
+
+
+DataType traverse_single_chain_expression(SingleChainExpression *singleChainExpression,string scope)
+{
+    if(debug) {cout << "Entering single chain expression" << endl;}
+    if(singleChainExpression==nullptr){
+        cout << "\e[31m Error: \e[0m SingleChainExpression is null\n";
+        printerror(singleChainExpression->row,singleChainExpression->column);
+        error_count++;
+        return Unknown;
+    }
+    char *identifier = singleChainExpression->identifier;
+    std::string identifier_str = std::string(identifier);
+    SymbolTableEntry *entry = symtab.search(identifier_str, scope);
+    if(debug) {cout << "Identifier: " << identifier_str << endl;}
+    if (entry == nullptr){
+        cout << "\e[31m Error: \e[0m Identifier " << identifier_str << " not declared\n";
+        printerror(singleChainExpression->row,singleChainExpression->column);
+        error_count++;
+        return Unknown;
+    }
+    vector<DataType> currentDataType = vector<DataType>({entry->dataType});
+    return traverse_function_call_list_multi(*singleChainExpression->functionCallList,currentDataType,scope)[0];
+    // for(auto &funcPair : *(singleChainExpression->functionCallList)){
+    //     FunctionCall *functionCall = funcPair.first;
+    //     if(debug) {cout << "Function call: " << endl;}
+    
+    //     std::string functionName;
+    //     if (functionCall->identifier != nullptr){
+    //         functionName = std::string(functionCall->identifier);
+    //     } else {
+    //         functionName = mapInbuiltFunctionToString(functionCall->inbuiltFunc);
+    //         insert_inbuiltfunction_symtab(functionCall, functionName);
+    //     }
+
+    //     SymbolTableEntry *functionEntry = symtab.search(functionName, scope);
+    //     if(functionEntry==nullptr){
+    //         cout << "\e[31m Error: \e[0m Function " << functionName << " not declared\n";
+    //         printerror(functionCall->row,functionCall->column);
+    //         error_count++;
+    //         return Unknown;
+    //     }
+    //     vector<int> funcIndex = match_function_symb_entry(functionEntry,&currentDataType);
+        // int funcIndex = match_function_symb_entry(functionEntry,&currentDataType);
+        // vector<DataType> *inputParameters = functionEntry->inputParameters;
+        // vector<DataType> *returnParameters = functionEntry->returnParameters;
+        // traverse_function_call(functionCall,functionEntry);
+        // if (functionEntry->inputParameters->size()!=1){
+        //     cout << "\e[31m Error: \e[0m Function " << functionName << " expects more than one input parameter\n";
+        //     printerror(functionCall->row,functionCall->column);
+        //     error_count++;
+        // } else if(returnParameters->size()!=1){
+        //     cout << "\e[31m Error: \e[0m Function " << functionName << " returns more than one return parameter\n";
+        //     printerror(functionCall->row,functionCall->column);
+        //     error_count++;
+        // } else {
+        //     DataType functionInputParameter = functionEntry->inputParameters->at(0);
+        //     if (functionInputParameter != currentDataType){
+        //         cout << "\e[31m Error: \e[0m Function " << functionName << " input parameter is not of the same type as the identifier\n"<<functionName<<" expects "<<dataTypeToString(functionInputParameter)<<" but input is of type "<<dataTypeToString(currentDataType)<<"!\n";
+        //         printerror(functionCall->row,functionCall->column);
+        //         error_count++;
+        //     } 
+        //     currentDataType = returnParameters->at(0);
+        // }
+    // }
+    if(debug) {cout << "Exiting single chain expression" << endl;}
+    return currentDataType.at(0);
+}
+
 
 //intbuilt functions must be initialized by default in symbol table
 // CHECK: init of functionCallName
