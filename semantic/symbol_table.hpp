@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include <functional>
+#include <cstring>
 
 enum DataType {
     Integer,
@@ -80,6 +81,7 @@ public:
     bool insert(std::string&, DataType, std::string, int, int);
     bool insert(std::string&, std::vector<std::vector<DataType>*>*,std::vector<std::vector<DataType>*>*,std::vector<std::vector<DataType>*>*, std::string, int, int);
     SymbolTableEntry* search(std::string&, std::string);
+    SymbolTableEntry* searchFunction(std::string);
     void print();
 };
 

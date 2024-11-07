@@ -2,23 +2,24 @@
 
 bool SymbolTable::insert(std::string& name, DataType dataType, std::string scope, int rowNum, int colNum) {
     SymbolTableEntry symEntry(name, dataType, scope, rowNum, colNum);
-    if (SymbolTable::search(name, scope) != nullptr) {
+    std::pair<std::string, std::string> key = {name, scope};
+
+    if (SymbolTable::symtab.count(key)) {
         return false;
     }
 
-    std::pair<std::string, std::string> key = {name, scope};
     SymbolTable::symtab[key] = symEntry;
     return true;
 }
 
 bool SymbolTable::insert(std::string& name, std::vector<std::vector<DataType>*> * inputParameters, std::vector<std::vector<DataType>*> * otherParameters, std::vector<std::vector<DataType>*> * returnParameters, std::string scope, int colNum, int rowNum) {
     SymbolTableEntry symEntry(name, inputParameters, otherParameters, returnParameters, scope, rowNum, colNum);
+    std::pair<std::string, std::string> key = {name, scope};
 
-    if (SymbolTable::search(name, scope) != nullptr) {
+    if (SymbolTable::symtab.count(key)) {
         return false;
     }
 
-    std::pair<std::string, std::string> key = {name, scope};
     SymbolTable::symtab[key] = symEntry;
     return true;
 }
@@ -35,6 +36,24 @@ SymbolTableEntry* SymbolTable::search(std::string& name, std::string scope) {
         return nullptr;
     }
     return &(SymbolTable::symtab[key]);
+}
+
+SymbolTableEntry* SymbolTable::searchFunction(std::string scope) {
+    // if scope has less than 2 dots, return nullptr
+    if (std::count(scope.begin(), scope.end(), '.') < 2) {
+        return nullptr;
+    }
+
+    // reduced scope is a substring of the scope from the beginning to the second dot
+    std::string reducedScope = scope.substr(0, scope.find(".", 1));
+
+    for (const auto &x : SymbolTable::symtab) {
+        if (x.second.scope == reducedScope) {
+            return &(SymbolTable::symtab[x.first]);
+        }
+    }
+
+    return nullptr;
 }
 
 void SymbolTable::print() {

@@ -1,0 +1,25 @@
+$!
+$$
+Inside multiline comment !$
+
+function_declarations:
+function (dataset ds)->my_func(dataset ds1, dataset ds2, integer i)->dataset{
+    dataset ds1;
+    ds = ds1;
+    array(integer) arr = {1, 2, 3};
+    ds->col("'height'") *= 10;
+    (ds1,ds2)->join({
+        integer i;
+    })-> Row () -> show ();
+    string st = "string'f";
+    return ds3;
+}
+
+
+start:
+dataset ds = read("ds", "csv"); $$ should be double quoted
+dataset d1;
+ds2->myfunc();
+ds->col(i)->show_bar();
+$!
+invalid comment !$
