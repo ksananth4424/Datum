@@ -211,6 +211,9 @@ SingleChainExpression::SingleChainExpression(char* identifier, vector<Expression
     this->functionCallList = functionCallList;
     this->row = row;
     this->column = column;
+    if(this->access == nullptr){
+        this->access = new vector<Expression*>();
+    }
 }
 
 //MultiChainExpression
@@ -220,6 +223,9 @@ MultiChainExpression::MultiChainExpression(FunctionCall* functionCall, vector<Ex
     this->functionCallList = functionCallList;
     this->row = row;
     this->column = column;
+    if(this->access == nullptr){
+        this->access = new vector<Expression*>();
+    }
     this->inbuiltFunc = InbuiltFunctions::none;
 }
 
@@ -229,6 +235,9 @@ MultiChainExpression::MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<
     this->functionCallList = functionCallList;
     this->row = row;
     this->column = column;
+    if(this->access == nullptr){
+        this->access = new vector<Expression*>();
+    }
 }
 MultiChainExpression::MultiChainExpression(vector<Expression*> *inputExprList, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column){
     this->access = access;
@@ -237,6 +246,9 @@ MultiChainExpression::MultiChainExpression(vector<Expression*> *inputExprList, v
     this->row = row;
     this->column = column;
     this->inbuiltFunc = InbuiltFunctions::none;
+    if(this->access == nullptr){
+        this->access = new vector<Expression*>();
+    }
 
 }
 

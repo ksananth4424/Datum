@@ -195,8 +195,8 @@ inbuilt_function
 declaration 
     : type_specifier ';'                                    {$$ = new DeclarationStatement($1, lineno, yycolumn);}
     | type_specifier init_declarator_list ';'               {$$ = new DeclarationStatement($1, $2, lineno, yycolumn);}
-    | ARRAY '(' type_specifier ')' ';'                      {TypeSpecifier* type = new TypeSpecifier(new vector<int>{6}, lineno, yycolumn); type->type->push_back($3->type->at(0)); $$ = new DeclarationStatement(type,lineno, yycolumn);}
-    | ARRAY '(' type_specifier ')' init_declarator_list ';' {TypeSpecifier* type = new TypeSpecifier(new vector<int>{6}, lineno, yycolumn); type->type->push_back($3->type->at(0)); $$ = new DeclarationStatement(type, $5, lineno, yycolumn);}
+    /* | ARRAY '(' type_specifier ')' ';'                      {TypeSpecifier* type = new TypeSpecifier(new vector<int>{6}, lineno, yycolumn); type->type->push_back($3->type->at(0)); $$ = new DeclarationStatement(type,lineno, yycolumn);} */
+    /* | ARRAY '(' type_specifier ')' init_declarator_list ';' {TypeSpecifier* type = new TypeSpecifier(new vector<int>{6}, lineno, yycolumn); type->type->push_back($3->type->at(0)); $$ = new DeclarationStatement(type, $5, lineno, yycolumn);} */
     ;
 
 // all the types which can be used for the above "declarations"
@@ -207,6 +207,12 @@ type_specifier
     | CHAR                          {$$ = new TypeSpecifier(new vector<int>{3}, lineno, yycolumn);}
     | BOOL                          {$$ = new TypeSpecifier(new vector<int>{4}, lineno, yycolumn);}
     | DATASET                       {$$ = new TypeSpecifier(new vector<int>{5}, lineno, yycolumn);}
+    | ARRAY '(' INTEGER ')'         {$$ = new TypeSpecifier(new vector<int>{6}, lineno, yycolumn);}
+    | ARRAY '(' FLOAT ')'           {$$ = new TypeSpecifier(new vector<int>{7}, lineno, yycolumn);}
+    | ARRAY '(' STRING ')'          {$$ = new TypeSpecifier(new vector<int>{8}, lineno, yycolumn);}
+    | ARRAY '(' CHAR ')'            {$$ = new TypeSpecifier(new vector<int>{9}, lineno, yycolumn);}
+    | ARRAY '(' BOOL ')'            {$$ = new TypeSpecifier(new vector<int>{10}, lineno, yycolumn);}
+    | ARRAY '(' DATASET ')'         {$$ = new TypeSpecifier(new vector<int>{11}, lineno, yycolumn);}
     /* | ARRAY '(' type_specifier ')'  { $$ = $3; $$->type->insert($$->type->begin(),6); } */
     ;
 

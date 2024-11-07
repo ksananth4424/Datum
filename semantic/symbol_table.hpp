@@ -21,6 +21,7 @@ enum DataType {
     Array_String,
     Array_Char,
     Array_Boolean,
+    Array_Dataset,
     Function,
     Unknown
 };
