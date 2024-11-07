@@ -82,19 +82,23 @@ DataType mapTypeToDataType(int type)
     case 5:
         return Dataset;
     case 6:
-        return Array_Integer;
+        return Array;
     case 7:
-        return Array_Float;
+        return Array_Integer;
     case 8:
-        return Array_String;
+        return Array_Float;
     case 9:
-        return Array_Char;
+        return Array_String;
     case 10:
-        return Array_Boolean;
+        return Array_Char;
     case 11:
+        return Array_Boolean;
+    case 12:
         return Array_Dataset;   
+    case 13:
+        return Function;
     default:
-        throw std::invalid_argument("Unknown type");
+        return Unknown;
     }
 }
 
@@ -494,6 +498,7 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                 if (init_decl->initializer != nullptr && init_decl->initializer->assignmentExpression!=nullptr && init_decl->initializer->assignmentExpression->expression!=nullptr){
                     Expression* expr = init_decl->initializer->assignmentExpression->expression;
                     DataType rhs = traverse_operations(expr,scope);
+                    if( rhs == Unknown) return;
                     if (type == Integer)
                     {
                         if (rhs != Integer && rhs != Boolean)
@@ -556,6 +561,7 @@ void traverse_declaration(DeclarationStatement *decl_stmt)
                         {
                             Expression *expr = initializer->assignmentExpression->expression;
                             DataType rhs = traverse_operations(expr,scope);
+                            if( rhs == Unknown) return;
                             if (type == Integer)
                             {
                                 if (rhs != Integer && rhs != Boolean)
@@ -642,7 +648,7 @@ void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
             // check if the from and to expressions are of type integer
             if (std::get<0>(pair) != nullptr)
             {
-                if (traverse_operations(std::get<0>(pair),scope) != 0)
+                if (traverse_operations(std::get<0>(pair),scope) != Integer)
                 {
                     std::cout << "\e[31m Error: \e[0m From expression in loop statement is not of type integer\n";
                     printerror(std::get<0>(pair)->row,std::get<0>(pair)->column);
@@ -651,7 +657,7 @@ void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
             }
             if (std::get<1>(pair) != nullptr)
             {
-                if (traverse_operations(std::get<1>(pair),scope) != 0)
+                if (traverse_operations(std::get<1>(pair),scope) != Integer)
                 {
                     std::cout << "\e[31m Error: \e[0m To expression in loop statement is not of type integer\n";
                     printerror(std::get<1>(pair)->row,std::get<1>(pair)->column);
@@ -660,7 +666,7 @@ void traverse_loop_statement(LoopStatement *loop_stmt,bool isFunction)
             }
             if (std::get<2>(pair) != nullptr)
             {
-                if (traverse_operations(std::get<2>(pair),scope) != 0)
+                if (traverse_operations(std::get<2>(pair),scope) != Integer)
                 {
                     std::cout << "\e[31m Error: \e[0m Step expression in loop statement is not of type integer\n";
                     printerror(std::get<2>(pair)->row,std::get<2>(pair)->column);
@@ -796,6 +802,9 @@ bool traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry,i
             if (argument->expression != nullptr) {
                 Expression *expr = argument->expression;
                 DataType exprType = traverse_operations(expr, entry->scope);
+                if(exprType==Unknown){
+                    return false;
+                }
                 if (exprType == Boolean) {
                     cout << "Expression is boolean\n";
                 }
@@ -812,6 +821,9 @@ bool traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry,i
                     DataType fromType = traverse_operations(from, entry->scope);
                     DataType toType = traverse_operations(to, entry->scope);
                     DataType alsoType = traverse_operations(also, entry->scope);
+                    if(fromType==Unknown || toType==Unknown || alsoType==Unknown){
+                        return;
+                    }
                     if (fromType != Integer || toType != Integer || alsoType != Integer) {
                         cout << "\e[31m Error: \e[0m Function " << entry->name << " expects integer arguments\n";
                         printerror(argument->row,argument->column);
@@ -1117,6 +1129,9 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
         vector<DataType> inputTypes;
         for(auto &expr : *inputList){
             DataType exprType = traverse_operations(expr,scope);
+            if(exprType==Unknown){
+                return vector<DataType>({Unknown});
+            }
             inputTypes.push_back(exprType);
         }
         return traverse_function_call_list_multi(*(multiChainExpression->functionCallList),inputTypes,scope,0);
@@ -1208,71 +1223,74 @@ DataType traverse_operations(Expression *root,string scope){
                 return DataType::Unknown;
             }  
         } else {
-        DataType datatype = mapTypeToDataType(unaryExpression->constantValue->type->type->at(0));
-        if (datatype == Integer) {
-            return Integer;
-        } else if (datatype == Float) {
-            return Float;
-        } else if (datatype == String) {
-            for (auto &o : *(unaryExpression->op)){
-                if (o == minus_op){
-                    cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
-                    printerror(unaryExpression->row,unaryExpression->column);
-                    error_count++;
-                }else if (o == plus_op){
-                    cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+            DataType datatype = mapTypeToDataType(unaryExpression->constantValue->type->type->at(0));
+            if (datatype == Integer) {
+                return Integer;
+            } else if (datatype == Float) {
+                return Float;
+            } else if (datatype == String) {
+                for (auto &o : *(unaryExpression->op)){
+                    if (o == minus_op){
+                        cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
+                        error_count++;
+                    }else if (o == plus_op){
+                        cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
+                        error_count++;
+                    }
+                }
+                return String;
+            } else if (datatype == Char) {
+                for (auto &o : *(unaryExpression->op)){
+                    if (o == minus_op) {
+                        cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
+                        error_count++;
+                    } else if (o == plus_op){
+                        cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
+                        error_count++;
+                    }
+                }
+                return Char;
+            } else if (datatype == Boolean){
+                for (auto &o : *(unaryExpression->op))
+                {
+                    if (o == minus_op){
+                        cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
+                        error_count++;
+                    } else if (o == plus_op){
+                        cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+                        printerror(unaryExpression->row,unaryExpression->column);
+                        error_count++;
+                    }
+                }
+                return Boolean;
+            } else if (datatype == Dataset){
+                if (unaryExpression->op->size() > 0){
+                    cout << "\e[31m Error: \e[0m Cannot perform Unary operations on dataset\n";
                     printerror(unaryExpression->row,unaryExpression->column);
                     error_count++;
                 }
-            }
-            return String;
-        } else if (datatype == Char) {
-            for (auto &o : *(unaryExpression->op)){
-                if (o == minus_op) {
-                    cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
-                    printerror(unaryExpression->row,unaryExpression->column);
-                    error_count++;
-                } else if (o == plus_op){
-                    cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
+                return Dataset;
+            } else if (datatype == Array){
+                if (unaryExpression->op->size() > 0){
+                    cout << "\e[31m Error: \e[0m Cannot perform Unary operations on array\n";
                     printerror(unaryExpression->row,unaryExpression->column);
                     error_count++;
                 }
+                return Array;
             }
-            return Char;
-        } else if (datatype == Boolean){
-            for (auto &o : *(unaryExpression->op))
-            {
-                if (o == minus_op){
-                    cout << "\e[31m Error: \e[0m Cannot \"-\" perform operation on string\n";
-                    printerror(unaryExpression->row,unaryExpression->column);
-                    error_count++;
-                } else if (o == plus_op){
-                    cout << "\e[31m Error: \e[0m Cannot \"+\" perform operation on string\n";
-                    printerror(unaryExpression->row,unaryExpression->column);
-                    error_count++;
-                }
-            }
-            return Boolean;
-        } else if (datatype == Dataset){
-            if (unaryExpression->op->size() > 0){
-                cout << "\e[31m Error: \e[0m Cannot perform Unary operations on dataset\n";
-                printerror(unaryExpression->row,unaryExpression->column);
-                error_count++;
-            }
-            return Dataset;
-        } else if (datatype == Array){
-            if (unaryExpression->op->size() > 0){
-                cout << "\e[31m Error: \e[0m Cannot perform Unary operations on array\n";
-                printerror(unaryExpression->row,unaryExpression->column);
-                error_count++;
-            }
-            return Array;
-        }
         }
     } else if (root->castType == 2){
         BinaryExpression *binaryExpression = dynamic_cast<BinaryExpression *>(root);
         DataType lhs = traverse_operations(binaryExpression->lhs,scope);
         DataType rhs = traverse_operations(binaryExpression->rhs,scope);
+        if (lhs == Unknown || rhs == Unknown){
+            return Unknown;
+        }
         if (binaryExpression->op == add_op){
             if (lhs == Integer && rhs == Integer){
                 return Integer;
@@ -1312,6 +1330,10 @@ DataType traverse_operations(Expression *root,string scope){
             if (lhs == Integer && rhs == Integer){
                 return Integer;
             } else if (lhs == Float && rhs == Float){
+                return Float;
+            } else if (lhs == Integer && rhs == Float){
+                return Float;
+            } else if (lhs == Float && rhs == Integer){
                 return Float;
             } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"-\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
@@ -1414,6 +1436,69 @@ DataType traverse_operations(Expression *root,string scope){
                 error_count++;
                 return Unknown;
             }
+        } else if (binaryExpression->op == gt_op){
+            if (lhs == Integer && rhs == Integer){
+                return Boolean;
+            } else if (lhs == Float && rhs == Float){
+                return Boolean;
+            } else if (lhs == String && rhs == String){
+                return Boolean;
+            } else if (lhs == Char && rhs == Char){
+                return Boolean;
+            } else if (lhs == Boolean && rhs == Boolean){
+                return Boolean;
+            } else if (lhs == Dataset && rhs == Dataset){
+                return Boolean;
+            } else if (lhs == Array && rhs == Array){
+                return Boolean;
+            } else{
+                cout << "\e[31m Error: \e[0m Cannot perform \">\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
+                error_count++;
+                return Unknown;
+            }
+        } else if (binaryExpression->op == lt_op){
+            if (lhs == Integer && rhs == Integer){
+                return Boolean;
+            } else if (lhs == Float && rhs == Float){
+                return Boolean;
+            } else if (lhs == String && rhs == String){
+                return Boolean;
+            } else if (lhs == Char && rhs == Char){
+                return Boolean;
+            } else if (lhs == Boolean && rhs == Boolean){
+                return Boolean;
+            } else if (lhs == Dataset && rhs == Dataset){
+                return Boolean;
+            } else if (lhs == Array && rhs == Array){
+                return Boolean;
+            } else{
+                cout << "\e[31m Error: \e[0m Cannot perform \"<\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
+                error_count++;
+                return Unknown;
+            }
+        } else if (binaryExpression->op == gte_op){
+            if (lhs == Integer && rhs == Integer){
+                return Boolean;
+            } else if (lhs == Float && rhs == Float){
+                return Boolean;
+            } else if (lhs == String && rhs == String){
+                return Boolean;
+            } else if (lhs == Char && rhs == Char){
+                return Boolean;
+            } else if (lhs == Boolean && rhs == Boolean){
+                return Boolean;
+            } else if (lhs == Dataset && rhs == Dataset){
+                return Boolean;
+            } else if (lhs == Array && rhs == Array){
+                return Boolean;
+            } else{
+                cout << "\e[31m Error: \e[0m Cannot perform \">=\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
+                error_count++;
+                return Unknown;
+            }
         }
     } else if (root->castType == 3){
         UnaryExpression *unaryExpression = dynamic_cast<UnaryExpression *>(root);
@@ -1425,7 +1510,16 @@ DataType traverse_operations(Expression *root,string scope){
         UnaryExpression *unaryExpression = dynamic_cast<UnaryExpression *>(root);
         Expression *expr = unaryExpression->expr;
         vector<DataType> v = traverse_multi_chain_expression(dynamic_cast<MultiChainExpression *>(expr),scope);
-        return Dataset;
+        if(v.size()==0){
+            return Unknown;
+        }
+        if(v.size()>1){
+            cout << "\e[31m Error: \e[0m MultiChainExpression cannot terminate with multiple DataTypes\n";
+            printerror(unaryExpression->row,unaryExpression->column);
+            error_count++;
+            return Unknown;
+        }
+        return v.at(0);
     }
     return DataType::Unknown;
 }
@@ -1449,100 +1543,120 @@ void traverse_assignment(AssignmentStatement *assignmentStatement)
     }
     string scope = assignmentStatement->get_scope();    
     DataType lhs = traverse_single_chain_expression(assignmentStatement->declarator,scope);
+    if(lhs==Unknown ){
+        return;
+    }
     DataType rhs = traverse_operations(assignmentStatement->expression,scope);
+    if(rhs==Unknown){
+        return;
+    }
     AssignmentOperator operator_type = assignmentStatement->op;
     if(operator_type == assign)
     {
-        if (lhs != rhs)
+        if (!matchDataType(lhs, rhs))
         {
             cout << "\e[31m Error: \e[0m Cannot assign " << dataTypeToString(rhs) << " to " << dataTypeToString(lhs) << "!\n";
+            printerror(assignmentStatement->row,assignmentStatement->column);
             error_count++;
+            return;
         }
     }else if(operator_type == add_assign)
     {
-        if(lhs != Integer && lhs != Float)
+        if(lhs == Integer && lhs == Float)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"+=\" operation on " << dataTypeToString(lhs) << "!\n";
-            error_count++;
+            return;
         }
-        if(rhs != Integer && rhs != Float)
+        if(rhs == Integer && rhs == Float)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"+=\" operation with " << dataTypeToString(rhs) << "!\n";
-            error_count++;
+            return;
         }
-        if(lhs != rhs)
+        if(matchDataType(lhs, rhs))
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"+=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
-            error_count++;
+            return;
         }
+        if(lhs==Array && (rhs==Integer || rhs==Float || rhs==Char || rhs==String || rhs==Boolean || rhs==Dataset))
+        {
+            return;
+        }
+        if((lhs==Array_Integer && rhs==Integer) || (lhs==Array_Float && rhs==Float) || (lhs==Array_Char && rhs==Char) || (lhs==Array_String && rhs==String) || (lhs==Array_Boolean && rhs==Boolean) || (lhs==Array_Dataset && rhs==Dataset))
+        {
+            return;
+        } 
+        cout << "\e[31m Error: \e[0m Cannot perform \"+=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+        printerror(assignmentStatement->row,assignmentStatement->column);
+        error_count++;
+        return;
+
     }else if(operator_type == sub_assign)
     {
         if(lhs != Integer && lhs != Float)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"-=\" operation on " << dataTypeToString(lhs) << "!\n";
-            error_count++;
+            return;
         }
         if(rhs != Integer && rhs != Float)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"-=\" operation on " << dataTypeToString(rhs) << "!\n";
-            error_count++;
+            return;
         }
         if(lhs != rhs)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"-=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
-            error_count++;
+            return;
         }
+        cout << "\e[31m Error: \e[0m Cannot perform \"-=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+        error_count++;
     }else if(operator_type == mul_assign)
     {
         if(lhs != Integer && lhs != Float)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"*=\" operation on " << dataTypeToString(lhs) << "!\n";
-            error_count++;
+            return;
         }
         if(rhs != Integer && rhs != Float)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"*=\" operation on " << dataTypeToString(rhs) << "!\n";
-            error_count++;
+            return;
         }
         if(lhs != rhs)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"*=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
-            error_count++;
+            return;
         }
+        cout << "\e[31m Error: \e[0m Cannot perform \"*=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+        error_count++;
+        printerror(assignmentStatement->row,assignmentStatement->column);
+        return;
     }else if(operator_type == div_assign)
     {
         if(lhs != Integer && lhs != Float)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"/=\" operation on " << dataTypeToString(lhs) << "!\n";
-            error_count++;
+            return;
         }
         if(rhs != Integer && rhs != Float)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"/=\" operation on " << dataTypeToString(rhs) << "!\n";
-            error_count++;
+            return;
         }
         if(lhs != rhs)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"/=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
-            error_count++;
+            return;
         }
+        cout << "\e[31m Error: \e[0m Cannot perform \"/=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+        error_count++;
+        printerror(assignmentStatement->row,assignmentStatement->column);
+        return;
     }else if(operator_type == mod_assign)
     {
         if(lhs != Integer && lhs != Float)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"%=\" operation on " << dataTypeToString(lhs) << "!\n";
-            error_count++;
+            return;
         }
         if(rhs != Integer && rhs != Float)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"%=\" operation on " << dataTypeToString(rhs) << "!\n";
-            error_count++;
+            return;
         }
         if(lhs != rhs)
         {
-            cout << "\e[31m Error: \e[0m Cannot perform \"%=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
-            error_count++;
+            return;
         }
+        cout << "\e[31m Error: \e[0m Cannot perform \"%=\" operation with " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+        error_count++;
+        printerror(assignmentStatement->row,assignmentStatement->column);
+        return;
     }
 }
 
@@ -1558,6 +1672,9 @@ void traverse_if_statement(ConditionalStatement *cond_stmt,bool isFunction,bool 
             {
                 string scope = string(cond_stmt->get_scope());
                 DataType temp = traverse_operations(expr,scope);
+                if(temp==Unknown){
+                    return;
+                }
                 if (temp != Boolean || temp != Integer)
                 {
                     std::cout << "\e[31m Error: \e[0m Expression in conditional statement is not of type boolean\n";
