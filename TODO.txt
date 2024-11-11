@@ -31,10 +31,11 @@ Syntax Analyser:
 
 ----------------------------------------------------------
 Semantic Analyser:
-- change language of Parser to cpp
-- in parser.y line 149 and 108??
-- start, ConstantValue, Initializer, AssignmentStatement...
-- change precedence order in parser.y
+- join not declared
+- need multi chain expression?
+- line numbers
+-  Error:  Cannot perform "*=" operation with Array and Integer!
+-  Error:  MultiChainExpression cannot terminate with multiple DataTypes
 
 ----------------------------------------------------------
 Intermediate code generator:
@@ -45,3 +46,4 @@ Intermediate code generator:
 Optimizations:
 - Do the whole thing
 
+`

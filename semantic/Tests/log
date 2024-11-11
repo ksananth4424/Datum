@@ -1,0 +1,14 @@
+In File /home/nimai/Desktop/MyPrograms/Courses/Compilers/project/Datum/semantic/Tests/correct_2.dt:5:11
+function_declarations:
+In File /home/nimai/Desktop/MyPrograms/Courses/Compilers/project/Datum/semantic/Tests/correct_2.dt:8:19
+ds = ds1;
+<-----------Program is syntactically correct--------->
+[31m Error: [0m Identifier ds1 in declaration statement is already declared
+[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m^[0m
+[31m Error: [0m Function col expects Array_Integer but String provided
+[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m-[0m[31m^[0m
+0
+In File /home/nimai/Desktop/MyPrograms/Courses/Compilers/project/Datum/semantic/Tests/correct_2.dt:8:24
+ds = ds1;
+In File /home/nimai/Desktop/MyPrograms/Courses/Compilers/project/Datum/semantic/Tests/correct_2.dt:11:4
+(ds1,ds2)->join({

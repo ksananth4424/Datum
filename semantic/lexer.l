@@ -7,6 +7,7 @@ int lineno = 1;
 int yycolumn = 0;
 
 void count();
+void comment();
 %}
 
 D			[0-9]
@@ -14,7 +15,7 @@ L			[a-zA-Z_]
 
 %%
 
-"$!"([^!]|(!+[^!$]))*!*"!$" ;
+"$!" 			{comment();}
 "$$".*        ;   
 
 "integer"   {count(); return (INTEGER);}
@@ -125,4 +126,27 @@ void count() {
 			yycolumn += 8 - (yycolumn % 8);
 		else
 			yycolumn++;
+}
+
+// Function to handle multiline comments
+void comment() {
+	char c, c1;
+
+    while (1) {
+        c = yyinput();
+        if (c == 0) {
+            break;
+        }
+        if (c == '\n') {
+            lineno++;
+        }
+        if (c == '!') {
+            c1 = yyinput();
+            if (c1 == '$') {
+                break;
+            } else {
+                unput(c1);
+            }
+        }
+    }
 }

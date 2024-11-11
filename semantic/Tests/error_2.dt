@@ -1,0 +1,9 @@
+$!
+$$
+Inside multiline comment !$
+
+function_declarations:
+
+start:
+
+dataset; $$ ERROR_EXPECTED
