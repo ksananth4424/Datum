@@ -4,22 +4,26 @@ Inside multiline comment !$
 
 function_declarations:
 function (dataset ds)->my_func(dataset ds1, dataset ds2, integer i)->dataset{
-    dataset ds1;
     ds = ds1;
-    array(integer) arr = {1, 2, 3};
-    ds->col("'height'") *= 10;
-    (ds1,ds2)->join({
-        integer i;
-    })-> Row () -> show ();
+$$    array(integer) arr = {1, 2, 3};
+$$    ds->col("'height'") *= 10;
+$$    (ds1,ds2)->join({
+$$        integer i;
+$$    })-> row () -> show ();
     string st = "string'f";
-    return ds3;
+    return ds1;
 }
 
 
 start:
-dataset ds = read("ds", "csv"); $$ should be double quoted
-dataset d1;
-ds2->myfunc();
+$$ dataset ds = read("ds", "csv"); $$ should be double quoted
+dataset ds;
+integer i =0;
+$$ ds2->my_func();
+$$ ds->col(i)->show_bar();
+array(integer) arr;
 ds->col(i)->show_bar();
+integer ba = arr[0];
+integer a = ds->col(i)[0];
 $!
 invalid comment !$

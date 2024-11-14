@@ -125,6 +125,7 @@ public:
     int row;
     int column;
     Node();
+    virtual void buildScope(string scope);
     virtual string get_scope();
     virtual ~Node() = default;
 };
@@ -134,6 +135,7 @@ class TypeSpecifier : public Node
 public:
     vector<int> *type;
     TypeSpecifier(vector<int> *type, int row, int column);
+    void buildScope(string scope);
 
     virtual ~TypeSpecifier() = default;
 };
@@ -147,6 +149,7 @@ public:
     Start(vector<class Statement *> *StatementList, int row, int column);
     Start(vector<class FunctionDeclaration *> *FunctionList, int row, int column);
     Start(vector<class FunctionDeclaration *> *FunctionList, vector<class Statement *> *StatementList, int row, int column);
+    void buildScope(string scope);
     virtual ~Start() = default;
 };
 
@@ -164,6 +167,7 @@ public:
     ConstantValue(TypeSpecifier *type, bool bval, int row, int column);
     ConstantValue(TypeSpecifier *type, char cval, int row, int column);
     ConstantValue(TypeSpecifier *type, char* sval, int row, int column);
+    void buildScope(string scope);
 
     virtual ~ConstantValue() = default;
 };
@@ -175,6 +179,7 @@ public:
     vector<class InitDeclaration *> *initDeclarations;
     DeclarationStatement(TypeSpecifier *type, int row, int column);
     DeclarationStatement(TypeSpecifier *type, vector<class InitDeclaration *> *initDeclarations, int row, int column);
+    void buildScope(string scope);
 
     virtual ~DeclarationStatement() = default;
 };
@@ -185,6 +190,7 @@ public:
     // TypeSpecifier type;
     int castType;
     Expression();
+    void buildScope(string scope);
     virtual ~Expression() = default;
 };
 
@@ -195,6 +201,7 @@ public:
     Expression *rhs;
     BinaryOperator op;
     BinaryExpression(Expression *lhs, Expression *rhs, BinaryOperator op, int row, int column);
+    void buildScope(string scope);
 
     virtual ~BinaryExpression() = default;
 };
@@ -214,6 +221,7 @@ public:
     UnaryExpression(Expression *expr, vector<UnaryOperator> *op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction, int row, int column);
     UnaryExpression(Expression *expr, int row, int column);
     UnaryExpression(ConstantValue *constantValue, int row, int column);
+    void buildScope(string scope);
 
     virtual ~UnaryExpression() = default;
 };
@@ -225,6 +233,7 @@ public:
     vector<class Initializer *> *initializerList;
     Initializer(AssignmentStatement *assignmentExpression, int row, int column);
     Initializer(vector<class Initializer *> *initializerList, int row, int column);
+    void buildScope(string scope);
 
     virtual ~Initializer() = default;
 };
@@ -234,6 +243,7 @@ class Declarator : public Node
 public:
     char* identifier;
     Declarator(char* identifier, int row, int column);
+    void buildScope(string scope);
 
     virtual ~Declarator() = default;
 };
@@ -246,6 +256,7 @@ public:
 
     InitDeclaration(Declarator *declarator, int row, int column);
     InitDeclaration(Declarator *declarator, Initializer *initializer, int row, int column);
+    void buildScope(string scope);
 
     virtual ~InitDeclaration() = default;
 };
@@ -259,6 +270,7 @@ public:
 
     AssignmentStatement(SingleChainExpression *declarator, Expression *expression, AssignmentOperator op, int row, int column);
     AssignmentStatement(Expression *expression, int row, int column);
+    void buildScope(string scope);
 
     virtual ~AssignmentStatement() = default;
 };
@@ -269,6 +281,7 @@ public:
     vector<pair<class Expression *, vector<class Statement *>*>> *ConditionStatements;
 
     ConditionalStatement(vector<pair<class Expression *, vector<class Statement *>*>> *ConditionStatements, int row, int column);
+    void buildScope(string scope);
 
     virtual ~ConditionalStatement() = default;
 };
@@ -281,6 +294,7 @@ public:
     vector<class Statement *> *statements;
 
     LoopStatement(Declarator* variable, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements, int row, int column);
+    void buildScope(string scope);
 
     virtual ~LoopStatement() = default;
 };
@@ -291,6 +305,7 @@ public:
     Expression *expression;
     ReturnStatement();
     ReturnStatement(Expression *expression, int row, int column);
+    void buildScope(string scope);
 
     virtual ~ReturnStatement() = default;
 };
@@ -331,6 +346,7 @@ public:
     Statement(BreakStatement *breakStatement, int row, int column);
     Statement(ContinueStatement *continueStatement, int row, int column);
     Statement(vector<Statement*> *compoundStatement, int row, int column);
+    void buildScope(string scope);
 
     virtual ~Statement() = default;
 };
@@ -341,6 +357,7 @@ public:
     TypeSpecifier* type;
     Declarator* identifier;
     Parameter(TypeSpecifier* type, Declarator* identifier, int row, int column);
+    void buildScope(string scope);
 
     virtual ~Parameter() = default;
 };
@@ -354,6 +371,7 @@ public:
     vector<Parameter *> *outParameter;
     vector<class Statement *> *statements;
     FunctionDeclaration(char* identifier, vector<Parameter *> *inpParameter, vector<Parameter *> *otherParameter, vector<Parameter *> *outParameter, vector<class Statement *> *statements, int row, int column);
+    void buildScope(string scope);
 
     virtual ~FunctionDeclaration() = default;
 };
@@ -367,6 +385,7 @@ public:
     Argument(Expression *expression, int row, int column);
     Argument(vector<tuple<Expression *, Expression *, Expression *>> *fromToAlsoExpression, int row, int column);
     Argument(vector<Statement *> *statements, int row, int column);
+    void buildScope(string scope);
 
     virtual ~Argument() = default;
 };
@@ -378,6 +397,7 @@ public:
     vector<Argument *> *argumentList;
     FunctionCall(char* identifier, vector<Argument *> *argumentList, int row, int column);
     FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *argumentList, int row, int column);
+    void buildScope(string scope);
 
     virtual ~FunctionCall() = default;
 };
@@ -389,6 +409,7 @@ public:
     vector<Expression*> *access;
     vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList;
     SingleChainExpression(char* identifier, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);
+    void buildScope(string scope);
 
     virtual ~SingleChainExpression() = default;
 };
@@ -406,6 +427,7 @@ public:
     MultiChainExpression(FunctionCall* functionCall, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);
     MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);;
     MultiChainExpression(vector<Expression*> *inputExprList, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);
+    void buildScope(string scope);
     virtual ~MultiChainExpression() = default;
 };
 

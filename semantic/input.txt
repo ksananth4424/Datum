@@ -1,9 +1,3 @@
-$!
-$$
-Inside multiline comment !$
-
 function_declarations:
 start:
 dataset dd = read("a","b");
-array(integer) arr;
-arr+=5;

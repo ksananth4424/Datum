@@ -24,6 +24,7 @@ enum DataType {
     Array_Boolean,
     Array_Dataset,
     Function,
+    Any, //it means teh type could be integer or float or string or char or boolean
     Unknown
 };
 
