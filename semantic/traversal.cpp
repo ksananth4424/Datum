@@ -241,6 +241,7 @@ void insert_inbuiltfunction_symtab(FunctionCall* function, std::string func){
         std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Integer}),new std::vector<DataType>({Integer}),new std::vector<DataType>({Integer})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, function->row,function->column);
     } else if(func == "read"){
+        cout<<"added to symbol table"<<endl;
         std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({})});
         std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({String,String})});
         std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset})});
@@ -885,14 +886,16 @@ bool traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry, 
 vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, vector<Expression *>*>> functionCallList,vector<DataType> currentDataType,string scope,bool isSingle)
 {
     if(debug) {cout << "Entering function call list multi" << endl;}
-    // cout<<"in multi call"<<endl;
+    cout<<"in multi call"<<endl;
     for(int i=0;i<functionCallList.size();i++){
         pair<FunctionCall *, vector<Expression *>*> funcPair = functionCallList.at(i);
         FunctionCall *functionCall = funcPair.first;
         vector<Expression *> *access = funcPair.second;
         std::string functionName ;
         if(functionCall->identifier!=nullptr){
+            cout<<"inbuilt"<<endl;
             functionName = std::string(functionCall->identifier);
+            cout<<functionName<<endl;
         } else {
             functionName = mapInbuiltFunctionToString(functionCall->inbuiltFunc);
             functionCall->scope = scope;
@@ -1137,11 +1140,18 @@ vector<DataType> traverse_multi_chain_expression(MultiChainExpression *multiChai
     if(multiChainExpression->functionCall!=nullptr || multiChainExpression->inbuiltFunc!=InbuiltFunctions::none){
         if(debug) {cout << "hi" << endl;}
         std::string functionCallName;
-        if(multiChainExpression->functionCall!=nullptr){
-            functionCallName = string(multiChainExpression->functionCall->identifier) ;
+        if(multiChainExpression->functionCall->identifier!=nullptr){
+            functionCallName = std::string(multiChainExpression->functionCall->identifier) ;
         } else {
             //
-            functionCallName = string(mapInbuiltFunctionToString(multiChainExpression->inbuiltFunc));
+            functionCallName = std::string(mapInbuiltFunctionToString(multiChainExpression->functionCall->inbuiltFunc));
+            std::string scope = std::string("g");
+    cout<<"in multi"<<endl;
+            SymbolTableEntry *ent = symtab.search(functionCallName,scope);
+     cout<<functionCallName<<endl;
+            if(ent==nullptr){
+                insert_inbuiltfunction_symtab(multiChainExpression->functionCall,"g");
+            }
         }
         SymbolTableEntry *entry = symtab.search(functionCallName,"g");
         if(entry==nullptr){

@@ -324,7 +324,7 @@ multi_chain_expression
     | IDENTIFIER '(' argument_list ')'                                                      { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),nullptr,nullptr, lineno, yycolumn); }
     | IDENTIFIER '(' argument_list ')' access_list                                          { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),$5,nullptr, lineno, yycolumn); }
     | inbuilt_function '('  ')'                                                             { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),nullptr,nullptr, lineno, yycolumn); }              
-    | inbuilt_function '('  ')' access_list                                                 { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),$4,nullptr, lineno, yycolumn); }
+    | inbuilt_function '('  ')' access_list                                                 { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),$4,nullptr, lineno, yycolumn);  }
     | inbuilt_function '(' argument_list ')'                                                { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),nullptr,nullptr, lineno, yycolumn); }
     | inbuilt_function '(' argument_list ')' access_list                                    { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),$5,nullptr, lineno, yycolumn); }
     ;
