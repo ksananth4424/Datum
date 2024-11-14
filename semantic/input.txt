@@ -19,6 +19,5 @@ dataset ds = read("ds", "csv"); $$ should be double quoted
 dataset ds1;
 ds1->my_func(ds1, ds1, 0);
 integer i = 10;
-ds->col(i)->show_bar();
 $!
 invalid comment !$

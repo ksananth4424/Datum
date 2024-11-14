@@ -1875,7 +1875,8 @@ void traverse(Start *start)
 {
     if (start == nullptr)
         return;
-    buildScope(start, ".g");
+    start->buildScope(".g");
+    // buildScope(start, ".g");
     //for functions in inbuilt function, add eacg of them to symbol table
     insert_inbuiltfunction_symtab();
     for (auto &func_dec : *(start->FunctionList))
