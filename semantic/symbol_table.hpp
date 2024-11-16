@@ -24,9 +24,40 @@ enum DataType {
     Array_Boolean,
     Array_Dataset,
     Function,
-    Any, //it means teh type could be integer or float or string or char or boolean
+    Any, //it means the type could be integer or float or string or char or boolean
     Unknown
 };
+
+class FunctionArgument {
+public:
+    bool isDataType;
+    bool isPf;
+    bool isFromToAlso;
+    DataType dataType;
+    std::vector<DataType> *pfDataTypes;
+    std::string print();
+
+    FunctionArgument(DataType dataType) {
+        this->isDataType = true;
+        this->dataType = dataType;
+        this->isPf = false;
+        this->isFromToAlso = false;
+    }
+
+    FunctionArgument(std::vector<DataType> *pfDataTypes) {
+        this->isDataType = false;
+        this->isPf = true;
+        this->pfDataTypes = pfDataTypes;
+        this->isFromToAlso = false;
+    }
+
+    FunctionArgument(bool isFromToAlso) {
+        this->isDataType = false;
+        this->isPf = false;
+        this->isFromToAlso = isFromToAlso;
+    }
+};
+
 
 class SymbolTableEntry {
 public:
@@ -34,8 +65,8 @@ public:
     DataType dataType;
     std::string scope;
     std::vector<std::vector<DataType>*> *returnParameters;
+    std::vector<std::vector<FunctionArgument>*> *otherParameters;
     std::vector<std::vector<DataType>*> *inputParameters;
-    std::vector<std::vector<DataType>*> *otherParameters;
 
     int rowNum;
 	int colNum;
@@ -53,15 +84,38 @@ public:
         this->colNum = colNum;
     }
 
-    SymbolTableEntry(std::string& name, std::vector<std::vector<DataType>*> *inputParameters, std::vector<std::vector<DataType>*> *otherParameters, std::vector<std::vector<DataType>*> *returnParameters, std::string& scope, int rowNum, int colNum) {
+    SymbolTableEntry(const std::string& name, std::vector<std::vector<DataType>*>* inputParameters, std::vector<std::vector<FunctionArgument>*>* otherParameters, std::vector<std::vector<DataType>*>* returnParameters, const std::string& scope, int rowNum, int colNum) {
         this->name = name;
         this->dataType = DataType::Function;
-        this->inputParameters = inputParameters;
-        this->otherParameters = otherParameters;
-        this->returnParameters = returnParameters;
         this->scope = scope;
         this->rowNum = rowNum;
         this->colNum = colNum;
+
+        this->inputParameters = inputParameters;
+        this->otherParameters = otherParameters;
+        this->returnParameters = returnParameters;
+
+    }
+
+    SymbolTableEntry(std::string& name, std::vector<std::vector<DataType>*> *inputParameters, std::vector<std::vector<DataType>*> *otherParameters, std::vector<std::vector<DataType>*> *returnParameters, std::string& scope, int rowNum, int colNum) {
+        this->name = name;
+        this->dataType = DataType::Function;
+        this->scope = scope;
+        this->rowNum = rowNum;
+        this->colNum = colNum;
+
+        std::vector<std::vector<FunctionArgument>*> *oParameters = new std::vector<std::vector<FunctionArgument>*>();
+        for (auto &param : *otherParameters) {
+            std::vector<FunctionArgument> *fArgs = new std::vector<FunctionArgument>();
+            for (auto &type : *param) {
+                FunctionArgument fArg(type);
+                fArgs->push_back(fArg);
+            }
+            oParameters->push_back(fArgs);
+        }
+        this->inputParameters = inputParameters;
+        this->otherParameters = oParameters;
+        this->returnParameters = returnParameters;
     }
 };
 struct pair_hash {
@@ -81,6 +135,7 @@ public:
     SymbolTable() {}
     bool insert(std::string&, DataType, std::string, int, int);
     bool insert(std::string&, std::vector<std::vector<DataType>*>*,std::vector<std::vector<DataType>*>*,std::vector<std::vector<DataType>*>*, std::string, int, int);
+    bool insert(std::string&, std::vector<std::vector<DataType>*>*,std::vector<std::vector<FunctionArgument>*>*,std::vector<std::vector<DataType>*>*, std::string, int, int);
     SymbolTableEntry* search(std::string&, std::string);
     SymbolTableEntry* searchFunction(std::string);
     void print();

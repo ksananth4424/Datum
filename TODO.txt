@@ -36,7 +36,7 @@ Semantic Analyser:
 - line numbers
 -  Error:  Cannot perform "*=" operation with Array and Integer!
 -  Error:  MultiChainExpression cannot terminate with multiple DataTypes
-
+- semantic analysis of pfunctions
 ----------------------------------------------------------
 Intermediate code generator:
 - Build the whole thing

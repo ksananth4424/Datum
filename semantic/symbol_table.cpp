@@ -24,6 +24,18 @@ bool SymbolTable::insert(std::string& name, std::vector<std::vector<DataType>*> 
     return true;
 }
 
+bool SymbolTable::insert(std::string& name, std::vector<std::vector<DataType>*> * inputParameters, std::vector<std::vector<FunctionArgument>*> * otherParameters, std::vector<std::vector<DataType>*> * returnParameters, std::string scope, int colNum, int rowNum) {
+    SymbolTableEntry symEntry(name, inputParameters, otherParameters, returnParameters, scope, rowNum, colNum);
+    std::pair<std::string, std::string> key = {name, scope};
+
+    if (SymbolTable::symtab.count(key)) {
+        return false;
+    }
+
+    SymbolTable::symtab[key] = symEntry;
+    return true;
+}
+
 SymbolTableEntry* SymbolTable::search(std::string& name, std::string scope) {
     std::pair<std::string, std::string> key = {name, scope};
 
@@ -38,22 +50,8 @@ SymbolTableEntry* SymbolTable::search(std::string& name, std::string scope) {
     return &(SymbolTable::symtab[key]);
 }
 
-SymbolTableEntry* SymbolTable::searchFunction(std::string scope) {
-    // if scope has less than 2 dots, return nullptr
-    if (std::count(scope.begin(), scope.end(), '.') < 2) {
-        return nullptr;
-    }
-
-    // reduced scope is a substring of the scope from the beginning to the second dot
-    std::string reducedScope = scope.substr(0, scope.find(".", 1));
-
-    for (const auto &x : SymbolTable::symtab) {
-        if (x.second.scope == reducedScope) {
-            return &(SymbolTable::symtab[x.first]);
-        }
-    }
-
-    return nullptr;
+SymbolTableEntry* SymbolTable::searchFunction(std::string functionName) {
+    return search(functionName, ".g");
 }
 
 void SymbolTable::print() {
@@ -83,7 +81,7 @@ void SymbolTable::print() {
         // loop through the other parameters and print them
         if (x.second.otherParameters != nullptr) {
             for (auto &param : *(x.second.otherParameters->at(0))) {
-                std::cout << std::setw(15) << param;
+                std::cout << std::setw(15) << param.print();
             }
         } else {
             std::cout << std::setw(15) << "NULL";
@@ -102,4 +100,16 @@ void SymbolTable::print() {
     }
     std::cout<<"<----------------------------------------------------->\n";
     std::cout << "\n";
+}
+
+std::string FunctionArgument::print() {
+    if (isDataType) {
+        return "dataType";
+    } else if (isFromToAlso) {
+        return "fromToAlso";
+    } else if (isPf) {
+        return "pfunction";
+    } else {
+        return "unknown";
+    }
 }

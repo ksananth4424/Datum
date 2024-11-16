@@ -108,7 +108,7 @@ L			[a-zA-Z_]
 
 [\n]        {lineno++; yycolumn = 0;}
 [ \t\v\f]   {}
-.           {puts("error in lexing"); /* ignore */}
+.           {printf("%s: error in lexing\n", yytext); /* ignore */}
 
 %%
 

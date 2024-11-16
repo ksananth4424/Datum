@@ -1,38 +1,5 @@
 function_declarations:
 
-function(integer depth) ->pascals_triangle() -> void{
-    $$ This function prints the pascal's triangle till the depth specified by the user
-
-    array(array(integer)) triangle;
-    $$ This array will store the pascal's triangle
-
-    $$ Looping over all the rows of the triangle
-    loop i from 0 to depth{
-        array(integer) dummy;
-        $$ This array will store the current row of the triangle
-
-        loop j from 0 to i{
-            if(j == 0 or j == i){
-                dummy->add(1);
-            }
-            else{
-                dummy->add(triangle[i-1][j-1] + triangle[i-1][j]);
-            }
-        }
-        triangle->add(dummy);
-        $$ Adding the current row to the triangle
-    }
-
-    $$ Looping over all the rows of the triangle to print the triangle
-    loop i from 0 to depth{
-        loop j from 0 to i{
-            triangle[i][j]->show();
-        }
-        $$ This is to print a new line after each row
-        print("\n");
-    }
-}
-
 function(dataset ds) -> max_element_each_row() -> array(integer) {
     array(integer) dummy;
     loop i from 0 to ds->shape()[0]{
@@ -42,47 +9,25 @@ function(dataset ds) -> max_element_each_row() -> array(integer) {
 }
 
 function(dataset ds) -> threshold_row(string col_name ,integer threshold_value) -> dataset{
-    loop i from 0 to ds->shape()[0]{
-        if(ds->row(i)->col(col_name) > threshold_value){
-            ds->row(i)->drop();
-        }
-    }
+    ds->col(col_name)->filter({return x > threshold;})->drop();
     return ds;
 }
 
 start:
-
-integer depth = 5;
-5->pascals_triangle();
-$!
-This will print the pascal's triangle of depth 5
-!$
-
-
-$$ Reading the dataset containing the error readings of the experiments
 dataset ds2 = read("experiments_error_readings", "csv");        
-
-$$ Getting the maximum error reading of each experiment
 array(integer) max_error_readings;
 max_error_readings = ds2->max_element_each_row();
 
-$$ Calculating the mean of the maximum error readings
 integer mean_of_max_errors = max_error_readings->mean();
 
-$$ Printing the maximum error readings and the mean of the maximum error readings
 max_error_readings->show();
 mean_of_max_errors->show();
 
-
-$$ Reading the dataset containing the loss predictions
 dataset ds3 = read("loss_predictions", "csv");      
 
-$$ Thresholding the dataset based on the maximum affordable loss
 integer max_affordable_loss = 120;
 dataset ds4 = ds3-> threshold_row("loss", max_affordable_loss);    
 ds4->col("loss")->show_bar();
-
-$$ Printing the dataset after thresholding(removing the rows with loss greater than max_affordable_loss)
 
 $!
 A multiline comment which contains a single and multi line comment

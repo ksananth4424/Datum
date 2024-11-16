@@ -194,18 +194,20 @@ void insert_inbuiltfunction_symtab() {
     std::string scope = ".g";
     {
         func = "show_bar";
-        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array}),new std::vector<DataType>({Array})});
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset})});
         std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Integer}),new std::vector<DataType>({})});
         std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({}),new std::vector<DataType>({})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     }
+    // TODO
     {
         func = "show_line";
         std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array,Array}),new std::vector<DataType>({Array}),new std::vector<DataType>({Array}),new std::vector<DataType>({Array,Array})});
         std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({}),new std::vector<DataType>({Integer,Integer,Integer,Integer}),new std::vector<DataType>({}),new std::vector<DataType>({Integer,Integer,Integer,Integer})});
         std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
-    } {
+    } 
+    {
         func = "show_scatter";
         std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array,Array}),new std::vector<DataType>({Array}),new std::vector<DataType>({Array}),new std::vector<DataType>({Array,Array})});
         std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({}),new std::vector<DataType>({Integer,Integer}),new std::vector<DataType>({}),new std::vector<DataType>({Integer,Integer}),});
@@ -218,54 +220,73 @@ void insert_inbuiltfunction_symtab() {
         std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({}),new std::vector<DataType>({Integer,Integer}),new std::vector<DataType>({}),new std::vector<DataType>({Integer,Integer}),});
         std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
-    } 
+    }
     {
         func = "row";
-        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset})});
-        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Integer}),new std::vector<DataType>({Integer})});
-        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset})});
+
+        std::vector<std::vector<FunctionArgument>*> *otherParameters = new std::vector<std::vector<FunctionArgument>*>();
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(Integer)}));
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(Array_Integer)}));
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(String)}));
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(Array_String)}));
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(new std::vector<DataType>({Integer}))}));
+
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}), new std::vector<DataType>({Dataset})});
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}), new std::vector<DataType>({Dataset})});
+
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     } 
     {
         func = "col";
-        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset})});
-        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Integer}),new std::vector<DataType>({Integer}),new std::vector<DataType>({String}),new std::vector<DataType>({Array_String})});
-        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Array}),new std::vector<DataType>({Array}),new std::vector<DataType>({Dataset})});
+
+        std::vector<std::vector<FunctionArgument>*> *otherParameters = new std::vector<std::vector<FunctionArgument>*>();
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(Integer)}));
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(Array_Integer)}));
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(String)}));
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(Array_String)}));
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(new std::vector<DataType>({Integer}))}));
+
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}), new std::vector<DataType>({Dataset})});
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}), new std::vector<DataType>({Dataset})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     } 
     {
         func = "filter";
+
+        std::vector<std::vector<FunctionArgument>*> *otherParameters = new std::vector<std::vector<FunctionArgument>*>();
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(new std::vector<DataType>({Integer}))}));
+        otherParameters->push_back(new std::vector<FunctionArgument>({FunctionArgument(new std::vector<DataType>({Integer, Integer}))}));
+
         std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset})});
-        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Integer}),new std::vector<DataType>({Integer,Integer})});
         std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     } 
     {
         func = "sum";
-        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Array_Integer})});
-        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({}),new std::vector<DataType>({Integer}),new std::vector<DataType>({})});
-        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Integer}),new std::vector<DataType>({Integer}),new std::vector<DataType>({Integer})});
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Array_Integer}), new std::vector<DataType>({Array_Float})});
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Integer}),new std::vector<DataType>({}),new std::vector<DataType>({})});
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Float}),new std::vector<DataType>({Float}),new std::vector<DataType>({Integer}), new std::vector<DataType>({Float})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     } 
     {
         func = "max";
-        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Array_Integer})});
-        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Integer}),new std::vector<DataType>({Integer}),new std::vector<DataType>({})});
-        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Integer}),new std::vector<DataType>({Integer}),new std::vector<DataType>({Integer})});
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Array_Integer}), new std::vector<DataType>({Array_Float})});
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Integer}),new std::vector<DataType>({}),new std::vector<DataType>({}), new std::vector<DataType>({})});
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Float}),new std::vector<DataType>({Float}),new std::vector<DataType>({Integer}), new std::vector<DataType>({Float})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     } 
     {
         func = "min";
-        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Array_Integer})});
-        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Integer}),new std::vector<DataType>({Integer}),new std::vector<DataType>({})});
-        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Integer}),new std::vector<DataType>({Integer}),new std::vector<DataType>({Integer})});
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Array_Integer}), new std::vector<DataType>({Array_Float})});
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Integer}),new std::vector<DataType>({}),new std::vector<DataType>({}), new std::vector<DataType>({})});
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Float}),new std::vector<DataType>({Float}),new std::vector<DataType>({Integer}), new std::vector<DataType>({Float})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     } 
     {
         func = "mean";
-        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Array_Integer})});
-        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Integer}),new std::vector<DataType>({Integer}),new std::vector<DataType>({})});
-        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Integer}),new std::vector<DataType>({Integer}),new std::vector<DataType>({Integer})});
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset}),new std::vector<DataType>({Array_Integer}), new std::vector<DataType>({Array_Float})});
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Integer}),new std::vector<DataType>({}),new std::vector<DataType>({}), new std::vector<DataType>({})});
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array_Float}),new std::vector<DataType>({Float}),new std::vector<DataType>({Integer}), new std::vector<DataType>({Float})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     } 
     {
@@ -320,9 +341,9 @@ void insert_inbuiltfunction_symtab() {
     {
         //this is left
         func = "add";
-        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset})});
-        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array})});
-        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset})});
+        std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}), new std::vector<DataType>({Array}), new std::vector<DataType>({Array})});
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Array}), new std::vector<DataType>({Integer}), new std::vector<DataType>({Float})});
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}), new std::vector<DataType>({Array}), new std::vector<DataType>({Array})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     } 
     {
@@ -335,8 +356,8 @@ void insert_inbuiltfunction_symtab() {
     {
         func = "drop";
         std::vector<std::vector<DataType>*> *inputParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset})});
-        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Integer,Integer}),new std::vector<DataType>({Integer,Array_Integer})});
-        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Dataset}),new std::vector<DataType>({Dataset})});
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({}),new std::vector<DataType>({Integer})});
+        std::vector<std::vector<DataType>*> *returnParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({}),new std::vector<DataType>({})});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     }
     {
@@ -347,7 +368,7 @@ void insert_inbuiltfunction_symtab() {
     }
 }
 
-void traverse_statement(Statement *stmt,bool isFunction=false,bool isLoop=false)
+void traverse_statement(Statement *stmt,bool isFunction=false,bool isLoop=false, string functionName="")
 {
     if(debug) {cout << "entering statement" << endl;}
     if (stmt == nullptr) {
@@ -375,7 +396,7 @@ void traverse_statement(Statement *stmt,bool isFunction=false,bool isLoop=false)
             error_count++;
             break;
         } else {
-            SymbolTableEntry* function = symtab.searchFunction(stmt->scope);
+            SymbolTableEntry* function = symtab.searchFunction(functionName);
             if (function != nullptr){
                 if (function->returnParameters->size() == 0 and stmt->returnStatement->expression != nullptr){
                     cout<<"\e[31m Error: \e[0m Function expects no return type\n";
@@ -919,7 +940,7 @@ void traverse_function_declaration(FunctionDeclaration *func_dec) {
     
     for (auto *stmt : *(func_dec->statements)) {
         Statement *statement = dynamic_cast<Statement *>(stmt);
-        traverse_statement(statement,true,false);
+        traverse_statement(statement,true,false, func_dec->identifier);
     }
 }
 
@@ -949,66 +970,72 @@ vector<int> match_function_symb_entry(SymbolTableEntry* entry,vector<DataType>* 
 
 }
 //IT MUST RETURN TRUE IF THE FUNCTION CALL IS MATCHED CORRECTLY. Match the ith one
-bool traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry, int index){
+bool traverse_function_call(FunctionCall* functionCall,SymbolTableEntry* entry, int index) {
     if(debug) {cout << "Entering function call" << endl;}
     vector<Argument *> *argumentList = functionCall->argumentList;
-    vector<DataType> *otherParameters = entry->otherParameters->at(index);
-    // vector<DataType> *outParameters = entry->returnParameters;
+    vector<FunctionArgument> *otherParameters = entry->otherParameters->at(index);
 
     if (argumentList->size() != otherParameters->size()) {
-        // cout << "\e[31m Error: \e[0m Function " << entry->name << " expects " << otherParameters->size() << " arguments but " << argumentList->size() << " provided\n";
-        // printerror(functionCall->row,functionCall->column);
-        // error_count++;
         return false;
-    } else {
-        for (int i = 0; i < argumentList->size(); i++) {
-            Argument *argument = argumentList->at(i);
-            if (argument->expression != nullptr) {
-                Expression *expr = argument->expression;
-                DataType exprType = traverse_operations(expr, entry->scope);
-                if(exprType==Unknown){
-                    return false;
-                }
-                if (exprType == Boolean) {
-                    cout << "Expression is boolean\n";
-                }
-                if (exprType != otherParameters->at(i)) {
-                    return false;
-                }
-            } else if (argument->fromToAlsoExpression != nullptr) {
-                for (auto &tuple : *(argument->fromToAlsoExpression)) {
-                    Expression *from = std::get<0>(tuple);
-                    Expression *to = std::get<1>(tuple);
-                    Expression *also = std::get<2>(tuple);
-                    DataType fromType = traverse_operations(from, entry->scope);
-                    DataType toType = traverse_operations(to, entry->scope);
-                    DataType alsoType = traverse_operations(also, entry->scope);
-                    if(fromType==Unknown || toType==Unknown || alsoType==Unknown){
-                        return false;
-                    }
-                    if (fromType != Integer || toType != Integer || alsoType != Integer) {
-                        cout << "\e[31m Error: \e[0m Function " << entry->name << " expects integer arguments\n";
-                        printerror(argument->row,argument->column);
-                        error_count++;
-                    }
-                }
-            } else if (argument->statements != nullptr) {
-                for (auto &stmt : *(argument->statements)) {
-                    Statement *statement = dynamic_cast<Statement *>(stmt);
-                    traverse_statement(statement,true,false);
-                }
-            } else {
-                cout << "\e[31m Error: \e[0m Argument is null\n";
-                printerror(argument->row,argument->column);
-                error_count++;
+    }
+    
+    for (int i = 0; i < argumentList->size(); i++) {
+        Argument *argument = argumentList->at(i);
+        if (argument->expression != nullptr) {
+            if (!otherParameters->at(i).isDataType) {
+                return false;
             }
+            Expression *expr = argument->expression;
+            DataType exprType = traverse_operations(expr, entry->scope);
+            if(exprType==Unknown){
+                return false;
+            }
+            if (exprType != otherParameters->at(i).dataType) {
+                return false;
+            }
+        } else if (argument->fromToAlsoExpression != nullptr) {
+            if (!otherParameters->at(i).isFromToAlso) {
+                return false;
+            }
+            for (auto &tuple : *(argument->fromToAlsoExpression)) {
+                Expression *from = std::get<0>(tuple);
+                Expression *to = std::get<1>(tuple);
+                Expression *also = std::get<2>(tuple);
+                DataType fromType = traverse_operations(from, entry->scope);
+                DataType toType = traverse_operations(to, entry->scope);
+                DataType alsoType = traverse_operations(also, entry->scope);
+                if(fromType==Unknown || toType==Unknown || alsoType==Unknown){
+                    return false;
+                }
+                if (fromType != Integer || toType != Integer || alsoType != Integer) {
+                    cout << "\e[31m Error: \e[0m Function " << entry->name << " expects integer arguments\n";
+                    printerror(argument->row,argument->column);
+                    error_count++;
+                }
+            }
+        } else if (argument->statements != nullptr) {
+            if (debug) {cout << "checking statements" << endl;}
+            if (!otherParameters->at(i).isPf) {
+                return false;
+            }
+            // collect all the undeclared variables in the function
+            vector<string> undeclaredVariables = vector<string>();
+
+            for (auto &stmt : *(argument->statements)) {
+                Statement *statement = dynamic_cast<Statement *>(stmt);
+                traverse_statement(statement,true,false);
+            }
+        } else {
+            cout << "\e[31m Error: \e[0m Argument is null\n";
+            printerror(argument->row,argument->column);
+            error_count++;
         }
     }
-    return true;
     
+    return true;
 }
 
-bool validate_access_list(vector<Expression*>* accessList,string scope){
+bool validate_access_list(vector<Expression*>* accessList,string scope) {
     if(debug) {cout << "Entering validate access list" << endl;}
     if(accessList->size()>3){
         cout << "\e[31m Error: \e[0m Invalid usage of access operator\n";
@@ -1041,7 +1068,6 @@ vector<DataType> traverse_function_call_list_multi(vector<pair<FunctionCall *, v
         vector<Expression *> *access = funcPair.second;
         std::string functionName ;
         if(functionCall->identifier!=nullptr){
-            cout<<"inbuilt"<<endl;
             functionName = std::string(functionCall->identifier);
             cout<<functionName<<endl;
         } else {
@@ -1478,6 +1504,12 @@ DataType traverse_operations(Expression *root,string scope){
         UnaryExpression *unaryExpression = dynamic_cast<UnaryExpression *>(root);
         if(unaryExpression->constantValue==nullptr){
             std::string identifier = std::string(unaryExpression->identifier);
+
+            if (debug) {
+                cout << "scope: " << scope << endl;
+                cout << "scope2: " << unaryExpression->scope << endl;
+            }
+
             SymbolTableEntry *entry = symtab.search(identifier, scope);
             if (entry == nullptr){
                 cout << "\e[31m Error: \e[0m Identifier " << identifier << " not declared\n";
@@ -1623,32 +1655,22 @@ DataType traverse_operations(Expression *root,string scope){
             return Unknown;
         }
         if (binaryExpression->op == add_op){
-            if (lhs == Integer && rhs == Integer){
+            if (lhs == Integer && rhs == Integer) {
                 return Integer;
-            } else if (lhs == Float && rhs == Float){
+            } else if (lhs == Integer && rhs == Float) {
                 return Float;
-            } else if (lhs == String && rhs == String){
-                return String;
-            } else if (lhs == String && rhs == Char){
-                return String;
-            } else if (lhs == Boolean && rhs == Boolean){
-                return Boolean;
-            } else if (lhs == Integer && rhs == Float){
+            } else if (lhs == Float && rhs == Integer) {
                 return Float;
-            } else if (lhs == Float && rhs == Integer){
+            } else if (lhs == Float && rhs == Float) {
                 return Float;
-            } else if (lhs == Boolean && rhs == Integer){
-                return Integer;
-            } else if (lhs == Integer && rhs == Boolean){
-                return Integer;
-            } else if (lhs == Boolean && rhs == Float){
-                return Float;
-            } else if (lhs == Float && rhs == Boolean){
-                return Float;
-            } else if (lhs == Dataset && rhs == Dataset){
+            } else if (lhs == Array_Integer && (rhs == Integer || rhs == Array_Integer)){
+                return Array_Integer;
+            } else if (lhs == Array_Integer && (rhs == Float || rhs == Array_Float)){
+                return Array_Float;
+            } else if (lhs == Array_Float && (rhs == Integer || rhs == Array_Integer || rhs == Float || rhs == Array_Float)){
+                return Array_Float;
+            } else if (lhs == Dataset && (rhs == Integer || rhs == Float || rhs == Dataset)){
                 return Dataset;
-            } else if (lhs == Array && rhs == Array){
-                return Array;
             } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"+\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 printerror(binaryExpression->row,binaryExpression->column);
@@ -1658,14 +1680,22 @@ DataType traverse_operations(Expression *root,string scope){
         }
         else if (binaryExpression->op == sub_op)
         {
-            if (lhs == Integer && rhs == Integer){
+            if (lhs == Integer && rhs == Integer) {
                 return Integer;
-            } else if (lhs == Float && rhs == Float){
+            } else if (lhs == Integer && rhs == Float) {
                 return Float;
-            } else if (lhs == Integer && rhs == Float){
+            } else if (lhs == Float && rhs == Integer) {
                 return Float;
-            } else if (lhs == Float && rhs == Integer){
+            } else if (lhs == Float && rhs == Float) {
                 return Float;
+            } else if (lhs == Array_Integer && (rhs == Integer || rhs == Array_Integer)){
+                return Array_Integer;
+            } else if (lhs == Array_Integer && (rhs == Float || rhs == Array_Float)){
+                return Array_Float;
+            } else if (lhs == Array_Float && (rhs == Integer || rhs == Array_Integer || rhs == Float || rhs == Array_Float)){
+                return Array_Float;
+            } else if (lhs == Dataset && (rhs == Integer || rhs == Float || rhs == Dataset)){
+                return Dataset;
             } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"-\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 printerror(binaryExpression->row,binaryExpression->column);
@@ -1673,10 +1703,22 @@ DataType traverse_operations(Expression *root,string scope){
                 return Unknown;
             }
         } else if (binaryExpression->op == mul_op){
-            if (lhs == Integer && rhs == Integer){
+            if (lhs == Integer && rhs == Integer) {
                 return Integer;
-            } else if (lhs == Float && rhs == Float){
+            } else if (lhs == Integer && rhs == Float) {
                 return Float;
+            } else if (lhs == Float && rhs == Integer) {
+                return Float;
+            } else if (lhs == Float && rhs == Float) {
+                return Float;
+            } else if (lhs == Array_Integer && (rhs == Integer || rhs == Array_Integer)){
+                return Array_Integer;
+            } else if (lhs == Array_Integer && (rhs == Float || rhs == Array_Float)){
+                return Array_Float;
+            } else if (lhs == Array_Float && (rhs == Integer || rhs == Array_Integer || rhs == Float || rhs == Array_Float)){
+                return Array_Float;
+            } else if (lhs == Dataset && (rhs == Integer || rhs == Float || rhs == Dataset)){
+                return Dataset;
             } else{
                 cout << "\e[31m Error: \e[0m Cannot perform \"*\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 printerror(binaryExpression->row,binaryExpression->column);
@@ -1684,16 +1726,29 @@ DataType traverse_operations(Expression *root,string scope){
                 return Unknown;
             }
         } else if (binaryExpression->op == div_op){
-            if (lhs == Integer && rhs == Integer){
+            if (lhs == Integer && rhs == Integer) {
                 return Integer;
-            } else if (lhs == Float && rhs == Float){
+            } else if (lhs == Integer && rhs == Float) {
                 return Float;
-            } else{
+            } else if (lhs == Float && rhs == Integer) {
+                return Float;
+            } else if (lhs == Float && rhs == Float) {
+                return Float;
+            } else if (lhs == Array_Integer && (rhs == Integer || rhs == Array_Integer)){
+                return Array_Integer;
+            } else if (lhs == Array_Integer && (rhs == Float || rhs == Array_Float)){
+                return Array_Float;
+            } else if (lhs == Array_Float && (rhs == Integer || rhs == Array_Integer || rhs == Float || rhs == Array_Float)){
+                return Array_Float;
+            } else if (lhs == Dataset && (rhs == Integer || rhs == Float || rhs == Dataset)){
+                return Dataset;
+            } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"/\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
+
         } else if (binaryExpression->op == mod_op){
             if (lhs == Integer && rhs == Integer){
                 return Integer;
@@ -1706,8 +1761,22 @@ DataType traverse_operations(Expression *root,string scope){
         } else if (binaryExpression->op == and_op){
             if (lhs == Boolean && rhs == Boolean){
                 return Boolean;
+            } else if (lhs == Boolean && rhs == Integer){
+                return Boolean;
+            } else if (lhs == Boolean && rhs == Float){
+                return Boolean;
+            } else if (lhs == Integer && rhs == Boolean){
+                return Boolean;
+            } else if (lhs == Integer && rhs == Float){
+                return Boolean;
             } else if (lhs == Integer && rhs == Integer){
-                return Integer;
+                return Boolean;
+            } else if (lhs == Float && rhs == Integer){
+                return Boolean;
+            } else if (lhs == Float && rhs == Boolean){
+                return Boolean;
+            } else if (lhs == Float && rhs == Float) {
+                return Boolean;
             } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"&&\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 printerror(binaryExpression->row,binaryExpression->column);
@@ -1717,8 +1786,22 @@ DataType traverse_operations(Expression *root,string scope){
         } else if (binaryExpression->op == or_op){
             if (lhs == Boolean && rhs == Boolean){
                 return Boolean;
+            } else if (lhs == Boolean && rhs == Integer){
+                return Boolean;
+            } else if (lhs == Boolean && rhs == Float){
+                return Boolean;
+            } else if (lhs == Integer && rhs == Boolean){
+                return Boolean;
+            } else if (lhs == Integer && rhs == Float){
+                return Boolean;
             } else if (lhs == Integer && rhs == Integer){
-                return Integer;
+                return Boolean;
+            } else if (lhs == Float && rhs == Integer){
+                return Boolean;
+            } else if (lhs == Float && rhs == Boolean){
+                return Boolean;
+            } else if (lhs == Float && rhs == Float) {
+                return Boolean;
             } else{
                 cout << "\e[31m Error: \e[0m Cannot perform \"||\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 printerror(binaryExpression->row,binaryExpression->column);
@@ -1726,6 +1809,7 @@ DataType traverse_operations(Expression *root,string scope){
                 return Unknown;
             }
         } else if (binaryExpression->op == eq_op){
+            if (debug) {cout << "lhs: " << dataTypeToString(lhs) << " rhs: " << dataTypeToString(rhs) << endl;}
             if (lhs == Integer && rhs == Integer){
                 return Boolean;
             } else if (lhs == Float && rhs == Float){
@@ -1736,16 +1820,28 @@ DataType traverse_operations(Expression *root,string scope){
                 return Boolean;
             } else if (lhs == Boolean && rhs == Boolean){
                 return Boolean;
-            } else if (lhs == Dataset && rhs == Dataset){
-                return Boolean;
             } else if (lhs == Array && rhs == Array){
                 return Boolean;
-            } else{
+            } else if (lhs == Array_Integer && rhs == Array_Integer){
+                return Boolean;
+            } else if (lhs == Array_Float && rhs == Array_Float){
+                return Boolean;
+            } else if (lhs == Array_Char && rhs == Array_Char){
+                return Boolean;
+            } else if (lhs == Array_String && rhs == Array_String){
+                return Boolean;
+            } else if (lhs == Array_Boolean && rhs == Array_Boolean){
+                return Boolean;
+            } else if (lhs == Array_Dataset && rhs == Array_Dataset){
+                return Boolean;
+            } else if (lhs == Dataset && rhs == Dataset){
+                return Boolean;
+            } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"==\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
-            }
+            } 
         } else if (binaryExpression->op == neq_op){
             if (lhs == Integer && rhs == Integer){
                 return Boolean;
@@ -1757,18 +1853,30 @@ DataType traverse_operations(Expression *root,string scope){
                 return Boolean;
             } else if (lhs == Boolean && rhs == Boolean){
                 return Boolean;
-            } else if (lhs == Dataset && rhs == Dataset){
-                return Boolean;
             } else if (lhs == Array && rhs == Array){
                 return Boolean;
-            } else{
+            } else if (lhs == Array_Integer && rhs == Array_Integer){
+                return Boolean;
+            } else if (lhs == Array_Float && rhs == Array_Float){
+                return Boolean;
+            } else if (lhs == Array_Char && rhs == Array_Char){
+                return Boolean;
+            } else if (lhs == Array_String && rhs == Array_String){
+                return Boolean;
+            } else if (lhs == Array_Boolean && rhs == Array_Boolean){
+                return Boolean;
+            } else if (lhs == Array_Dataset && rhs == Array_Dataset){
+                return Boolean;
+            } else if (lhs == Dataset && rhs == Dataset){
+                return Boolean;
+            } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \"!=\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
             }
         } else if (binaryExpression->op == gt_op){
-            if (lhs == Integer && rhs == Integer){
+           if (lhs == Integer && rhs == Integer){
                 return Boolean;
             } else if (lhs == Float && rhs == Float){
                 return Boolean;
@@ -1777,10 +1885,6 @@ DataType traverse_operations(Expression *root,string scope){
             } else if (lhs == Char && rhs == Char){
                 return Boolean;
             } else if (lhs == Boolean && rhs == Boolean){
-                return Boolean;
-            } else if (lhs == Dataset && rhs == Dataset){
-                return Boolean;
-            } else if (lhs == Array && rhs == Array){
                 return Boolean;
             } else{
                 cout << "\e[31m Error: \e[0m Cannot perform \">\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
@@ -1788,7 +1892,7 @@ DataType traverse_operations(Expression *root,string scope){
                 error_count++;
                 return Unknown;
             }
-        } else if (binaryExpression->op == lt_op){
+        } else if (binaryExpression->op == lt_op) {
             if (lhs == Integer && rhs == Integer){
                 return Boolean;
             } else if (lhs == Float && rhs == Float){
@@ -1798,10 +1902,6 @@ DataType traverse_operations(Expression *root,string scope){
             } else if (lhs == Char && rhs == Char){
                 return Boolean;
             } else if (lhs == Boolean && rhs == Boolean){
-                return Boolean;
-            } else if (lhs == Dataset && rhs == Dataset){
-                return Boolean;
-            } else if (lhs == Array && rhs == Array){
                 return Boolean;
             } else{
                 cout << "\e[31m Error: \e[0m Cannot perform \"<\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
@@ -1820,12 +1920,25 @@ DataType traverse_operations(Expression *root,string scope){
                 return Boolean;
             } else if (lhs == Boolean && rhs == Boolean){
                 return Boolean;
-            } else if (lhs == Dataset && rhs == Dataset){
-                return Boolean;
-            } else if (lhs == Array && rhs == Array){
-                return Boolean;
-            } else{
+            } else {
                 cout << "\e[31m Error: \e[0m Cannot perform \">=\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
+                printerror(binaryExpression->row,binaryExpression->column);
+                error_count++;
+                return Unknown;
+            }
+        } else if (binaryExpression->op == lte_op) {
+            if (lhs == Integer && rhs == Integer){
+                return Boolean;
+            } else if (lhs == Float && rhs == Float){
+                return Boolean;
+            } else if (lhs == String && rhs == String){
+                return Boolean;
+            } else if (lhs == Char && rhs == Char){
+                return Boolean;
+            } else if (lhs == Boolean && rhs == Boolean){
+                return Boolean;
+            } else {
+                cout << "\e[31m Error: \e[0m Cannot perform \"<=\" operation on " << dataTypeToString(lhs) << " and " << dataTypeToString(rhs) << "!\n";
                 printerror(binaryExpression->row,binaryExpression->column);
                 error_count++;
                 return Unknown;
@@ -2004,27 +2117,26 @@ void traverse_if_statement(ConditionalStatement *cond_stmt,bool isFunction,bool 
     if(debug) {cout << "entering if" << endl;}
     if (cond_stmt->ConditionStatements != nullptr)
     {
-        for (auto &[expr, stmt_list] : *(cond_stmt->ConditionStatements))
-        {
+        for (auto &[expr, stmt_list] : *(cond_stmt->ConditionStatements)) {
             // check if the expression is of type boolean
-            if (expr != nullptr)
-            {
+            if (expr != nullptr) {
                 string scope = string(cond_stmt->get_scope());
                 DataType temp = traverse_operations(expr,scope);
-                if(temp==Unknown){
+                if(temp==Unknown) {
                     return;
                 }
-                if (temp != Boolean || temp != Integer)
-                {
+                if (temp != Boolean && temp != Integer) {
                     std::cout << "\e[31m Error: \e[0m Expression in conditional statement is not of type boolean\n";
                     printerror(cond_stmt->row,cond_stmt->column);
                     error_count++;
                 }
+            } else {
+                if (debug) {
+                    cout << "cond statement Expression is null" << endl;
+                }
             }
             
-            for (auto &in_stmt : *stmt_list)
-            {
-                // do the same for the statements in the conditional statement
+            for (auto &in_stmt : *stmt_list) {
                 traverse_statement(dynamic_cast<Statement *>(in_stmt),isFunction,isLoop);
             }
         }

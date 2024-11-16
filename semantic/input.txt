@@ -1,3 +1,30 @@
 function_declarations:
+
+function(dataset ds) -> max_element_each_row() -> array(integer) {
+    array(integer) dummy;
+    loop i from 0 to ds->shape()[0]{
+        dummy->add(ds->row(i)->max());
+    }
+    return dummy;
+}
+
+function(dataset ds) -> threshold_row(string col_name ,integer threshold_value) -> dataset{
+    ds->col(col_name)->filter({return x > threshold;})->drop();
+    return ds;
+}
+
 start:
-dataset dd = read("a","b");
+
+integer a4 = 40;
+integer a5 = 50;
+integer threshold = 25;
+
+array(integer) arr;
+arr->add(a4);
+arr->add(a5);
+
+loop i from 0 to 5{
+    if(arr[0] >= threshold){
+        arr[0]->show();
+    }
+}

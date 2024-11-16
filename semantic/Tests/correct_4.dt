@@ -1,5 +1,6 @@
 function_declarations:
 
+
 function(dataset ds) -> product_of_columns(integer i1, integer i2) -> dataset{
     dataset dummy;
     dummy = ds->col(i1);
@@ -7,38 +8,19 @@ function(dataset ds) -> product_of_columns(integer i1, integer i2) -> dataset{
     {
         dummy *= ds->col(i);
     }
-    $!
-        first assigning row i1 to dummy and then adding all the rows till i2
-    !$
     return dummy;
 }
 
-$!
-        This function splits the dataset into two datasets based on the threshold value of a column
-        Then returns the dataset which is specified by the user
-!$
+
 
 function(dataset ds) -> split_into_two_datasets(string col_name, integer threshold_value, integer return_dataset) -> dataset{
     dataset ds1 = ds;
     dataset ds2 = ds;
-    $$ these two datasets will be used to store the two datasets after splitting
 
-    $$ iterating over all the rows of the dataset
-    loop i from 0 to ds->shape()[0]{
-
-        $$ if the value of the column is greater than the threshold value, then the row is will be in ds1, else in ds2
-        if(ds->row(i)->col(col_name) >= threshold_value){
-            ds2->row(i)->drop();
-        }
-        else{
-            ds1->row(i)->drop();
-        }
-
-    }
+    ds2->col(col_name)->filter({return x >= threshold_value;})->drop();
+    ds1->col(col_name)->filter({return x < threshold_value;})->drop();
     
-    $$ if return_dataset is 0, then return ds1 will the output dataset, else return ds2 will be the output dataset
-
-    if(return_dataset == 0){
+    if(return_dataset == 0) {
         return ds1;
     }
     else{
@@ -52,48 +34,13 @@ function(dataset ds) -> split_into_two_datasets(string col_name, integer thresho
 start:
 
 dataset ds1 = read("parameters", "csv");      
-$$ parameters.csv contains all the individual parameters for each project and each row is a project
-
-integer total_cols = ds1->shape()[1];
-ds1->product_of_columns(total_cols - 6, total_cols - 2)->write("Cummulative_parameters_score", "csv");
-$!
-The parameters that we want to multiply are from column total_cols - 6 to total_cols - 2
-The product of these columns is written to a new file named Cummulative_parameters_score.csv
-!$
-
-
-
-dataset ds2 = read("projects", "csv");
-$$ projects.csv contains all the projects and their details
-
-$!
-Status is the column which contains the status of the project, 1 means the project is active and 0 means the project is inactive
-!$
-dataset ds3 = ds2->split_into_two_datasets("status", 1, 0);
-ds3->write("Active_projects", "csv");
-$$ writing the active projects to a new file named Active_projects.csv
+dataset ds2;
 
 dataset ds4 = ds2->split_into_two_datasets("status", 1, 1);
 ds4->write("Inactive_projects", "csv");
-$$ writing the inactive projects to a new file named Inactive_projects.csv
-
-$!
-The column status is used to split the dataset into two datasets, one containing active projects and the other containing inactive projects
-!$
-
 
 
 dataset d5 = read("participants", "csv");
-$$ participants.csv contains all the participants and their details
 
 dataset d6 = d5->split_into_two_datasets("age", 18, 0);
-d6->write("Adult_participants", "csv");
-$$ writing the adult participants to a new file named Adult_participants.csv
 
-dataset d7 = d5->split_into_two_datasets("age", 18, 1);
-d7->write("Minor_participants", "csv");
-$$ writing the minor participants to a new file named Minor_participants.csv
-
-$!
-    We splitted the participants dataset into two datasets based on the age of the participants
-!$
