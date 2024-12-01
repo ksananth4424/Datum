@@ -656,3 +656,106 @@ AssignmentStatement::AssignmentStatement(Expression *expression, int row, int co
     this->row = row;
     this->column = column;
 }
+
+llvm::Value* ConstantValue::codegen() {
+    if (this->type->type->at(0) == 0) {
+        return llvm::ConstantInt::get(*TheContext, llvm::APInt(32, this->ival, true));
+    } else if (this->type->type->at(0) == 1) {
+        return llvm::ConstantFP::get(*TheContext, llvm::APFloat(this->fval));
+    } else if (this->type->type->at(0) == 2) {
+        return llvm::ConstantInt::get(*TheContext, llvm::APInt(8, this->cval, true));
+    } else if (this->type->type->at(0) == 3) {
+        return llvm::ConstantInt::get(*TheContext, llvm::APInt(1, this->bval, true));
+    } else if (this->type->type->at(0) == 4) {
+        return Builder->CreateGlobalStringPtr(this->sval);
+    }
+}
+
+llvm::Value* DeclarationStatement::codegen() {
+    llvm::Value* last = nullptr;
+    if (this->initDeclarations != nullptr) {
+        for (auto &initDeclaration : *(this->initDeclarations)) {
+            last = initDeclaration->codegen();
+            if (!last) {
+                std::cerr << "Error generating code for declaration" << std::endl;
+                return nullptr;
+            }
+        }
+    }
+    return last;
+}
+
+llvm::Value* TypeSpecifier::codegen() {
+    if (this->type->at(0) == 0) {
+        return llvm::Type::getInt32Ty(*TheContext); 
+    } else if (this->type->at(0) == 1) {
+        return llvm::Type::getFloatTy(*TheContext); 
+    } else if (this->type->at(0) == 2) {
+        return llvm::Type::getInt8Ty(*TheContext); 
+    } else if (this->type->at(0) == 3) {
+        return llvm::Type::getInt1Ty(*TheContext); 
+    } else if (this->type->at(0) == 4) {
+        return llvm::Type::getInt8PtrTy(*TheContext); 
+    }
+    return nullptr; 
+}
+
+llvm::Value* InitDeclaration::codegen() {
+    llvm::Value* var = nullptr;
+
+    if (this->declarator != nullptr) {
+        var = this->declarator->codegen();
+        if (!var) {
+            std::cerr << "Error generating code for declarator" << std::endl;
+            return nullptr;
+        }
+    }
+
+    if (this->initializer != nullptr) {
+        llvm::Value* initValue = this->initializer->codegen();
+        if (!initValue) {
+            std::cerr << "Error generating code for initializer" << std::endl;
+            return nullptr;
+        }
+        // Assuming the declarator's codegen returns an llvm::AllocaInst* for the variable
+        Builder->CreateStore(initValue, var);
+    }
+
+    return var;
+}
+
+llvm::Value* Declarator::codegen() {
+    llvm::Function *TheFunction = Builder->GetInsertBlock()->getParent();
+
+    llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
+    llvm::AllocaInst *Alloca = TmpB.CreateAlloca(llvm::Type::getInt32Ty(*TheContext), nullptr, this->identifier);
+
+    NamedValues[this->identifier] = Alloca;
+
+    return Alloca;
+}
+
+llvm::Value* Initializer::codegen() {
+    if (this->assignmentExpression != nullptr) {
+        return this->assignmentExpression->codegen();
+    } else if (this->initializerList != nullptr) {
+        // llvm::Value* lastValue = nullptr;
+        // for (auto &initializer : *(this->initializerList)) {
+        //     lastValue = initializer->codegen();
+
+        // }
+        // return lastValue;
+        //ARRAY
+        llvm::ArrayType* arrayType = llvm::ArrayType::get(llvm::Type::getInt32Ty(*TheContext), this->initializerList->size());
+        llvm::AllocaInst* arrayAlloc = Builder->CreateAlloca(arrayType, nullptr, "arraytmp");
+
+        for (size_t i = 0; i < this->initializerList->size(); ++i) {
+            llvm::Value* index = llvm::ConstantInt::get(*TheContext, llvm::APInt(32, i));
+            llvm::Value* elementPtr = Builder->CreateGEP(arrayAlloc, {llvm::ConstantInt::get(*TheContext, llvm::APInt(32, 0)), index});
+            llvm::Value* elementValue = this->initializerList->at(i)->codegen();
+            Builder->CreateStore(elementValue, elementPtr);
+        }
+        return arrayAlloc;
+    }
+    return nullptr;
+}
