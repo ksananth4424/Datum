@@ -759,3 +759,135 @@ llvm::Value* Initializer::codegen() {
     }
     return nullptr;
 }
+
+llvm::Value* AssignmentStatement::codegen()
+{
+    llvm::Value* var = nullptr;
+
+    Expression* expr = this->expression;
+    int expr_type = expr->castType;
+
+    SingleChainExpression* single_chai_expr = this->declarator;
+    DataType single_chain_type = traverse_single_chain_expression(single_chai_expr);
+    int single_chain_expr_type = -1;
+
+    if (single_chain_type == DataType::Integer) {
+        single_chain_expr_type = 0;
+    }else if (single_chain_type == DataType::Float) {
+        single_chain_expr_type = 1;
+    }
+
+    if (this->declarator != nullptr) {
+        var = this->declarator->codegen();
+        if (!var) {
+            std::cerr << "Error generating code for declarator" << std::endl;
+            return nullptr;
+        }
+    }
+
+    llvm::Value* exprValue = this->expression->codegen();
+    if (!exprValue) {
+        std::cerr << "Error generating code for expression" << std::endl;
+        return nullptr;
+    }
+
+    llvm::Value* loadValue = Builder->CreateLoad(var);
+    if(loadValue == nullptr)
+    {
+        std::cerr << "Error generating code for load" << std::endl;
+        return nullptr;
+    }
+
+    if (this->op == AssignmentOperator::assign) 
+    {
+        Builder->CreateStore(exprValue, var);
+        return exprValue;
+    } else if (this->op == AssignmentOperator::add_assign) 
+    {
+        llvm::Value* addValue = nullptr;
+        if(single_chain_expr_type == 1 || expr_type == 1)
+        {
+            addValue = Builder->CreateFAdd(loadValue, exprValue, "addtmp");    
+        }else
+        {
+            addValue = Builder->CreateAdd(loadValue, exprValue, "addtmp");
+        }
+        if(add_value == nullptr)
+        {
+            std::cerr << "Error generating code for add" << std::endl;
+            return nullptr;
+        }
+        Builder->CreateStore(addValue, var);
+        return addValue;
+    } else if (this->op == AssignmentOperator::sub_assign) 
+    {
+        llvm::Value* subValue = nullptr;
+        if(single_chain_expr_type == 1 || expr_type == 1)
+        {
+            subValue = Builder->CreateFSub(loadValue, exprValue, "subtmp");    
+        }else
+        {
+            subValue = Builder->CreateSub(loadValue, exprValue, "subtmp");
+        }
+        if(subValue == nullptr)
+        {
+            std::cerr << "Error generating code for sub" << std::endl;
+            return nullptr;
+        }
+        Builder->CreateStore(subValue, var);
+        return subValue;
+    } else if (this->op == AssignmentOperator::mul_assign) 
+    {
+        llvm::Value* mulValue = nullptr;
+        if(single_chain_expr_type == 1 || expr_type == 1)
+        {
+            mulValue = Builder->CreateFMul(loadValue, exprValue, "multmp");    
+        }else
+        {
+            mulValue = Builder->CreateMul(loadValue, exprValue, "multmp");
+        }
+        if(mulValue == nullptr)
+        {
+            std::cerr << "Error generating code for mul" << std::endl;
+            return nullptr;
+        }
+        Builder->CreateStore(mulValue, var);
+        return mulValue;
+    } else if (this->op == AssignmentOperator::div_assign) 
+    {
+        llvm::Value* divValue = nullptr;
+        if(single_chain_expr_type == 1 || expr_type == 1)
+        {
+            divValue = Builder->CreateFDiv(loadValue, exprValue, "divtmp");    
+        }else
+        {
+            divValue = Builder->CreateSDiv(loadValue, exprValue, "divtmp");
+        }
+        if(divValue == nullptr)
+        {
+            std::cerr << "Error generating code for div" << std::endl;
+            return nullptr;
+        }
+        Builder->CreateStore(divValue, var);
+        return divValue;
+    } else if (this->op == AssignmentOperator::mod_assign) 
+    {
+        llvm::Value* modValue = nullptr;
+        if(single_chain_expr_type == 1 || expr_type == 1)
+        {
+            modValue = Builder->CreateFRem(loadValue, exprValue, "modtmp");    
+        }else
+        {
+            modValue = Builder->CreateSRem (loadValue, exprValue, "modtmp");
+        }
+        if(modValue == nullptr)
+        {
+            std::cerr << "Error generating code for mod" << std::endl;
+            return nullptr;
+        }
+        Builder->CreateStore(modValue, var);
+        return modValue;
+    }
+
+    return nullptr;
+}
