@@ -14,17 +14,43 @@ function(dataset ds) -> threshold_row(string col_name ,integer threshold_value) 
 }
 
 start:
+dataset ds2 = read("experiments_error_readings", "csv");        
+array(integer) max_error_readings;
+max_error_readings = ds2->max_element_each_row();
 
+integer mean_of_max_errors = max_error_readings->mean();
+
+max_error_readings->show();
+mean_of_max_errors->show();
+
+dataset ds3 = read("loss_predictions", "csv");      
+
+integer max_affordable_loss = 120;
+dataset ds4 = ds3-> threshold_row("loss", max_affordable_loss);    
+ds4->col("loss")->show_bar();
+
+$!
+A multiline comment which contains a single and multi line comment
+$$ This is a single line comment
+
+!$
+
+integer a1 = 10;
+integer a2 = 20;
+integer a3 = 30;
 integer a4 = 40;
 integer a5 = 50;
 integer threshold = 25;
 
 array(integer) arr;
+arr->add(a1);
+arr->add(a2);
+arr->add(a3);
 arr->add(a4);
 arr->add(a5);
 
 loop i from 0 to 5{
-    if(arr[0] >= threshold){
-        arr[0]->show();
+    if(arr[i] >= threshold){
+        arr[i]->show();
     }
 }

@@ -1,18 +1,12 @@
-/* %code requires{
-    #include "ast.hpp"
-} */
 
 %{
     #include <iostream>
     #include <fstream>
-    // #include "ast.hpp"
-    // #include "symbol_table.hpp"
     #include "traversal.hpp"
 
     class Start* root;
     extern int yylex();
     extern void yyerror(const char*);
-    // SymbolTable symtab;
     extern int lineno;
     extern int yycolumn;
 %}
@@ -59,14 +53,14 @@
     Argument *AstArgument;
     SingleChainExpression *AstSingleChainExpression;
     FunctionCall *AstFunctionCall;
-    MultiChainExpression *AstMultiChainExpression;
+    // MultiChainExpression *AstMultiChainExpression;
 
 
 
     vector<InitDeclaration*> *AstInitDeclaratorList;
     vector<Initializer*> *AstInitializerList;
     vector<Parameter*> *AstParameterList;
-    vector<Expression*> *AstExpressionList;
+    // vector<Expression*> *AstExpressionList;
     vector<FunctionDeclaration*> *AstFunctionDeclarationList;
     vector<Statement*> *AstStatementList;
     vector<tuple<Expression*,Expression*,Expression*>> *AstFromToAlsoExpression;
@@ -96,19 +90,11 @@
 
 
 
-%left '*'
-%left '/'
-%left '%'
-%left '+'
-%left '-'
-%left '>'
-%left '<'
-%left LE_OP
-%left GE_OP
-%left EQ_OP
-%left NE_OP
-%left AND
-%left OR
+%left '*' '/' '%'
+%left '+' '-'
+%left '>' '<' LE_OP GE_OP
+%left EQ_OP NE_OP
+%left AND OR
 
 %type <AstStart> start
 %type <AstStart> program
@@ -124,7 +110,7 @@
 %type <AstParameterList> parameter_list
 %type <AstParameter> parameter_declaration
 %type <AstExpression> expression
-%type <AstExpressionList> expression_list
+// %type <AstExpressionList> expression_list
 %type <AstFunctionDeclaration> function_definition
 %type <AstFunctionDeclarationList> functions
 %type <AstStatement> statement
@@ -142,8 +128,8 @@
 %type <AstSingleChainExpression> single_chain_expression
 %type <AstAssignmentStatement> assignment_expression
 %type <AstUnaryOperator> unary_operator
-%type <AstExpressionList> access_list
-%type <AstMultiChainExpression> multi_chain_expression
+// %type <AstExpressionList> access_list
+// %type <AstMultiChainExpression> multi_chain_expression
 %type <AstExpression> postfix_expression
 
 
@@ -219,7 +205,7 @@ type_specifier
 // for declaring multiple variables of same type in one declaration.
 init_declarator_list 
     : init_declarator                           {$$ = new vector<InitDeclaration*>(); $$->push_back($1);}
-    | init_declarator_list ',' init_declarator  {$$ = $1; $1->push_back($3);}
+    | init_declarator_list ',' init_declarator  {$$ = $1; $$->push_back($3);}
     ;
 
 // for initializing while declaring variables
@@ -269,10 +255,10 @@ primary_expression
     ;
 
  // similar to parameter list, multiple expressions are dealt.
-expression_list
-    : expression                        { $$ = new vector<Expression*>(); $$->push_back($1); }
-    | expression_list ',' expression    { $$ = $1; $1->push_back($3); }
-    ;
+// expression_list
+//     : expression                        { $$ = new vector<Expression*>(); $$->push_back($1); }
+//     | expression_list ',' expression    { $$ = $1; $1->push_back($3); }
+//     ;
 
 // similar to expression list, multiple arguments are dealt.
 argument_list 
@@ -289,49 +275,59 @@ argument
 
 // e.g {variable_name}.{function_name}(expression) 
 single_chain_expression 
-	: IDENTIFIER                                                                                { $$ = new SingleChainExpression($1,new vector<Expression*>(),new vector<pair<FunctionCall*,vector<Expression*>*>>(), lineno, yycolumn); }
-	| IDENTIFIER access_list                                                                    { $$ = new SingleChainExpression($1,$2,new vector<pair<FunctionCall*,vector<Expression*>*>>(), lineno, yycolumn); }
-    | single_chain_expression FLOW IDENTIFIER '(' ')'                                           { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),new vector<Expression*>())); }
-    | single_chain_expression FLOW IDENTIFIER '(' ')' access_list                               { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),$6)); }
-    | single_chain_expression FLOW IDENTIFIER '(' argument_list ')'                             { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),new vector<Expression*>())); }
-    | single_chain_expression FLOW IDENTIFIER '(' argument_list ')' access_list                 { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),$7)); }
-    | single_chain_expression FLOW inbuilt_function '(' ')'                                     { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),new vector<Expression*>())); }
-    | single_chain_expression FLOW inbuilt_function '(' ')' access_list                         { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),$6)); }
-    | single_chain_expression FLOW inbuilt_function '(' argument_list ')'                       { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),new vector<Expression*>())); }
-    | single_chain_expression FLOW inbuilt_function '(' argument_list ')' access_list           { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),$7)); }
+	: IDENTIFIER                                                                                { $$ = new SingleChainExpression($1, nullptr,new vector<pair<FunctionCall*, Expression*>>(), lineno, yycolumn); }
+	| IDENTIFIER '[' expression']'                                                              { $$ = new SingleChainExpression($1,$3,new vector<pair<FunctionCall*, Expression*>>(), lineno, yycolumn); }
+    | '(' expression ')'                                                                        { $$ = new SingleChainExpression($2, nullptr, new vector<pair<FunctionCall*,Expression*>>(), lineno, yycolumn); }    
+    | '(' expression ')' '[' expression']'                                                      { $$ = new SingleChainExpression($2, $5, new vector<pair<FunctionCall*,Expression*>>(), lineno, yycolumn); }
+    | IDENTIFIER '(' ')'                                                                        { $$ = new SingleChainExpression(new FunctionCall($1, new vector<Argument*>(), lineno, yycolumn), nullptr, lineno, yycolumn); }
+    | IDENTIFIER '(' ')' '[' expression']'                                                      { $$ = new SingleChainExpression(new FunctionCall($1, new vector<Argument*>(), lineno, yycolumn), $5, lineno, yycolumn); }
+    | IDENTIFIER '(' argument_list ')'                                                          { $$ = new SingleChainExpression(new FunctionCall($1, $3, lineno, yycolumn), nullptr, lineno, yycolumn); }
+    | IDENTIFIER '(' argument_list ')' '[' expression']'                                        { $$ = new SingleChainExpression(new FunctionCall($1, $3, lineno, yycolumn), $6, lineno, yycolumn); }
+    | inbuilt_function '(' ')'                                                                  { $$ = new SingleChainExpression(new FunctionCall($1, new vector<Argument*>(), lineno, yycolumn), nullptr, lineno, yycolumn); }
+    | inbuilt_function '(' ')' '[' expression']'                                                { $$ = new SingleChainExpression(new FunctionCall($1, new vector<Argument*>(), lineno, yycolumn), $5, lineno, yycolumn); }
+    | inbuilt_function '(' argument_list ')'                                                    { $$ = new SingleChainExpression(new FunctionCall($1, $3, lineno, yycolumn), nullptr, lineno, yycolumn); }
+    | inbuilt_function '(' argument_list ')' '[' expression']'                                  { $$ = new SingleChainExpression(new FunctionCall($1, $3, lineno, yycolumn), $6, lineno, yycolumn); }
+    | single_chain_expression FLOW IDENTIFIER '(' ')'                                           { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),nullptr)); }
+    | single_chain_expression FLOW IDENTIFIER '(' ')' '[' expression']'                         { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),$7)); }
+    | single_chain_expression FLOW IDENTIFIER '(' argument_list ')'                             { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn), nullptr)); }
+    | single_chain_expression FLOW IDENTIFIER '(' argument_list ')' '[' expression']'           { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),$8)); }
+    | single_chain_expression FLOW inbuilt_function '(' ')'                                     { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),nullptr)); }
+    | single_chain_expression FLOW inbuilt_function '(' ')' '[' expression']'                   { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),$7)); }
+    | single_chain_expression FLOW inbuilt_function '(' argument_list ')'                       { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn), nullptr)); }
+    | single_chain_expression FLOW inbuilt_function '(' argument_list ')' '[' expression']'     { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),$8)); }
     ;
 
-access_list
-    : '[' expression ']'                { $$ = new vector<Expression*>(); $$->push_back($2); }
-    | access_list '[' expression ']'    { $$ = $1; $1->push_back($3); }
-    ;
+// access_list
+//     : '[' expression ']'                { $$ = new vector<Expression*>(); $$->push_back($2); }
+//     // | access_list '[' expression ']'    { $$ = $1; $1->push_back($3); }
+//     ;
 
 // e.g {variable_name}.{function_name}(expression).{function_name}(expression)
-multi_chain_expression 
-	: '(' expression_list ')'                                                               { $$ = new MultiChainExpression($2,new vector<Expression*>(), new vector<pair<FunctionCall*, vector<Expression*>*>>(), lineno, yycolumn); }
-	| '(' expression_list ')' access_list                                                   { $$ = new MultiChainExpression($2,$4, new vector<pair<FunctionCall*, vector<Expression*>*>>(), lineno, yycolumn); }
-    | multi_chain_expression FLOW IDENTIFIER '(' ')'                                        { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),nullptr)); }
-    | multi_chain_expression FLOW IDENTIFIER '(' ')' access_list                            { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),$6)); }
-    | multi_chain_expression FLOW IDENTIFIER '(' argument_list ')'                          { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),nullptr)); }
-    | multi_chain_expression FLOW IDENTIFIER '(' argument_list ')' access_list              { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),$7)); }
-    | multi_chain_expression FLOW inbuilt_function '(' ')'                                  { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),nullptr)); }
-    | multi_chain_expression FLOW inbuilt_function '(' ')' access_list                      { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),$6)); }
-    | multi_chain_expression FLOW inbuilt_function '(' argument_list ')'                    { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),nullptr)); }
-    | multi_chain_expression FLOW inbuilt_function '(' argument_list ')' access_list        { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),$7)); }
-    | IDENTIFIER '('  ')'                                                                   { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),new vector<Expression*>(),new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }                
-    | IDENTIFIER '('  ')' access_list                                                       { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),$4,new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
-    | IDENTIFIER '(' argument_list ')'                                                      { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),new vector<Expression*>(), new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
-    | IDENTIFIER '(' argument_list ')' access_list                                          { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),$5,new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
-    | inbuilt_function '('  ')'                                                             { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),new vector<Expression*>(),new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }              
-    | inbuilt_function '('  ')' access_list                                                 { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),$4,new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
-    | inbuilt_function '(' argument_list ')'                                                { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),new vector<Expression*>(),new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
-    | inbuilt_function '(' argument_list ')' access_list                                    { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),$5,new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
-    ;
+// multi_chain_expression 
+// 	: '(' expression_list ')'                                                               { $$ = new MultiChainExpression($2,new vector<Expression*>(), new vector<pair<FunctionCall*, vector<Expression*>*>>(), lineno, yycolumn); }
+// 	| '(' expression_list ')' access_list                                                   { $$ = new MultiChainExpression($2,$4, new vector<pair<FunctionCall*, vector<Expression*>*>>(), lineno, yycolumn); }
+//     | multi_chain_expression FLOW IDENTIFIER '(' ')'                                        { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),nullptr)); }
+//     | multi_chain_expression FLOW IDENTIFIER '(' ')' access_list                            { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),$6)); }
+//     | multi_chain_expression FLOW IDENTIFIER '(' argument_list ')'                          { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),nullptr)); }
+//     | multi_chain_expression FLOW IDENTIFIER '(' argument_list ')' access_list              { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),$7)); }
+//     | multi_chain_expression FLOW inbuilt_function '(' ')'                                  { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),nullptr)); }
+//     | multi_chain_expression FLOW inbuilt_function '(' ')' access_list                      { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,new vector<Argument*>(), lineno, yycolumn),$6)); }
+//     | multi_chain_expression FLOW inbuilt_function '(' argument_list ')'                    { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),nullptr)); }
+//     | multi_chain_expression FLOW inbuilt_function '(' argument_list ')' access_list        { $$ = $1; $$->functionCallList->push_back(make_pair(new FunctionCall($3,$5, lineno, yycolumn),$7)); }
+//     | IDENTIFIER '('  ')'                                                                   { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),new vector<Expression*>(),new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }                
+//     | IDENTIFIER '('  ')' access_list                                                       { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),$4,new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
+//     | IDENTIFIER '(' argument_list ')'                                                      { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),new vector<Expression*>(), new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
+//     | IDENTIFIER '(' argument_list ')' access_list                                          { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),$5,new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
+//     | inbuilt_function '('  ')'                                                             { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),new vector<Expression*>(),new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }              
+//     | inbuilt_function '('  ')' access_list                                                 { $$ = new MultiChainExpression(new FunctionCall($1,new vector<Argument*>(), lineno, yycolumn),$4,new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
+//     | inbuilt_function '(' argument_list ')'                                                { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),new vector<Expression*>(),new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
+//     | inbuilt_function '(' argument_list ')' access_list                                    { $$ = new MultiChainExpression(new FunctionCall($1,$3, lineno, yycolumn),$5,new vector<pair<FunctionCall *, vector<Expression*>*>>(), lineno, yycolumn); }
+//     ;
 
  // this includes both single chain and multi chain expressions
 postfix_expression
     : single_chain_expression   { $$ = $1;$$->castType = 3; }
-    | multi_chain_expression    { $$ = $1;$$->castType = 4; }
+    // | multi_chain_expression    { $$ = $1;$$->castType = 4; }
     ;
 
 // this is how unary operators are used
@@ -448,10 +444,10 @@ functions
 
 // this is how parameter should be given to a function
 function_definition
-    : FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' parameter_list ')' FLOW '(' parameter_list ')' compound_statement     {$$ = new FunctionDeclaration($6,$3,$8,$12,$14, lineno, yycolumn);}
-    | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' ')' FLOW '(' parameter_list ')' compound_statement                    {$$ = new FunctionDeclaration($6,$3, new vector<Parameter*>(),$11,$13, lineno, yycolumn);}
-    | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' parameter_list ')' FLOW  parameter_declaration  compound_statement    {vector<Parameter *> *p = new vector<Parameter*>(); p->push_back($11); $$ = new FunctionDeclaration($6,$3,$8,p,$12, lineno, yycolumn);}
-    | FUNCTION '(' parameter_list ')' FLOW IDENTIFIER '(' ')' FLOW  parameter_declaration  compound_statement                   {vector<Parameter *> *p = new vector<Parameter*>(); p->push_back($10); $$ = new FunctionDeclaration($6,$3,new vector<Parameter*>(),p,$11, lineno, yycolumn);}
+    : FUNCTION '(' parameter_declaration ')' FLOW IDENTIFIER '(' parameter_list ')' FLOW '(' parameter_declaration ')' compound_statement     {$$ = new FunctionDeclaration($6,$3,$8,$12,$14, lineno, yycolumn);}
+    | FUNCTION '(' parameter_declaration ')' FLOW IDENTIFIER '(' ')' FLOW '(' parameter_declaration ')' compound_statement                    {$$ = new FunctionDeclaration($6,$3, new vector<Parameter*>(),$11,$13, lineno, yycolumn);}
+    | FUNCTION '(' parameter_declaration ')' FLOW IDENTIFIER '(' parameter_list ')' FLOW  parameter_declaration  compound_statement           {$$ = new FunctionDeclaration($6,$3,$8,$11,$12, lineno, yycolumn);}
+    | FUNCTION '(' parameter_declaration ')' FLOW IDENTIFIER '(' ')' FLOW  parameter_declaration  compound_statement                          {$$ = new FunctionDeclaration($6,$3, new vector<Parameter*>(),$10,$11, lineno, yycolumn);}
     ;
 %%
 
@@ -476,7 +472,6 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 	yyparse(); 
-    /* return 0; */
     traverse(root);
     symtab.print();
 

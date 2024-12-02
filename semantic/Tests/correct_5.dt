@@ -33,10 +33,6 @@ $!
 A multiline comment which contains a single and multi line comment
 $$ This is a single line comment
 
-$!
-This is a nested multiline comment
-!$
-
 !$
 
 integer a1 = 10;

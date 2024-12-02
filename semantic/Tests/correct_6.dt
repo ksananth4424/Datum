@@ -1,0 +1,30 @@
+function_declarations:
+start:
+dataset ds1, ds2, ds3;
+ds1 = read("input1.csv", ",");
+ds2 = read("input2.csv", ",");
+ds3 = read("input3.csv", " ");
+
+array(integer) int_vals;
+int_vals->add(0);
+int_vals->add(10);
+
+array(float) float_vals;
+float_vals->add(0);
+float_vals->add(10);
+
+$$ show_bar test
+ds1->col("street")->show_bar();
+ds2->col("street")->show_bar(int_vals);
+ds3->col("street")->show_bar(float_vals);
+
+$$ show_line test
+show_line(int_vals, float_vals);
+ds2->col("street")->show_line(0, 1, 2, 3);
+show_line(float_vals, ds1->col("target"), 0, 2, 1, 3);
+
+$$ show_scatter test
+show_scatter(int_vals, float_vals);
+
+$$ row test fails
+$$ ds1->row({x = 0; return x;});

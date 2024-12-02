@@ -48,7 +48,6 @@ Start::Start(vector<FunctionDeclaration *> *FunctionList, vector<Statement *> *S
 //Expression
 void Expression::buildScope (std::string scope) {
     this->scope = scope;
-    std::cout << "Expression scope: " << this->scope << std::endl;
 }
 
 Expression::Expression() {
@@ -79,6 +78,9 @@ void UnaryExpression::buildScope (std::string scope) {
     this->scope = scope;
     if (this->expr != nullptr) {
         this->expr->buildScope(scope);
+    }
+    if (this->constantValue != nullptr) {
+        this->constantValue->buildScope(scope);
     }
 }
 
@@ -270,18 +272,24 @@ void Argument::buildScope (std::string scope) {
 
 Argument::Argument(Expression *expression, int row, int column) {
     this->expression = expression;
+    this->fromToAlsoExpression = nullptr;
+    this->statements = nullptr;
     this->row = row;
     this->column = column;
 }
 
 Argument::Argument(vector<tuple<Expression *, Expression *, Expression *>> *fromToAlsoExpression, int row, int column) {
     this->fromToAlsoExpression = fromToAlsoExpression;
+    this->expression = nullptr;
+    this->statements = nullptr;
     this->row = row;
     this->column = column;
 }
 
 Argument::Argument(vector<Statement *> *statements, int row, int column) {
     this->statements = statements;
+    this->expression = nullptr;
+    this->fromToAlsoExpression = nullptr;
     this->row = row;
     this->column = column;
 }
@@ -312,21 +320,21 @@ FunctionCall::FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *arg
 void FunctionDeclaration::buildScope(string scope) {
     this->scope = scope;
     int child_scope = 0;
-    for (auto &param : *(this->inpParameter)) {
-        param->buildScope(scope + "." + to_string(child_scope++));
+    if (this->inpParameter != nullptr) {    
+        this->inpParameter->buildScope(scope + "." + to_string(child_scope++));
     }
     for (auto &param : *(this->otherParameter)) {
         param->buildScope(scope + "." + to_string(child_scope++));
     }
-    for (auto &param : *(this->outParameter)) {
-        param->buildScope(scope + "." + to_string(child_scope++));
+    if (this->outParameter != nullptr) {
+        this->outParameter->buildScope(scope + "." + to_string(child_scope++));
     }
     for (auto &stmt : *(this->statements)) {
         stmt->buildScope(scope + "." + to_string(child_scope++));
     }
 }
 
-FunctionDeclaration::FunctionDeclaration(char* identifier, vector<Parameter *> *inpParameter, vector<Parameter *> *otherParameter, vector<Parameter *> *outParameter, vector<Statement *> *statements, int row, int column) {
+FunctionDeclaration::FunctionDeclaration(char* identifier, Parameter* inpParameter, vector<Parameter *> *otherParameter, Parameter* outParameter, vector<Statement *> *statements, int row, int column) {
     this->identifier = identifier;
     this->inpParameter = inpParameter;
     this->otherParameter = otherParameter;
@@ -340,94 +348,42 @@ FunctionDeclaration::FunctionDeclaration(char* identifier, vector<Parameter *> *
 void SingleChainExpression::buildScope(string scope) {
     this->scope = scope;
     if (this->access != nullptr) {
-        for (auto &expr : *access) {
-            expr->buildScope(scope);
-        }
+        access->buildScope(scope);
     }
     if (this->functionCallList != nullptr) {
-        for (auto &[func, expr_list] : *functionCallList) {
+        for (auto &[func, expr] : *functionCallList) {
             func->buildScope(scope);
-            if (expr_list != nullptr) {
-                for (auto &expr : *expr_list) {
-                    expr->buildScope(scope);
-                }
+            if (expr != nullptr) {
+                expr->buildScope(scope);
             }
         }
     }
 }
 
-SingleChainExpression::SingleChainExpression(char* identifier, vector<Expression *> *access, vector<pair<FunctionCall *, vector<Expression *> *>> *functionCallList, int row, int column) {
+SingleChainExpression::SingleChainExpression(char* identifier, Expression* access, vector<pair<FunctionCall *, Expression* >> *functionCallList, int row, int column) {
     this->identifier = identifier;
     this->access = access;
     this->functionCallList = functionCallList;
     this->row = row;
     this->column = column;
-    if(this->access == nullptr){
-        this->access = new vector<Expression*>();
-    }
 }
 
-//MultiChainExpression
-void MultiChainExpression::buildScope(string scope) {
-    this->scope = scope;
-    if (this->functionCall != nullptr) {
-        this->functionCall->buildScope(scope);
-    }
-    if (this->inputExprList != nullptr) {
-        for (auto &expr : *inputExprList) {
-            expr->buildScope(scope);
-        }
-    }
-    if (this->access != nullptr) {
-        for (auto &expr : *access) {
-            expr->buildScope(scope);
-        }
-    }
-    if (this->functionCallList != nullptr) {
-        for (auto &[func, expr_list] : *functionCallList) {
-            func->buildScope(scope);
-            if (expr_list != nullptr) {
-                for (auto &expr : *expr_list) {
-                    expr->buildScope(scope);
-                }
-            }
-        }
-    }
-}
-
-MultiChainExpression::MultiChainExpression(FunctionCall* functionCall, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column){
-    this->functionCall = functionCall;
+SingleChainExpression::SingleChainExpression(Expression *inputExpr, Expression *access, vector<pair<FunctionCall *, Expression* >> *functionCallList, int row, int column) {
+    this->identifier = identifier;
     this->access = access;
+    this->inputExpr = inputExpr;
     this->functionCallList = functionCallList;
     this->row = row;
     this->column = column;
-    if(this->access == nullptr){
-        this->access = new vector<Expression*>();
-    }
-    this->inbuiltFunc = InbuiltFunctions::none;
 }
 
-MultiChainExpression::MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column){
-    this->inbuiltFunc = inbuiltFunc;
-    this->access = access;
-    this->functionCallList = functionCallList;
+SingleChainExpression::SingleChainExpression(FunctionCall *functionCall, Expression* access, int row, int column) {
+    this->functionCallList = new vector<pair<FunctionCall *, Expression *>>();
+    this->functionCallList->push_back(make_pair(functionCall, access));
+    this->identifier = nullptr;
+    this->access = nullptr;
     this->row = row;
     this->column = column;
-    if(this->access == nullptr){
-        this->access = new vector<Expression*>();
-    }
-}
-MultiChainExpression::MultiChainExpression(vector<Expression*> *inputExprList, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column){
-    this->access = access;
-    this->inputExprList = inputExprList;    
-    this->functionCallList = functionCallList;
-    this->row = row;
-    this->column = column;
-    this->inbuiltFunc = InbuiltFunctions::none;
-    if(this->access == nullptr){
-        this->access = new vector<Expression*>();
-    }
-
 }
 
 // Statements

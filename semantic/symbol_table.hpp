@@ -25,7 +25,8 @@ enum DataType {
     Array_Dataset,
     Function,
     Any, //it means the type could be integer or float or string or char or boolean
-    Unknown
+    Unknown, 
+    Void
 };
 
 class FunctionArgument {
@@ -64,9 +65,9 @@ public:
     std::string name;
     DataType dataType;
     std::string scope;
-    std::vector<std::vector<DataType>*> *returnParameters;
+    std::vector<DataType> *returnParameters;
     std::vector<std::vector<FunctionArgument>*> *otherParameters;
-    std::vector<std::vector<DataType>*> *inputParameters;
+    std::vector<DataType>* inputParameters;
 
     int rowNum;
 	int colNum;
@@ -84,7 +85,7 @@ public:
         this->colNum = colNum;
     }
 
-    SymbolTableEntry(const std::string& name, std::vector<std::vector<DataType>*>* inputParameters, std::vector<std::vector<FunctionArgument>*>* otherParameters, std::vector<std::vector<DataType>*>* returnParameters, const std::string& scope, int rowNum, int colNum) {
+    SymbolTableEntry(const std::string& name, std::vector<DataType>* inputParameters, std::vector<std::vector<FunctionArgument>*>* otherParameters, std::vector<DataType>* returnParameters, const std::string& scope, int rowNum, int colNum) {
         this->name = name;
         this->dataType = DataType::Function;
         this->scope = scope;
@@ -97,7 +98,7 @@ public:
 
     }
 
-    SymbolTableEntry(std::string& name, std::vector<std::vector<DataType>*> *inputParameters, std::vector<std::vector<DataType>*> *otherParameters, std::vector<std::vector<DataType>*> *returnParameters, std::string& scope, int rowNum, int colNum) {
+    SymbolTableEntry(std::string& name, std::vector<DataType> *inputParameters, std::vector<std::vector<DataType>*> *otherParameters, std::vector<DataType>* returnParameters, std::string& scope, int rowNum, int colNum) {
         this->name = name;
         this->dataType = DataType::Function;
         this->scope = scope;
@@ -134,8 +135,8 @@ private:
 public:
     SymbolTable() {}
     bool insert(std::string&, DataType, std::string, int, int);
-    bool insert(std::string&, std::vector<std::vector<DataType>*>*,std::vector<std::vector<DataType>*>*,std::vector<std::vector<DataType>*>*, std::string, int, int);
-    bool insert(std::string&, std::vector<std::vector<DataType>*>*,std::vector<std::vector<FunctionArgument>*>*,std::vector<std::vector<DataType>*>*, std::string, int, int);
+    bool insert(std::string&, std::vector<DataType>*,std::vector<std::vector<DataType>*>*,std::vector<DataType>*, std::string, int, int);
+    bool insert(std::string&, std::vector<DataType>*,std::vector<std::vector<FunctionArgument>*>*,std::vector<DataType>*, std::string, int, int);
     SymbolTableEntry* search(std::string&, std::string);
     SymbolTableEntry* searchFunction(std::string);
     void print();

@@ -2,13 +2,14 @@ function_declarations:
 
 
 function(dataset ds) -> product_of_columns(integer i1, integer i2) -> dataset{
-    dataset dummy;
+    array(float) dummy;
     dummy = ds->col(i1);
     loop i from i1+1 to i2
     {
         dummy *= ds->col(i);
     }
-    return dummy;
+    ds->col(i1) = dummy;
+    return ds;
 }
 
 

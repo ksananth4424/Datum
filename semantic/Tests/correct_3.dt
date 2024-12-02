@@ -4,13 +4,13 @@ Inside multiline comment !$
 
 function_declarations:
 
-function (integer a)->ff(integer b)->integer{
-    return a+b;
+function (array(integer) a)->ff(integer b)->integer{
+    return b;
 }
 function (integer a)->gg(integer b,integer c)->integer{
     return 1;
 }
-function (integer a, integer b)->integer{
+function (array(integer)d)->f()->integer{
     return 0;
 }
 function (dataset ds)->my_func(dataset ds1, dataset ds2, integer i)->dataset{
@@ -21,25 +21,18 @@ function (dataset ds)->my_func(dataset ds1, dataset ds2, integer i)->dataset{
     return ds;
 }
 start:
-$$ dataset ds = read("ds", "csv"); $$ should be double quoted
-$$ dataset d1;
-$$ ds2->myfunc();
-$$ ds->col(i)->show_bar();
-$$ $!
-$$ invalid comment !$
-$$ float b = 5.0;
-$$ integer a = 4;
-$$ $$a+=b;
-$$ array (integer) c;
-$$ $$c+=5;
-$$ $$c+=0.56;
-$$ array(integer) d;
-$$ $$c-=d;
-$$ $$c+=d;
-$$ $$d->sum();
-$$ dataset ds;
-$$ $$ds->sum();
-$$ integer e = ds->sum(0)->ff(1)->gg(2,3);
-$$ $$d = ds->sum( );
-$$ integer fk = (1,2)->hh();
-$$ integer ss = d[0];
+dataset ds = read("ds", "csv"); $$ should be double quoted
+float z = 0;
+dataset ds2;
+integer i;
+dataset ds3 = ds2->my_func(ds, ds2, i);
+ds->col(i)->show_bar();
+float b = 5.0;
+integer a = 4;
+array (integer) c;
+c+=5;
+$$c+=0.56;
+array(integer) d;
+c-=d;
+c+=d;
+integer e = ds->sum(0)->ff(1)->gg(2,3);

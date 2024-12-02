@@ -214,10 +214,6 @@ public:
     vector<UnaryOperator> *op ;
     ConstantValue *constantValue;
     InbuiltFunctions inbuiltFunction;
-    // SingleChainExpression *singleChainExpression;
-    // MultiChainExpression *multiChainExpression;
-    // UnaryExpression(SingleChainExpression *singleChainExpression);
-    // UnaryExpression(MultiChainExpression *multiChainExpression);
     UnaryExpression(Expression *expr, vector<UnaryOperator> *op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction, int row, int column);
     UnaryExpression(Expression *expr, int row, int column);
     UnaryExpression(ConstantValue *constantValue, int row, int column);
@@ -366,11 +362,11 @@ class FunctionDeclaration : public Node
 {
 public:
     char* identifier;
-    vector<Parameter *> *inpParameter;
+    Parameter* inpParameter;
     vector<Parameter *> *otherParameter;
-    vector<Parameter *> *outParameter;
+    Parameter* outParameter;
     vector<class Statement *> *statements;
-    FunctionDeclaration(char* identifier, vector<Parameter *> *inpParameter, vector<Parameter *> *otherParameter, vector<Parameter *> *outParameter, vector<class Statement *> *statements, int row, int column);
+    FunctionDeclaration(char* identifier, Parameter* inpParameter, vector<Parameter *> *otherParameter, Parameter* outParameter, vector<class Statement *> *statements, int row, int column);
     void buildScope(string scope);
 
     virtual ~FunctionDeclaration() = default;
@@ -406,29 +402,15 @@ class SingleChainExpression : public Expression
 {
 public:
     char* identifier;
-    vector<Expression*> *access;
-    vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList;
-    SingleChainExpression(char* identifier, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);
+    Expression* inputExpr;
+    Expression* access;
+    vector<pair<FunctionCall *, Expression*>> *functionCallList;
+    SingleChainExpression(char* identifier, Expression* access, vector<pair<FunctionCall *, Expression*>> *functionCallList, int row, int column);
+    SingleChainExpression(Expression* inputExpr, Expression* access, vector<pair<FunctionCall *, Expression*>> *functionCallList, int row, int column);
+    SingleChainExpression(FunctionCall* functionCall, Expression* access, int row, int column);
     void buildScope(string scope);
 
     virtual ~SingleChainExpression() = default;
-};
-
-class MultiChainExpression : public Expression
-{
-public:
-    FunctionCall* functionCall;
-    InbuiltFunctions inbuiltFunc;
-    vector<Expression*> *access;
-    vector<Expression*> *inputExprList;
-
-
-    vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList;
-    MultiChainExpression(FunctionCall* functionCall, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);
-    MultiChainExpression(InbuiltFunctions inbuiltFunc, vector<Expression*> *access, vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);;
-    MultiChainExpression(vector<Expression*> *inputExprList, vector<Expression*> *access,  vector<pair<FunctionCall *, vector<Expression*>*>> *functionCallList, int row, int column);
-    void buildScope(string scope);
-    virtual ~MultiChainExpression() = default;
 };
 
 #endif
