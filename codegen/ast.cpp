@@ -657,6 +657,7 @@ AssignmentStatement::AssignmentStatement(Expression *expression, int row, int co
     this->column = column;
 }
 
+
 llvm::Value* ConstantValue::codegen() {
     if (this->type->type->at(0) == 0) {
         return llvm::ConstantInt::get(*TheContext, llvm::APInt(32, this->ival, true));
@@ -670,6 +671,7 @@ llvm::Value* ConstantValue::codegen() {
         return Builder->CreateGlobalStringPtr(this->sval);
     }
 }
+
 
 llvm::Value* DeclarationStatement::codegen() {
     llvm::Value* last = nullptr;
@@ -685,6 +687,7 @@ llvm::Value* DeclarationStatement::codegen() {
     return last;
 }
 
+
 llvm::Value* TypeSpecifier::codegen() {
     if (this->type->at(0) == 0) {
         return llvm::Type::getInt32Ty(*TheContext); 
@@ -699,6 +702,7 @@ llvm::Value* TypeSpecifier::codegen() {
     }
     return nullptr; 
 }
+
 
 llvm::Value* InitDeclaration::codegen() {
     llvm::Value* var = nullptr;
@@ -724,6 +728,7 @@ llvm::Value* InitDeclaration::codegen() {
     return var;
 }
 
+
 llvm::Value* Declarator::codegen() {
     llvm::Function *TheFunction = Builder->GetInsertBlock()->getParent();
 
@@ -734,6 +739,7 @@ llvm::Value* Declarator::codegen() {
 
     return Alloca;
 }
+
 
 llvm::Value* Initializer::codegen() {
     if (this->assignmentExpression != nullptr) {
@@ -760,6 +766,7 @@ llvm::Value* Initializer::codegen() {
     return nullptr;
 }
 
+
 llvm::Value* AssignmentStatement::codegen()
 {
     llvm::Value* var = nullptr;
@@ -784,6 +791,7 @@ llvm::Value* AssignmentStatement::codegen()
             return nullptr;
         }
     }
+
 
     llvm::Value* exprValue = this->expression->codegen();
     if (!exprValue) {
@@ -889,5 +897,52 @@ llvm::Value* AssignmentStatement::codegen()
         return modValue;
     }
 
+    return nullptr;
+}
+
+
+llvm::Value *LoopStatement::codegen() 
+{
+    llvm::Function *function = Builder->GetInsertBlock()->getParent();
+
+    llvm::BasicBlock *preheaderBB = builder.GetInsertBlock();
+    llvm::BasicBlock *loopBB = llvm::BasicBlock::Create(*TheContext, "loop", function);
+    llvm::BasicBlock *afterBB = llvm::BasicBlock::Create(*TheContext, "afterloop", function);
+
+    builder.CreateBr(loopBB);
+
+    builder.SetInsertPoint(loopBB);
+
+    for (const auto &range : *fromToPairs) {
+        Expression *startExpr = std::get<0>(range);
+        Expression *endExpr = std::get<1>(range);
+        Expression *stepExpr = std::get<2>(range);
+
+        llvm::Value *startVal = startExpr->codegen();
+        llvm::Value *endVal = endExpr->codegen();
+        llvm::Value *stepVal = stepExpr->codegen();
+
+        llvm::AllocaInst *loopVar = builder.CreateAlloca(llvm::Type::getInt32Ty(*TheContext), nullptr, variable->name);
+        builder.CreateStore(startVal, loopVar);
+
+        llvm::Value *currentVal = builder.CreateLoad(loopVar);
+        llvm::Value *cond = builder.CreateICmpSLT(currentVal, endVal, "loopcond");
+        llvm::BasicBlock *bodyBB = llvm::BasicBlock::Create(*TheContext, "loopbody", function);
+
+        builder.CreateCondBr(cond, bodyBB, afterBB);
+
+        builder.SetInsertPoint(bodyBB);
+        for (auto *stmt : *statements) {
+            stmt->codegen();
+        }
+
+        llvm::Value *incremented = builder.CreateAdd(currentVal, stepVal, "increment");
+        builder.CreateStore(incremented, loopVar);
+
+        builder.CreateBr(loopBB);
+
+    }
+
+    builder.SetInsertPoint(afterBB);
     return nullptr;
 }
