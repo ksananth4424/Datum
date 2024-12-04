@@ -47,7 +47,7 @@ Start::Start(vector<FunctionDeclaration *> *FunctionList, vector<Statement *> *S
     this->column = column;
 }
 
-Start::codegen() {
+std::string Start::codegen() {
     string code = "";
     for (auto &func_dec : *(this->FunctionList)) {
         code += func_dec->codegen();
@@ -67,8 +67,19 @@ Expression::Expression() {
 
 }
 
-Expression::codegen() {
-    return "";
+string Expression::codegen() {
+    string code = "";
+    if(this->castType==1){
+        code += dynamic_cast<UnaryExpression *>(this)->codegen();
+    }
+    else if(this->castType==2){
+        code += dynamic_cast<BinaryExpression *>(this)->codegen();
+    }
+    else if(this->castType==3){
+        UnaryExpression *unaryExpression = dynamic_cast<UnaryExpression *>(this);
+        Expression *expr = unaryExpression->expr;
+        code += dynamic_cast<SingleChainExpression *>(expr)->codegen();
+    }
 }
 
 //BinaryExpression
@@ -90,47 +101,47 @@ BinaryExpression::BinaryExpression(Expression *lhs, Expression *rhs, BinaryOpera
     this->column = column;
 }
 
-BinaryExpression::codegen() {
+string BinaryExpression::codegen() {
     string code = "";
     code += this->lhs->codegen();
     switch(this->op) {
-        case BinaryOperator::plus:
+        case BinaryOperator::add_op:
             code += " + ";
             break;
-        case BinaryOperator::minus:
+        case BinaryOperator::sub_op:
             code += " - ";
             break;
-        case BinaryOperator::multiply:
+        case BinaryOperator::mul_op:
             code += " * ";
             break;
-        case BinaryOperator::divide:
+        case BinaryOperator::div_op:
             code += " / ";
             break;
-        case BinaryOperator::mod:
+        case BinaryOperator::mod_op:
             code += " % ";
             break;
-        case BinaryOperator::less:
+        case BinaryOperator::lt_op:
             code += " < ";
             break;
-        case BinaryOperator::greater:
+        case BinaryOperator::gt_op:
             code += " > ";
             break;
-        case BinaryOperator::lessEqual:
+        case BinaryOperator::lte_op:
             code += " <= ";
             break;
-        case BinaryOperator::greaterEqual:
+        case BinaryOperator::gte_op:
             code += " >= ";
             break;
-        case BinaryOperator::equal:
+        case BinaryOperator::eq_op:
             code += " == ";
             break;
-        case BinaryOperator::notEqual:
+        case BinaryOperator::ne_op:
             code += " != ";
             break;
-        case BinaryOperator::and:
+        case BinaryOperator::and_op:
             code += " && ";
             break;
-        case BinaryOperator::or:
+        case BinaryOperator::or_op:
             code += " || ";
             break;
     }
@@ -175,18 +186,17 @@ UnaryExpression::UnaryExpression(Expression *expr, int row, int column) {
     this->column = column;
 }
 
-UnaryExpression::codegen() {
+string UnaryExpression::codegen() {
     string code = "";
-    for (auto &o : *(unaryExpression->op)){
+    for (auto &o : *(this->op)){
         if (o == minus_op){
             code+="-";
-            error_count++;
         }else if (o == plus_op){
             code+="+";
         }
     }
     if(this->constantValue){
-        code+=this->constantValue-> codegen;
+        code+=this->constantValue-> codegen();
     }
     // need to handle inbuilt function
     
@@ -232,7 +242,7 @@ ConstantValue::ConstantValue(TypeSpecifier *type, char* sval, int row, int colum
     this->column = column;
 }
 
-ConstantValue::codegen() {
+string ConstantValue::codegen() {
     string code = "";
     switch(this->type->type->at(0)) {
         case 1:
@@ -265,24 +275,47 @@ TypeSpecifier::TypeSpecifier(vector<int>*type, int row, int column){
     this->column = column;
 }
 
-TypeSpecifier::codegen() {
+string TypeSpecifier::codegen() {
     string code = "";
     switch(this->type->at(0)) {
-        case 1:
+        case 0:
             code += "int";
             break;
-        case 2:
+        case 1:
             code += "float";
             break;
-        case 3:
+        case 4:
             code += "bool";
             break;
-        case 4:
+        case 3:
             code += "char";
             break;
-        case 5:
+        case 2:
             code += "string";
             break;
+        case 6:
+        //NEED TO HANDLE THIS DATASET
+            code += "dataset";
+            break;
+        case 7:
+            code += "vector<int>";
+            break;
+        case 8:
+            code += "vector<float>";
+            break;
+        case 9:
+            code += "vector<string>";
+            break;
+        case 10:
+            code += "vector<char>";
+            break;
+        case 11:
+            code += "vector<bool>";
+            break;
+        case 12:
+            code += "vector<dataset>";
+            break;
+
     }
     return code;
 }
@@ -314,7 +347,7 @@ Initializer::Initializer(vector<Initializer *> *initializerList, int row, int co
     this->column = column;
 }
 
-Initializer::codegen() {
+string Initializer::codegen() {
     string code = "";
     if (this->assignmentExpression != nullptr) {
         code += this->assignmentExpression->codegen();
@@ -338,8 +371,8 @@ Declarator::Declarator(char* identifier, int row, int column) {
     this->column = column;
 }
 
-Declarator::codegen() {
-    return this->identifier;
+string Declarator::codegen() {
+    return std::string(this->identifier);
 }
 
 //InitDeclaration
@@ -367,7 +400,7 @@ InitDeclaration::InitDeclaration(Declarator *declarator, Initializer *initialize
     this->column = column;
 }
 
-InitDeclaration::codegen() {
+string InitDeclaration::codegen() {
     string code = "";
     code += this->declarator->codegen();
     if (this->initializer != nullptr) {
@@ -395,7 +428,7 @@ Parameter::Parameter(TypeSpecifier *type, Declarator* identifier, int row, int c
     this->column = column;
 }
 
-Parameter::codegen() {
+string Parameter::codegen() {
     string code = "";
     code += this->type->codegen();
     code += " ";
@@ -454,7 +487,15 @@ Argument::Argument(vector<Statement *> *statements, int row, int column) {
     this->column = column;
 }
 
-Argument::codegen() {
+string Argument::codegen() {
+    string code = "";
+    if (this->expression != nullptr) {
+        code += this->expression->codegen();
+    }
+    if (this->fromToAlsoExpression != nullptr) {
+        code += fromToPairsCodeGen(this->fromToAlsoExpression);
+    }
+    return code;
 
 }
 
@@ -578,8 +619,38 @@ SingleChainExpression::SingleChainExpression(FunctionCall *functionCall, Express
     this->column = column;
 }
 
-SingleChainExpression::codegen() {
+string SingleChainExpression::codegen() {
+    string code = "";
+    if (this->identifier != nullptr) {
+        code += this->identifier;
+        if (this->access != nullptr) {
+            code += "[";
+            code += this->access->codegen();
+            code += "]";
+        }
+    } else if (this->inputExpr != nullptr) {
+        code += this->inputExpr->codegen();
+        if (this->access != nullptr) {
+            code += "[";
+            code += this->access->codegen();
+            code += "]";
+        }
+    } 
+    if (this->functionCallList!= nullptr && this->functionCallList->size()>0){
+        for (auto &[func, expr] : *functionCallList) {
+            code += ")";
+            code = func->codegen() + "(" + code;
+            if (expr != nullptr) {
+                code += "[";
+                code += expr->codegen();
+                code += "]";
+            }
+        }
+    }
+    code += ";\n";
+    return code;
 
+    
 }
 
 // Statements
@@ -672,7 +743,7 @@ Statement::Statement(vector<Statement*>* compoundStatement, int row, int column)
     this->column = column;
 }
 
-Statement::codegen() {
+string Statement::codegen() {
     string code = "";
     switch (this->statementType) {
         case 1:
@@ -709,7 +780,7 @@ ContinueStatement::ContinueStatement()  {
 
 }
 
-ContinueStatement::codegen() {
+string ContinueStatement::codegen() {
     return "continue;\n";
 }
 
@@ -717,7 +788,7 @@ BreakStatement::BreakStatement()  {
 
 }
 
-BreakStatement::codegen() {
+string BreakStatement::codegen() {
     return "break;\n";
 }
 
@@ -738,7 +809,7 @@ ReturnStatement::ReturnStatement(Expression *expression, int row, int column)  {
     this->column = column;
 }
 
-ReturnStatement::codegen() {
+string ReturnStatement::codegen() {
     string code = "return ";
     if (this->expression != nullptr) {
         code += this->expression->codegen();
@@ -770,7 +841,7 @@ DeclarationStatement::DeclarationStatement(TypeSpecifier *type, vector<class Ini
     this->column = column;
 }
 
-DeclarationStatement::codegen() {
+string DeclarationStatement::codegen() {
     string code = "";
     code += this->type->codegen();
     code += " ";
@@ -813,16 +884,32 @@ LoopStatement::LoopStatement(Declarator* variable, vector<tuple<class Expression
     this->row = row;
     this->column = column;
 }
+string fromToPairsCodeGen(vector<tuple<Expression *, Expression *, Expression *>> *fromToPairs) {
+    string code = "";
+    vector<string> fromTostep;
+    code+= "vector<int> temp;\n";
+    for (auto &[from, to, step] : *fromToPairs) {
+        code += "for (int i = ";
+        code += from->codegen();
+        code += "; i < ";
+        code += to->codegen();
+        code += "; i += ";
+        code += step->codegen();
+        code += ") {\n";
+        code += "temp.push_back(i);\n";
+        code += "}\n";
+    }
+    code += "vector<int>(temp);\n";
+    return code;
+}
 
-LoopStatement::codegen() {
+string LoopStatement::codegen() {
     string code = "";
     if (this->variable != nullptr) {
-        code += "for (";
+        code += "for ( int ";
         code += this->variable->codegen();
         code += " : ";
-        code += this->fromToPairs->at(0)->codegen();
-        code += " : ";
-        code += this->fromToPairs->at(1)->codegen();
+        code+= fromToPairsCodeGen(this->fromToPairs);
         code += "++) {\n";
     }
     for (auto &stmt : *statements) {
@@ -852,14 +939,29 @@ ConditionalStatement::ConditionalStatement(vector<pair<class Expression *, vecto
     this->column = column;
 }
 
-ConditionalStatement::codegen() {
+string ConditionalStatement::codegen() {
     string code = "";
-    for (auto &[expr, stmt_list] : *ConditionStatements) {
-        code += "if (";
-        if (expr != nullptr) {
+    // get the first pair in the condition statement
+    auto &[expr, stmt_list] = ConditionStatements->at(0);
+    code += "if (";
+    if (expr != nullptr) {
+        code += expr->codegen();
+    }
+    code += ") {\n";
+    for (auto &stmt : *stmt_list) {
+        code += stmt->codegen();
+    }
+    code += "}\n";
+    // get the rest of the pairs in the conditinal statement
+    for (int i = 1; i < ConditionStatements->size(); i++) {
+        auto &[expr, stmt_list] = ConditionStatements->at(i);
+        if(expr != nullptr) {
+            code += "else if (";
             code += expr->codegen();
+            code += ") {\n";
+        } else {
+            code += "else {\n";
         }
-        code += ") {\n";
         for (auto &stmt : *stmt_list) {
             code += stmt->codegen();
         }
@@ -895,7 +997,7 @@ AssignmentStatement::AssignmentStatement(Expression *expression, int row, int co
     this->column = column;
 }
 
-AssignmentStatement::codegen() {
+string AssignmentStatement::codegen() {
     string code = "";
     if (this->declarator != nullptr) {
         code += this->declarator->codegen();
@@ -903,19 +1005,19 @@ AssignmentStatement::codegen() {
             case AssignmentOperator::assign:
                 code += " = ";
                 break;
-            case AssignmentOperator::plusAssign:
+            case AssignmentOperator::add_assign:
                 code += " += ";
                 break;
-            case AssignmentOperator::minusAssign:
+            case AssignmentOperator::sub_assign:
                 code += " -= ";
                 break;
-            case AssignmentOperator::multiplyAssign:
+            case AssignmentOperator::mul_assign:
                 code += " *= ";
                 break;
-            case AssignmentOperator::divideAssign:
+            case AssignmentOperator::div_assign:
                 code += " /= ";
                 break;
-            case AssignmentOperator::modAssign:
+            case AssignmentOperator::mod_assign:
                 code += " %= ";
                 break;
         }

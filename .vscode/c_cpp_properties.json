@@ -7,7 +7,7 @@
                 "/usr/include/llvm-15"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/clang-15",
+            "compilerPath": "/usr/bin/g++-11",
             "cStandard": "c17",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-clang-x64"
