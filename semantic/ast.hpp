@@ -126,6 +126,7 @@ public:
     int column;
     Node();
     virtual void buildScope(string scope);
+    virtual string codegen();
     virtual string get_scope();
     virtual ~Node() = default;
 };

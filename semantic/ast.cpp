@@ -1,5 +1,7 @@
 #include "ast.hpp"
 
+// codegen spits out cpp code
+
 Node::Node() {
 
 }
@@ -45,6 +47,17 @@ Start::Start(vector<FunctionDeclaration *> *FunctionList, vector<Statement *> *S
     this->column = column;
 }
 
+Start::codegen() {
+    string code = "";
+    for (auto &func_dec : *(this->FunctionList)) {
+        code += func_dec->codegen();
+    }
+    for (auto &stmt : *(this->StatementList)) {
+        code += stmt->codegen();
+    }
+    return code;
+}
+
 //Expression
 void Expression::buildScope (std::string scope) {
     this->scope = scope;
@@ -52,6 +65,10 @@ void Expression::buildScope (std::string scope) {
 
 Expression::Expression() {
 
+}
+
+Expression::codegen() {
+    return "";
 }
 
 //BinaryExpression
@@ -71,6 +88,54 @@ BinaryExpression::BinaryExpression(Expression *lhs, Expression *rhs, BinaryOpera
     this->op = op;
     this->row = row;
     this->column = column;
+}
+
+BinaryExpression::codegen() {
+    string code = "";
+    code += this->lhs->codegen();
+    switch(this->op) {
+        case BinaryOperator::plus:
+            code += " + ";
+            break;
+        case BinaryOperator::minus:
+            code += " - ";
+            break;
+        case BinaryOperator::multiply:
+            code += " * ";
+            break;
+        case BinaryOperator::divide:
+            code += " / ";
+            break;
+        case BinaryOperator::mod:
+            code += " % ";
+            break;
+        case BinaryOperator::less:
+            code += " < ";
+            break;
+        case BinaryOperator::greater:
+            code += " > ";
+            break;
+        case BinaryOperator::lessEqual:
+            code += " <= ";
+            break;
+        case BinaryOperator::greaterEqual:
+            code += " >= ";
+            break;
+        case BinaryOperator::equal:
+            code += " == ";
+            break;
+        case BinaryOperator::notEqual:
+            code += " != ";
+            break;
+        case BinaryOperator::and:
+            code += " && ";
+            break;
+        case BinaryOperator::or:
+            code += " || ";
+            break;
+    }
+    code += this->rhs->codegen();
+    return code;
 }
 
 //UnaryExpression
@@ -108,6 +173,23 @@ UnaryExpression::UnaryExpression(Expression *expr, int row, int column) {
     this->constantValue = nullptr;
     this->row = row;
     this->column = column;
+}
+
+UnaryExpression::codegen() {
+    string code = "";
+    for (auto &o : *(unaryExpression->op)){
+        if (o == minus_op){
+            code+="-";
+            error_count++;
+        }else if (o == plus_op){
+            code+="+";
+        }
+    }
+    if(this->constantValue){
+        code+=this->constantValue-> codegen;
+    }
+    // need to handle inbuilt function
+    
 }
 
 //ConstantValue
@@ -150,6 +232,28 @@ ConstantValue::ConstantValue(TypeSpecifier *type, char* sval, int row, int colum
     this->column = column;
 }
 
+ConstantValue::codegen() {
+    string code = "";
+    switch(this->type->type->at(0)) {
+        case 1:
+            code += to_string(this->ival);
+            break;
+        case 2:
+            code += to_string(this->fval);
+            break;
+        case 3:
+            code += to_string(this->bval);
+            break;
+        case 4:
+            code += this->cval;
+            break;
+        case 5:
+            code += this->sval;
+            break;
+    }
+    return code;
+}
+
 //TypeSpecifier
 void TypeSpecifier::buildScope (std::string scope) {
     this->scope = scope;
@@ -159,6 +263,28 @@ TypeSpecifier::TypeSpecifier(vector<int>*type, int row, int column){
     this->type = type;
     this->row = row;
     this->column = column;
+}
+
+TypeSpecifier::codegen() {
+    string code = "";
+    switch(this->type->at(0)) {
+        case 1:
+            code += "int";
+            break;
+        case 2:
+            code += "float";
+            break;
+        case 3:
+            code += "bool";
+            break;
+        case 4:
+            code += "char";
+            break;
+        case 5:
+            code += "string";
+            break;
+    }
+    return code;
 }
 
 //Initializer
@@ -188,6 +314,19 @@ Initializer::Initializer(vector<Initializer *> *initializerList, int row, int co
     this->column = column;
 }
 
+Initializer::codegen() {
+    string code = "";
+    if (this->assignmentExpression != nullptr) {
+        code += this->assignmentExpression->codegen();
+    }
+    if (this->initializerList != nullptr) {
+        for (auto &initializer : *(this->initializerList)) {
+            code += initializer->codegen();
+        }
+    }
+    return code;
+}
+
 //Declarator
 void Declarator::buildScope (std::string scope) {
     this->scope = scope;
@@ -199,6 +338,9 @@ Declarator::Declarator(char* identifier, int row, int column) {
     this->column = column;
 }
 
+Declarator::codegen() {
+    return this->identifier;
+}
 
 //InitDeclaration
 void InitDeclaration::buildScope (std::string scope) {
@@ -225,6 +367,16 @@ InitDeclaration::InitDeclaration(Declarator *declarator, Initializer *initialize
     this->column = column;
 }
 
+InitDeclaration::codegen() {
+    string code = "";
+    code += this->declarator->codegen();
+    if (this->initializer != nullptr) {
+        code += " = ";
+        code += this->initializer->codegen();
+    }
+    return code;
+}
+
 //Parameter
 void Parameter::buildScope (std::string scope) {
     this->scope = scope;
@@ -241,6 +393,14 @@ Parameter::Parameter(TypeSpecifier *type, Declarator* identifier, int row, int c
     this->identifier = identifier;
     this->row = row;
     this->column = column;
+}
+
+Parameter::codegen() {
+    string code = "";
+    code += this->type->codegen();
+    code += " ";
+    code += this->identifier->codegen();
+    return code;
 }
 
 //Argument
@@ -294,6 +454,10 @@ Argument::Argument(vector<Statement *> *statements, int row, int column) {
     this->column = column;
 }
 
+Argument::codegen() {
+
+}
+
 //FunctionCall
 void FunctionCall::buildScope(string scope) {
     this->scope = scope;
@@ -314,6 +478,10 @@ FunctionCall::FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *arg
     this->argumentList = argumentList;
     this->row = row;
     this->column = column;
+}
+
+FunctionCall::codegen() {
+
 }
 
 //FunctionDeclaration
@@ -342,6 +510,30 @@ FunctionDeclaration::FunctionDeclaration(char* identifier, Parameter* inpParamet
     this->statements = statements;
     this->row = row;
     this->column = column;
+}
+
+FunctionDeclaration::codegen() {
+    string code = "";
+    code += this->outParameter->codegen(); //doubt here
+    code += this->identifier;
+    code += "(";
+    if (this->inpParameter != nullptr) {
+        code += this->inpParameter->codegen();
+    }
+    for (auto &param : *(this->otherParameter)) {
+        code += ", ";
+        code += param->codegen();
+    }
+    code += ") ";
+    if (this->outParameter != nullptr) {
+        code += this->outParameter->codegen();
+    }
+    code += " {\n";
+    for (auto &stmt : *(this->statements)) {
+        code += stmt->codegen();
+    }
+    code += "}\n";
+    return code;
 }
 
 //SingleChainExpression
@@ -384,6 +576,10 @@ SingleChainExpression::SingleChainExpression(FunctionCall *functionCall, Express
     this->access = nullptr;
     this->row = row;
     this->column = column;
+}
+
+SingleChainExpression::codegen() {
+
 }
 
 // Statements
@@ -476,12 +672,53 @@ Statement::Statement(vector<Statement*>* compoundStatement, int row, int column)
     this->column = column;
 }
 
+Statement::codegen() {
+    string code = "";
+    switch (this->statementType) {
+        case 1:
+            code += this->declarationStatement->codegen();
+            break;
+        case 2:
+            code += this->assignmentStatement->codegen();
+            break;
+        case 3:
+            code += this->conditionalStatement->codegen();
+            break;
+        case 4:
+            code += this->loopStatement->codegen();
+            break;
+        case 5:
+            code += this->returnStatement->codegen();
+            break;
+        case 6:
+            code += this->breakStatement->codegen();
+            break;
+        case 7:
+            code += this->continueStatement->codegen();
+            break;
+        case 8:
+            for (auto &stmt : *compoundStatement) {
+                code += stmt->codegen();
+            }
+            break;
+    }
+    return code;
+}
+
 ContinueStatement::ContinueStatement()  {
 
 }
 
+ContinueStatement::codegen() {
+    return "continue;\n";
+}
+
 BreakStatement::BreakStatement()  {
 
+}
+
+BreakStatement::codegen() {
+    return "break;\n";
 }
 
 void ReturnStatement::buildScope(string scope) {
@@ -499,6 +736,15 @@ ReturnStatement::ReturnStatement(Expression *expression, int row, int column)  {
     this->expression = expression;
     this->row = row;
     this->column = column;
+}
+
+ReturnStatement::codegen() {
+    string code = "return ";
+    if (this->expression != nullptr) {
+        code += this->expression->codegen();
+    }
+    code += ";\n";
+    return code;
 }
 
 void DeclarationStatement::buildScope(string scope) {
@@ -522,6 +768,20 @@ DeclarationStatement::DeclarationStatement(TypeSpecifier *type, vector<class Ini
     this->initDeclarations = initDeclarations;
     this->row = row;
     this->column = column;
+}
+
+DeclarationStatement::codegen() {
+    string code = "";
+    code += this->type->codegen();
+    code += " ";
+    for (auto &initDeclaration : *(this->initDeclarations)) {
+        code += initDeclaration->codegen();
+        code += ", ";
+    }
+    code.pop_back();
+    code.pop_back();
+    code += ";\n";
+    return code;
 }
 
 void LoopStatement::buildScope(string scope) {
@@ -554,6 +814,24 @@ LoopStatement::LoopStatement(Declarator* variable, vector<tuple<class Expression
     this->column = column;
 }
 
+LoopStatement::codegen() {
+    string code = "";
+    if (this->variable != nullptr) {
+        code += "for (";
+        code += this->variable->codegen();
+        code += " : ";
+        code += this->fromToPairs->at(0)->codegen();
+        code += " : ";
+        code += this->fromToPairs->at(1)->codegen();
+        code += "++) {\n";
+    }
+    for (auto &stmt : *statements) {
+        code += stmt->codegen();
+    }
+    code += "}\n";
+    return code;
+}
+
 //Conditional Statement
 void ConditionalStatement::buildScope(string scope) {
     int child_scope = 0;
@@ -572,6 +850,22 @@ ConditionalStatement::ConditionalStatement(vector<pair<class Expression *, vecto
     this->ConditionStatements = ConditionStatements;
     this->row = row;
     this->column = column;
+}
+
+ConditionalStatement::codegen() {
+    string code = "";
+    for (auto &[expr, stmt_list] : *ConditionStatements) {
+        code += "if (";
+        if (expr != nullptr) {
+            code += expr->codegen();
+        }
+        code += ") {\n";
+        for (auto &stmt : *stmt_list) {
+            code += stmt->codegen();
+        }
+        code += "}\n";
+    }
+    return code;
 }
 
 //Assignment Statement
@@ -599,4 +893,34 @@ AssignmentStatement::AssignmentStatement(Expression *expression, int row, int co
     // this->op = op;
     this->row = row;
     this->column = column;
+}
+
+AssignmentStatement::codegen() {
+    string code = "";
+    if (this->declarator != nullptr) {
+        code += this->declarator->codegen();
+        switch(this->op) {
+            case AssignmentOperator::assign:
+                code += " = ";
+                break;
+            case AssignmentOperator::plusAssign:
+                code += " += ";
+                break;
+            case AssignmentOperator::minusAssign:
+                code += " -= ";
+                break;
+            case AssignmentOperator::multiplyAssign:
+                code += " *= ";
+                break;
+            case AssignmentOperator::divideAssign:
+                code += " /= ";
+                break;
+            case AssignmentOperator::modAssign:
+                code += " %= ";
+                break;
+        }
+    }
+    code += this->expression->codegen();
+    code += ";\n";
+    return code;
 }
