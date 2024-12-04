@@ -946,3 +946,66 @@ llvm::Value *LoopStatement::codegen()
     builder.SetInsertPoint(afterBB);
     return nullptr;
 }
+
+// llvm::value* Expression::codegen() 
+// {
+//     llvm::value* ExprValue = nullptr;
+
+//     switch (castType) {
+//         case 1: { // cast to i32
+//             llvm::Type *TargetType = llvm::Type::getInt32Ty(TheContext);
+//             if (ExprValue && !ExprValue->getType()->isIntegerTy(32)) {
+//                 ExprValue = Builder.CreateIntCast(ExprValue, TargetType, /*isSigned=*/true, "castToI32");
+//             }
+//             break;
+//         }
+//         case 2: { // cast to float
+//             llvm::Type *TargetType = llvm::Type::getFloatTy(TheContext);
+//             if (ExprValue && !ExprValue->getType()->isFloatTy()) {
+//                 if (ExprValue->getType()->isIntegerTy()) {
+//                     ExprValue = Builder.CreateSIToFP(ExprValue, TargetType, "castToFloat");
+//                 } else {
+//                     // Handle other conversions if necessary.
+//                 }
+//             }
+//             break;
+//         }
+//         case 3: { // cast to char
+//             llvm::Type *TargetType = llvm::Type::getInt8Ty(TheContext);
+//             if (ExprValue && !ExprValue->getType()->isIntegerTy(8)) {
+//                 ExprValue = Builder.CreateIntCast(ExprValue, TargetType, /*isSigned=*/true, "castToChar");
+//             }
+//             break;
+//         }
+//         case 4: { // cast to bool
+//             llvm::Type *TargetType = llvm::Type::getInt1Ty(TheContext);
+//             if (ExprValue && !ExprValue->getType()->isIntegerTy(1)) {
+//                 ExprValue = Builder.CreateIntCast(ExprValue, TargetType, /*isSigned=*/true, "castToBool");
+//             }
+//             break;
+//         }
+//         case 5: { // cast to dataset
+//             // Handle dataset casting here.
+//             break;
+//         }
+//         default: {
+//             // If castType is unknown, just return the original value.
+//             break;
+//         }
+//     }
+
+//     return ExprValue;
+// }
+
+llvm::value* ReturnStatement::codegen() 
+{
+    llvm::Value *returnValue = nullptr;
+    if (this->expression != nullptr) {
+        returnValue = this->expression->codegen();
+        if (!returnValue) {
+            std::cerr << "Error generating code for return expression" << std::endl;
+            return nullptr;
+        }
+    }
+    return Builder->CreateRet(returnValue);
+}
