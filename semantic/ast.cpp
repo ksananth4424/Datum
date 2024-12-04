@@ -52,6 +52,7 @@ std::string Start::codegen() {
     for (auto &func_dec : *(this->FunctionList)) {
         code += func_dec->codegen();
     }
+    code += "std::vector<int> computeFromToRange(vector<tuple<int, int, int>> fromToPairs) {\nstd::vector<int> arr;\nfor (auto &pair : fromToPairs) {\nint from = std::get<0>(pair);\nint to = std::get<1>(pair);\nint step = std::get<2>(pair);\nfor (int i = from; i <= to; i += step) {\narr.push_back(i);\n}\n}\nreturn arr;\n}\n";
     for (auto &stmt : *(this->StatementList)) {
         code += stmt->codegen();
     }
@@ -189,20 +190,22 @@ UnaryExpression::UnaryExpression(Expression *expr, int row, int column) {
 
 string UnaryExpression::codegen() {
     string code = "";
-    for (auto &o : *(this->op)){
-        if (o == minus_op){
-            code+="-";
-        }else if (o == plus_op){
-            code+="+";
-        }else if (o == not_op){
-            code+="!";
+    for (auto &o : *(this->op)) {
+        if (o == minus_op) {
+            code += "-";
+        } else if (o == plus_op) {
+            code += "+";
+        } else if (o == not_op) {
+            code += "!";
         }
     }
-    if(this->constantValue){
-        code+=this->constantValue-> codegen();
+    if (this->constantValue) {
+        code += this->constantValue->codegen();
     }
-    // need to handle inbuilt function
-    
+    //handles the single chain expression part
+    else if (this->expr) {
+        code += this->expr->codegen();
+    }
     return code;
 }
 
@@ -497,7 +500,19 @@ string Argument::codegen() {
         code += this->expression->codegen();
     }
     if (this->fromToAlsoExpression != nullptr) {
-        code += fromToPairsCodeGen(this->fromToAlsoExpression);
+        code += "computeFromToRange({";
+        for (auto &[from, to, also] : *fromToAlsoExpression) {
+            // make these into a tuple
+            code += "(";
+            code += from->codegen();
+            code += ", ";
+            code += to->codegen();
+            code += ", ";
+            code += also->codegen();
+            code += "), ";
+        }
+        code.pop_back();
+        code += "})";
     }
     return code;
 
@@ -527,6 +542,88 @@ FunctionCall::FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *arg
 
 string FunctionCall::codegen() {
     string code = "";
+    if (this->identifier != nullptr) {
+        code += std::string(this->identifier);
+    } else {
+        if (this->inbuiltFunc && this->inbuiltFunc != InbuiltFunctions::none) {
+        switch (this->inbuiltFunc) {
+            case InbuiltFunctions::func_show_bar:
+                code += "show_bar";
+                break;
+            case InbuiltFunctions::func_show_line:
+                code += "show_line";
+                break;
+            case InbuiltFunctions::func_show_scatter:
+                code += "show_scatter";
+                break;
+            case InbuiltFunctions::func_show_box:
+                code += "show_box";
+                break;
+            case InbuiltFunctions::func_row:
+                code += "row";
+                break;
+            case InbuiltFunctions::func_col:
+                code += "col";
+                break;
+            case InbuiltFunctions::func_filter:
+                code += "filter";
+                break;
+            case InbuiltFunctions::func_sum:
+                code += "sum";
+                break;
+            case InbuiltFunctions::func_max:
+                code += "max";
+                break;
+            case InbuiltFunctions::func_min:
+                code += "min";
+                break;
+            case InbuiltFunctions::func_mean:
+                code += "mean";
+                break;
+            case InbuiltFunctions::func_join:
+                code += "join";
+                break;
+            case InbuiltFunctions::func_read:
+                code += "read";
+                break;
+            case InbuiltFunctions::func_write:
+                code += "write";
+                break;
+            case InbuiltFunctions::func_unique:
+                code += "unique";
+                break;
+            case InbuiltFunctions::func_show:
+                code += "show";
+                break;
+            case InbuiltFunctions::func_split:
+                code += "split";
+                break;
+            case InbuiltFunctions::func_sort:
+                code += "sort";
+                break;
+            case InbuiltFunctions::func_shuffle:
+                code += "shuffle";
+                break;
+            case InbuiltFunctions::func_add:
+                code += "add";
+                break;
+            case InbuiltFunctions::func_shape:
+                code += "shape";
+                break;
+            case InbuiltFunctions::func_drop:
+                code += "drop";
+                break;
+            }
+        }
+    }
+    code += "(";
+    for (auto &arg : *argumentList) {
+        code += arg->codegen();
+        code += ", ";
+    }
+    code.pop_back();
+    code.pop_back();
+    code += ")";
      
     return code;
 }
@@ -629,13 +726,12 @@ string SingleChainExpression::codegen() {
     string code = "";
     if (this->identifier != nullptr) {
         code += this->identifier;
-        if (this->access != nullptr) {
-            code += "[";
-            code += this->access->codegen();
-            code += "]";
+        if(this->inputExpr!=nullptr){
+            // THIS IS FUNCTION CALL
+            code += "(";
+            code += this->inputExpr->codegen();
+            code += ")";
         }
-    } else if (this->inputExpr != nullptr) {
-        code += this->inputExpr->codegen();
         if (this->access != nullptr) {
             code += "[";
             code += this->access->codegen();
@@ -915,8 +1011,18 @@ string LoopStatement::codegen() {
         code += "for ( int ";
         code += this->variable->codegen();
         code += " : ";
-        code+= fromToPairsCodeGen(this->fromToPairs);
-        code += "++) {\n";
+        code+= "computeFromToRange({";
+        for (auto &[from, to, step] : *fromToPairs) {
+            code += "(";
+            code += from->codegen();
+            code += ", ";
+            code += to->codegen();
+            code += ", ";
+            code += step->codegen();
+            code += "), ";
+        }
+        code.pop_back();
+        code += "}) {\n";
     }
     for (auto &stmt : *statements) {
         code += stmt->codegen();

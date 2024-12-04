@@ -684,6 +684,119 @@ void func_show_bar(vector<Dataset_object> data) {
     plt::bar(labels, values);
     plt::show();
 }
+void func_show_box(vector<Dataset_object> data, vector<vector<int>> temp) {
+    vector<string> labels;
+    vector<vector<int>> values;
+    
+    for (int i = 0; i < temp.size(); i++) {
+        labels.push_back(data[temp[i][0]].sval);
+        vector<int> columnValues;
+        for (int j = 1; j < temp[i].size(); j++) {
+            columnValues.push_back(data[temp[i][j]].ival);
+        }
+        values.push_back(columnValues);
+    }
+    
+    plt::boxplot(values, labels);
+    plt::show();
+}
+
+void func_show_box(vector<Dataset_object> data, vector<vector<float>> temp) {
+    vector<string> labels;
+    vector<vector<float>> values;
+
+    for (int i = 0; i < temp.size(); i++) {
+        labels.push_back(data[temp[i][0]].sval);
+        vector<float> columnValues;
+        for (int j = 1; j < temp[i].size(); j++) {
+            columnValues.push_back(data[temp[i][j]].fval);
+        }
+        values.push_back(columnValues);
+    }
+
+    plt::boxplot(values, labels);
+    plt::show();
+}show_bar
+
+void func_show_box(vector<Dataset_object> data) {
+    vector<string> labels;
+    vector<vector<float>> values;
+
+    for (int i = 0; i < data.size(); i++) {
+        labels.push_back(data[i].sval);
+        vector<float> columnValues;
+
+        if (data[i].type == Dataset_object::DataType::Integer) {
+            columnValues.push_back(static_cast<float>(data[i].ival));
+        } else if (data[i].type == Dataset_object::DataType::Float) {
+            columnValues.push_back(data[i].fval);
+        }
+        values.push_back(columnValues);
+    }
+
+    plt::boxplot(values, labels);
+    plt::show();
+}
+void func_show_line(vector<Dataset_object> data, vector<pair<int, int>> temp) {
+    for (const auto& pair : temp) {
+        vector<float> xValues;
+        vector<float> yValues;
+
+        for (int i = 0; i < data.size(); i++) {
+            if (data[i].type == Dataset_object::DataType::Float || data[i].type == Dataset_object::DataType::Integer) {
+                xValues.push_back(data[i][pair.first].fval);
+                yValues.push_back(data[i][pair.second].fval);
+            }
+        }
+        plt::plot(xValues, yValues);
+    }
+    plt::show();
+}
+
+void func_show_line(vector<Dataset_object> data) {
+    vector<float> xValues;
+    vector<float> yValues;
+
+    for (int i = 0; i < data.size(); i++) {
+        if (data[i].type == Dataset_object::DataType::Float || data[i].type == Dataset_object::DataType::Integer) {
+            xValues.push_back(static_cast<float>(data[i].ival));
+            yValues.push_back(data[i].fval);
+        }
+    }
+    plt::plot(xValues, yValues);
+    plt::show();
+}
+void func_show_scatter(vector<Dataset_object> data, vector<pair<int, int>> temp) {
+    for (const auto& pair : temp) {
+        vector<float> xValues;
+        vector<float> yValues;
+
+        for (int i = 0; i < data.size(); i++) {
+            if (data[i].type == Dataset_object::DataType::Float || data[i].type == Dataset_object::DataType::Integer) {
+                xValues.push_back(data[i][pair.first].fval);
+                yValues.push_back(data[i][pair.second].fval);
+            }
+        }
+        plt::scatter(xValues, yValues);
+    }
+    plt::show();
+}
+
+void func_show_scatter(vector<Dataset_object> data) {
+    vector<float> xValues;
+    vector<float> yValues;
+
+    for (int i = 0; i < data.size(); i++) {
+        if (data[i].type == Dataset_object::DataType::Float || data[i].type == Dataset_object::DataType::Integer) {
+            xValues.push_back(static_cast<float>(data[i].ival));
+            yValues.push_back(data[i].fval);
+        }
+    }
+    plt::scatter(xValues, yValues);
+    plt::show();
+}
+
+
 
 Dataset func_read(vector<string> temp) {
     // read the dataset from the csv
