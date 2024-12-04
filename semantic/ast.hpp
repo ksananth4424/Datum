@@ -15,28 +15,28 @@ class Node;
 
 enum InbuiltFunctions
 {
-    func_show_bar,
+    func_show_bar, // done
     func_show_line,
     func_show_scatter,
     func_show_box,
-    func_row,
-    func_col,
+    func_row,// done
+    func_col,// done
     func_filter,
-    func_sum,
-    func_max,
-    func_min,
-    func_mean,
-    func_join,
-    func_read,
-    func_write,
-    func_unique,
-    func_show,
+    func_sum, // done
+    func_max, // done
+    func_min, // done
+    func_mean, // done
+    func_join, // done
+    func_read, // done
+    func_write, // done
+    func_unique, // done
+    func_show, // done
     func_split,
-    func_sort,
-    func_shuffle,
-    func_add,
-    func_shape,
-    func_drop,
+    func_sort, // done
+    func_shuffle, // done
+    func_add, // done
+    func_shape, // done
+    func_drop, // done
     none
 };
 
@@ -137,7 +137,7 @@ public:
     vector<int> *type;
     TypeSpecifier(vector<int> *type, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~TypeSpecifier() = default;
 };
 
@@ -150,6 +150,7 @@ public:
     Start(vector<class Statement *> *StatementList, int row, int column);
     Start(vector<class FunctionDeclaration *> *FunctionList, int row, int column);
     Start(vector<class FunctionDeclaration *> *FunctionList, vector<class Statement *> *StatementList, int row, int column);
+    string codegen();
     void buildScope(string scope);
     virtual ~Start() = default;
 };
@@ -169,7 +170,7 @@ public:
     ConstantValue(TypeSpecifier *type, char cval, int row, int column);
     ConstantValue(TypeSpecifier *type, char* sval, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~ConstantValue() = default;
 };
 
@@ -181,7 +182,7 @@ public:
     DeclarationStatement(TypeSpecifier *type, int row, int column);
     DeclarationStatement(TypeSpecifier *type, vector<class InitDeclaration *> *initDeclarations, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~DeclarationStatement() = default;
 };
 
@@ -192,6 +193,7 @@ public:
     int castType;
     Expression();
     void buildScope(string scope);
+    string codegen();
     virtual ~Expression() = default;
 };
 
@@ -203,7 +205,7 @@ public:
     BinaryOperator op;
     BinaryExpression(Expression *lhs, Expression *rhs, BinaryOperator op, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~BinaryExpression() = default;
 };
 
@@ -218,6 +220,7 @@ public:
     UnaryExpression(Expression *expr, vector<UnaryOperator> *op, ConstantValue *constantValue, InbuiltFunctions inbuiltFunction, int row, int column);
     UnaryExpression(Expression *expr, int row, int column);
     UnaryExpression(ConstantValue *constantValue, int row, int column);
+    string codegen();
     void buildScope(string scope);
 
     virtual ~UnaryExpression() = default;
@@ -231,7 +234,7 @@ public:
     Initializer(AssignmentStatement *assignmentExpression, int row, int column);
     Initializer(vector<class Initializer *> *initializerList, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~Initializer() = default;
 };
 
@@ -241,7 +244,7 @@ public:
     char* identifier;
     Declarator(char* identifier, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~Declarator() = default;
 };
 
@@ -254,7 +257,7 @@ public:
     InitDeclaration(Declarator *declarator, int row, int column);
     InitDeclaration(Declarator *declarator, Initializer *initializer, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~InitDeclaration() = default;
 };
 
@@ -268,7 +271,7 @@ public:
     AssignmentStatement(SingleChainExpression *declarator, Expression *expression, AssignmentOperator op, int row, int column);
     AssignmentStatement(Expression *expression, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~AssignmentStatement() = default;
 };
 
@@ -279,7 +282,7 @@ public:
 
     ConditionalStatement(vector<pair<class Expression *, vector<class Statement *>*>> *ConditionStatements, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~ConditionalStatement() = default;
 };
 
@@ -292,7 +295,7 @@ public:
 
     LoopStatement(Declarator* variable, vector<tuple<class Expression *, class Expression *, class Expression *>> *fromToPairs, vector<class Statement *> *statements, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~LoopStatement() = default;
 };
 
@@ -303,7 +306,7 @@ public:
     ReturnStatement();
     ReturnStatement(Expression *expression, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~ReturnStatement() = default;
 };
 
@@ -311,7 +314,7 @@ class BreakStatement : public Node
 {
 public:
     BreakStatement();
-
+    string codegen();
     virtual ~BreakStatement() = default;
 };
 
@@ -319,7 +322,7 @@ class ContinueStatement : public Node
 {
 public:
     ContinueStatement();
-
+    string codegen();
     virtual ~ContinueStatement() = default;
 };
 
@@ -344,7 +347,7 @@ public:
     Statement(ContinueStatement *continueStatement, int row, int column);
     Statement(vector<Statement*> *compoundStatement, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~Statement() = default;
 };
 
@@ -355,7 +358,7 @@ public:
     Declarator* identifier;
     Parameter(TypeSpecifier* type, Declarator* identifier, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~Parameter() = default;
 };
 
@@ -369,7 +372,7 @@ public:
     vector<class Statement *> *statements;
     FunctionDeclaration(char* identifier, Parameter* inpParameter, vector<Parameter *> *otherParameter, Parameter* outParameter, vector<class Statement *> *statements, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~FunctionDeclaration() = default;
 };
 
@@ -383,7 +386,7 @@ public:
     Argument(vector<tuple<Expression *, Expression *, Expression *>> *fromToAlsoExpression, int row, int column);
     Argument(vector<Statement *> *statements, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~Argument() = default;
 };
 class FunctionCall : public Node
@@ -395,7 +398,7 @@ public:
     FunctionCall(char* identifier, vector<Argument *> *argumentList, int row, int column);
     FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *argumentList, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~FunctionCall() = default;
 };
 
@@ -410,7 +413,7 @@ public:
     SingleChainExpression(Expression* inputExpr, Expression* access, vector<pair<FunctionCall *, Expression*>> *functionCallList, int row, int column);
     SingleChainExpression(FunctionCall* functionCall, Expression* access, int row, int column);
     void buildScope(string scope);
-
+    string codegen();
     virtual ~SingleChainExpression() = default;
 };
 

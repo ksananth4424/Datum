@@ -330,7 +330,7 @@ void insert_inbuiltfunction_symtab() {
         func = "show";
         std::vector<DataType> *inputParameters = new std::vector<DataType>({Dataset,Array,Array_Integer,Array_String,Array_Float,Array_Char,Array_Boolean,String,Integer,Char,Float,Boolean});
         std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({})});
-        std::vector<DataType> *returnParameters = new std::vector<DataType>({Dataset,Array,Array_Integer,Array_String,Array_Float,Array_Char,Array_Boolean,String,Integer,Char,Float,Boolean});
+        std::vector<DataType> *returnParameters = new std::vector<DataType>({Void,Void,Void,Void,Void,Void,Void,Void,Void,Void,Void,Void});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     } 
     {
@@ -343,7 +343,7 @@ void insert_inbuiltfunction_symtab() {
     {
         func = "sort";
         std::vector<DataType> *inputParameters = new std::vector<DataType>({Dataset,Dataset,Array_Integer,Array_String,Array_Float,Array_Char,Array_Boolean});
-        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector<DataType>({Integer}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({})});
+        std::vector<std::vector<DataType>*> *otherParameters = new std::vector<std::vector<DataType>*>({new std::vector({Integer}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({}),new std::vector<DataType>({})});
         std::vector<DataType> *returnParameters = new std::vector<DataType>({Dataset,Dataset,Array_Integer,Array_String,Array_Float,Array_Char,Array_Boolean});
         symtab.insert(func,inputParameters,otherParameters,returnParameters, scope, -1, -1);
     } 

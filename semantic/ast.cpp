@@ -80,6 +80,7 @@ string Expression::codegen() {
         Expression *expr = unaryExpression->expr;
         code += dynamic_cast<SingleChainExpression *>(expr)->codegen();
     }
+    return code;
 }
 
 //BinaryExpression
@@ -193,6 +194,8 @@ string UnaryExpression::codegen() {
             code+="-";
         }else if (o == plus_op){
             code+="+";
+        }else if (o == not_op){
+            code+="!";
         }
     }
     if(this->constantValue){
@@ -200,6 +203,7 @@ string UnaryExpression::codegen() {
     }
     // need to handle inbuilt function
     
+    return code;
 }
 
 //ConstantValue
@@ -521,8 +525,10 @@ FunctionCall::FunctionCall(InbuiltFunctions inbuiltFunc, vector<Argument *> *arg
     this->column = column;
 }
 
-FunctionCall::codegen() {
-
+string FunctionCall::codegen() {
+    string code = "";
+     
+    return code;
 }
 
 //FunctionDeclaration
@@ -553,7 +559,7 @@ FunctionDeclaration::FunctionDeclaration(char* identifier, Parameter* inpParamet
     this->column = column;
 }
 
-FunctionDeclaration::codegen() {
+string FunctionDeclaration::codegen() {
     string code = "";
     code += this->outParameter->codegen(); //doubt here
     code += this->identifier;

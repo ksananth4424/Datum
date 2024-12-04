@@ -1,0 +1,7 @@
+Download matplotlibcpp.h
+
+pip uninstall numpy
+pip install numpy==1.24.3
+sudo apt-get install python3-tk
+g++ library.cpp -I /usr/include/python3.10/ -lpython3.10
+./a.out

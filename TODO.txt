@@ -12,8 +12,8 @@ Prepare whitepaper
 DSL:
 - Lexer Done
 - Parser Done
-- Rest left to do
-
+- Semantic Done
+- Transpiling almost done
 
 ----------------------------------------------------------
 Lexical Analyser:
@@ -23,27 +23,11 @@ Lexical Analyser:
 ----------------------------------------------------------
 Syntax Analyser:
 - Done 
-- Few doubts left:
-    -> how to declare arrays (size?)
-    -> do we support complex arrays?
-    -> multi dimensional expression on lhs ?
-    -> are our loops restrictive ??
 
 ----------------------------------------------------------
 Semantic Analyser:
-- join not declared
-- need multi chain expression?
-- line numbers
--  Error:  Cannot perform "*=" operation with Array and Integer!
--  Error:  MultiChainExpression cannot terminate with multiple DataTypes
-- semantic analysis of pfunctions
+- Almost done
+
 ----------------------------------------------------------
 Intermediate code generator:
-- Build the whole thing
-
-
-----------------------------------------------------------
-Optimizations:
-- Do the whole thing
-
-`
+- Almost done
