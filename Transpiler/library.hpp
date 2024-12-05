@@ -37,6 +37,8 @@ class Dataset {
     // the dataset is a 2D array of dataset_objects
 public:
     vector<vector<Dataset_object>> data;
+    vector<vector<function<bool(int, int)>>> filters;
+
     Dataset(vector<vector<Dataset_object>> data) {
         this->data = data;
     }
@@ -75,7 +77,12 @@ public:
             }
             new_data.push_back(row);
         }
-        return Dataset(new_data);
+        Dataset new_dataset = Dataset(new_data);
+        new_dataset.filters = this->filters;
+        for (int i = 0; i < other.filters.size(); i++) {
+            new_dataset.filters.push_back(other.filters[i]);
+        }
+        return new_dataset;
     }
 
     // operator overloading for the - operator only if the two datasets have the same shape and same type in corresponding cells
@@ -112,7 +119,12 @@ public:
             }
             new_data.push_back(row);
         }
-        return Dataset(new_data);
+        Dataset new_dataset = Dataset(new_data);
+        new_dataset.filters = this->filters;
+        for (int i = 0; i < other.filters.size(); i++) {
+            new_dataset.filters.push_back(other.filters[i]);
+        }
+        return new_dataset;
     }
 
     // operator overloading for the * operator only if the two datasets have the same shape and same type in corresponding cells
@@ -149,7 +161,12 @@ public:
             }
             new_data.push_back(row);
         }
-        return Dataset(new_data);
+        Dataset new_dataset = Dataset(new_data);
+        new_dataset.filters = this->filters;
+        for (int i = 0; i < other.filters.size(); i++) {
+            new_dataset.filters.push_back(other.filters[i]);
+        }
+        return new_dataset;
     }
 
     // operator overloading for the / operator only if the two datasets have the same shape and same type in corresponding cells
@@ -186,7 +203,12 @@ public:
             }
             new_data.push_back(row);
         }
-        return Dataset(new_data);
+        Dataset new_dataset = Dataset(new_data);
+        new_dataset.filters = this->filters;
+        for (int i = 0; i < other.filters.size(); i++) {
+            new_dataset.filters.push_back(other.filters[i]);
+        }
+        return new_dataset;
     }
 
     // operator overloading for the = operator only if the two datasets have the same shape and same type in corresponding cells
@@ -223,7 +245,12 @@ public:
             }
             new_data.push_back(row);
         }
-        return Dataset(new_data);
+        Dataset new_dataset = Dataset(new_data);
+        new_dataset.filters = this->filters;
+        for (int i = 0; i < other.filters.size(); i++) {
+            new_dataset.filters.push_back(other.filters[i]);
+        }
+        return new_dataset;
     }
 }
 
@@ -236,7 +263,9 @@ Dataset func_row(Dataset dataset, vector<int> rows) {
     for (int i = 0; i < rows.size(); i++) {
         new_data.push_back(dataset.data[rows[i]]);
     }
-    return Dataset(new_data);
+    Dataset new_dataset = Dataset(new_data);
+    new_dataset.filters = this->filters;
+    return new_dataset;
 }
 
 vector<Dataset_object> func_row(Dataset dataset, string s){
@@ -255,7 +284,9 @@ Dataset func_row(Dataset dataset, vector<string> rows) {
     for (int i = 0; i < rows.size(); i++) {
         new_data.push_back(func_row(dataset, rows[i]));
     }
-    return Dataset(new_data);
+    Dataset new_dataset = Dataset(new_data);
+    new_dataset.filters = this->filters;
+    return new_dataset;
 }
 
 Dataset func_row(Dataset dataset, vector<vector<int>> rows) {
@@ -263,7 +294,9 @@ Dataset func_row(Dataset dataset, vector<vector<int>> rows) {
     for (int i = 0; i < rows.size(); i++) {
         new_data.push_back(func_row(dataset, rows[i]));
     }
-    return Dataset(new_data);
+    Dataset new_dataset = Dataset(new_data);
+    new_dataset.filters = this->filters;
+    return new_dataset;
 }
 
 vector<Dataset_object> func_col(Dataset dataset, int col) {
@@ -283,7 +316,9 @@ Dataset func_col(Dataset dataset, vector<int> cols) {
         }
         new_data.push_back(row);
     }
-    return Dataset(new_data);
+    Dataset new_dataset = Dataset(new_data);
+    new_dataset.filters = this->filters;
+    return new_dataset;
 }
 
 vector<Dataset_object> func_col(Dataset dataset, string s) {
@@ -302,7 +337,9 @@ Dataset func_col(Dataset dataset, vector<string> cols) {
     for (int i = 0; i < cols.size(); i++) {
         new_data.push_back(func_col(dataset, cols[i]));
     }
-    return Dataset(new_data);
+    Dataset new_dataset = Dataset(new_data);
+    new_dataset.filters = this->filters;
+    return new_dataset;
 }
 
 Dataset func_col(Dataset dataset, vector<vector<int>> cols) {
@@ -310,7 +347,14 @@ Dataset func_col(Dataset dataset, vector<vector<int>> cols) {
     for (int i = 0; i < cols.size(); i++) {
         new_data.push_back(func_col(dataset, cols[i]));
     }
-    return Dataset(new_data);
+    Dataset new_dataset = Dataset(new_data);
+    new_dataset.filters = this->filters;
+    return new_dataset;
+}
+
+Dataset func_filter(Dataset dataset, function<bool(int, int)> filter) {
+    dataset.filters.push_back(filter);
+    return dataset;
 }
 
 vector<Dataset_object> func_sum(Dataset dataset, vector<vector<int>> temp) {
@@ -512,7 +556,9 @@ Dataset func_unique(Dataset dataset) {
             new_data.push_back(dataset.data[i]);
         }
     }
-    return Dataset(new_data);
+    Dataset new_dataset = Dataset(new_data);
+    new_dataset.filters = this->filters;
+    return new_dataset;
 }
 
 vector<Dataset_object> func_unique(vector<Dataset_object> dataset) {
