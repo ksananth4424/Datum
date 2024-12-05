@@ -1,0 +1,8 @@
+function_declarations:
+function(integer input) -> complex_calculation(string threshold) -> float {
+    return threshold;  $$ ERROR_EXPECTED 
+}
+
+start:
+integer value = 10;
+float result = value->complex_calculation("high");
