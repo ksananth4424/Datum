@@ -2,7 +2,7 @@
 This repository is for course projects. Course info: CS3423 Compilers-II at CSE Department, IITH
 
 Language name: Datum\
-Supervisor Dr. Ramakrishna Upadrasta\
+Supervisor Dr. Ramakrishna Upadrasta
 
 Abstract \
 This whitepaper presents a domain-specific language(DSL) which is designed for tasks related
@@ -53,6 +53,9 @@ For further info regarding the same proceed to the parser folder.
 This stage has been completed.\
 For further info regarding the same proceed to the semantic folder.
 
+The node structure for the AST is as follows:
+![AST](semantic/nodes.png)
+
 ### Transpiling Phase
 
 This stage is almost completed except a few bugs which we plan to resolve in the upcoming days.\
@@ -62,7 +65,23 @@ For further info regarding the transpiling proceed to the Transpiler folder.
 ### Codegen with LLVM-IR
 
 This stage was stopped halfway due to shortage of time and we went ahead with transpiling the code to cpp.\
-To see developments in LLVM-IR refer the codegen folder.\
+To see developments in LLVM-IR refer the codegen folder.
 
 
 Note: In the next few days we will be fixing a few bugs of transpiler and adding test cases
+
+## Acknowledgements
+
+[K S Ananth](https://github.com/ksananth4424)
+
+[Nimai Parsa](https://github.com/nimaiParsa)
+
+[Kartikeya M](https://github.com/MKartikeya)
+
+[Bhavesh M Chowdary](https://github.com/Bhaveshchowdary)
+
+[Arugonda Srikar](https://github.com/Srikar-Arugonda-1)
+
+[Koushik Gunnam](https://github.com/koushikgunnam)
+
+[Mohammed Gufran Ali](https://github.com/Gufran2809)
