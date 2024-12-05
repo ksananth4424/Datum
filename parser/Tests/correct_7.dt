@@ -1,0 +1,31 @@
+function_declarations:
+function(dataset ds) -> analyze_and_transform(string col_name, integer threshold) -> dataset 
+{
+    array(float) filtered_values;
+
+    filtered_values = ds->col(col_name)->filter({return x > threshold;});
+    
+    ds->col(col_name) = filtered_values * 2;
+    
+    array(integer) summary_stats;
+
+    summary_stats->add(filtered_values->mean());
+
+    summary_stats->add(filtered_values->max());
+
+    summary_stats->add(filtered_values->min());
+    
+    summary_stats->show();
+    
+    return ds;
+}
+
+start:
+
+dataset sales_data = read("sales_report.csv", ",");
+
+integer sales_threshold = 1000;
+
+dataset processed_data = sales_data->analyze_and_transform("revenue", sales_threshold);
+
+processed_data->write("processed_sales.csv", ",");

@@ -1,0 +1,18 @@
+function_declarations:
+function(dataset ds) -> safe_column_operation(string col_name) -> dataset 
+{
+    if(ds->col_exists(col_name)) {   $$ERROR_EXPECTED missing }
+
+    return ds;
+}
+
+start:
+dataset research_data = read("research_metrics.csv", ",");
+
+dataset processed_research;
+
+processed_research = research_data->safe_column_operation("performance_score");
+
+processed_research->safe_column_operation("non_existent_column");
+
+processed_research->write("processed_research.csv", ",");

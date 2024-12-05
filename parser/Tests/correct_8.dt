@@ -1,0 +1,24 @@
+function_declarations:
+function(dataset ds1, dataset ds2) -> cross_dataset_analysis(string join_col) -> dataset 
+{
+    (ds1, ds2)->join({
+        string matching_key;
+    }) -> row() -> show();
+    
+    array(float) correlation_values;
+
+    correlation_values = ds1->col("performance") * ds2->col("budget");
+    
+    correlation_values->show();
+    
+    return ds1;
+}
+
+start:
+dataset employee_data = read("employees.csv", ",");
+
+dataset budget_data = read("budgets.csv", ",");
+
+dataset correlated_data = employee_data->cross_dataset_analysis("employee_id");
+
+correlated_data->col("performance")->show_bar();

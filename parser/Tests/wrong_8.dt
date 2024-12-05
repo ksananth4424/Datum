@@ -1,0 +1,10 @@
+start:
+dataset experimental_data = read("experiments.csv", " ");
+
+array(integer) interesting_windows;
+
+interesting_windows = experimental_data->smart_filtering(3);
+
+interesting_windows->show();
+
+integer sum = 0; $$ERROR_EXPECTED used reserve word for variable name
