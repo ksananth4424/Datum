@@ -1,0 +1,17 @@
+function_declarations:
+
+
+start:
+dataset ds;
+ds = read("input1.csv", ",");
+integer check = 0;
+integer num = 2;
+loop i from 0 to 5 {
+    if ((integer)i % num == 0) {
+        check = 1;
+    } else {
+        check = 0;
+    }
+    check->show();
+}
+

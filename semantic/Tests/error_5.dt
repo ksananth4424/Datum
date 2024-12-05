@@ -1,0 +1,12 @@
+
+function_declarations:
+function(dataset ds1) -> addDatasets(dataset ds2) -> dataset { 
+
+    return ds1+ds2["data"]; $$ ERROR_EXPECTED
+}
+
+start:
+dataset ds1 = read("input1.csv", ",");
+dataset ds2 = read("input2.csv", ",");
+
+ds1->addDatasets(ds2);
