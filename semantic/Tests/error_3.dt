@@ -1,0 +1,10 @@
+function_declarations:
+function(dataset ds) -> transform_data(string col_name) -> dataset {
+    ds->col(col_name) = ds->col(col_name) + 2; $$ ERROR_EXPECTED
+
+    return ds;
+}
+
+start:
+dataset customer_data = read("customers.csv", ",");
+dataset processed_data = customer_data->transform_data("name");
