@@ -127,7 +127,7 @@ public:
     Node();
     virtual void buildScope(string scope);
     virtual string codegen() = 0;
-    virtual string get_scope() = 0;
+    virtual string get_scope();
     virtual ~Node() = default;
 };
 

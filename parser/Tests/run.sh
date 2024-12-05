@@ -58,13 +58,24 @@ do
     run_test $file "incorrect" $expected_error $expected_warning
 done
 
-echo -e "\n"
+if [ $passed -eq 0 ]
+then
+    echo -e "\n\e[31mFailed, No tests passed."
+    exit 1
+fi
+
+if [ $failed -eq 0 ]
+then
+    echo -e "\n\e[32mSuccess, all tests passed."
+    exit 0
+fi
 
 # test stats
 echo -e "\tTest summary"
 echo -e "Total \t:\t$((passed + failed)) (Correct count: $correct_files, Wrong count: $wrong_files)"
 echo -e "Passed \t:\t$passed"
 echo -e "Failed \t:\t$failed"
+
 
 # exit
 if [[ $failed -ne 0 ]]; then

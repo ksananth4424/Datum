@@ -8,6 +8,12 @@ This section of the DSL compiler is the process of parsing a string of tokens in
 correct_{test_case_num}.dt is to test the correct codes. \
 Similarly wrong_{test_case_num}.dt is to test the wrong code.
 
+## Installations
+
+In order to run this run the following command
+
+    $ sudo apt install bison
+
 ## Testing
 
 Go to the parser folder and run the following
@@ -24,3 +30,5 @@ Run the following to clean the repository with all the files formed:
 ## References
 
 ANSI C Grammar
+
+Note: Syntax phase completed

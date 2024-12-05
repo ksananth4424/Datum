@@ -1,15 +1,14 @@
-EXEC = semantic.o
+EXEC = transpiler.o
 TESTDIR = Tests
 FLAGS =
 
 .SILENT: test run
 .PHONY: clean build test run debug
 
-
 build: $(EXEC)
 
-$(EXEC): y.tab.c ast.cpp traversal.cpp symbol_table.cpp
-	g++ $(FLAGS) -o $(EXEC) y.tab.c ast.cpp traversal.cpp symbol_table.cpp
+$(EXEC): y.tab.c ../semantic/ast.cpp ../semantic/traversal.cpp ../semantic/symbol_table.cpp
+	g++ $(FLAGS) -o $(EXEC) y.tab.c ../semantic/ast.cpp ../semantic/traversal.cpp ../semantic/symbol_table.cpp -I /usr/include/python3.10/ -lpython3.10
 
 run: $(EXEC)
 	./$(EXEC) input.txt

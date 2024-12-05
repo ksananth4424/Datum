@@ -6,6 +6,12 @@ Lexical analysis is the process of converting a string of characters into a sequ
 
 It can recognise all the keywords and operators mentioned in our Language whitepaper
 
+## Installations
+
+In order to run this run the following command
+
+    $ sudo apt install flex
+
 ## Testing
 
 Go to the lexer folder and run the following
@@ -19,3 +25,5 @@ This should run the test cases and report their results
 ## References
 
 ANSI C Lexer
+
+Note: Lexeical phase completed

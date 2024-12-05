@@ -7,19 +7,34 @@ This section of the DSL compiler is the process of analysing the semantics of th
 correct_{test_case_num}.dt is to test the correct codes. \
 Similarly wrong_{test_case_num}.dt is to test the wrong code.
 
+## Installations
+
+Make sure you have g++
+
+    $ sudo apt install g++
+
 ## Testing
 
 Go to the parser folder and run the following
 
     $ make \
-    $$ make test
+    $ make test \
 
 This should run the test cases and report their results
+
+To test with debug mode
+
+    $ make debug
+
+To run a particular test file run
+
+    $ make run input.txt
+
+This will print all the flow of the semantic analysis
 
 Run the following to clean the repository with all the files formed:
 
     $ make clean
 
-## References
 
-ANSI C Grammar
+Note: Semantic phase completed

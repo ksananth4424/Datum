@@ -2,11 +2,8 @@ List of To Do's
 
 ----------------------------------------------------------
 Prepare whitepaper
-- Logo 
+- Done
 - Final Touches
-- change int to integer
-- some semi colons are missing
-
 
 ----------------------------------------------------------
 DSL:
@@ -29,5 +26,5 @@ Semantic Analyser:
 - Almost done
 
 ----------------------------------------------------------
-Intermediate code generator:
+Intermediate code generator (to cpp due to shortage of time):
 - Almost done
