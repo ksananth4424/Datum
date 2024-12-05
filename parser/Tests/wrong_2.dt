@@ -1,2 +1,12 @@
 start:
+integer x = ds1->func1() * (ds2->func2({ return e == 1; }) + 123) / 2 
+            * (ds1, ds2)->func3(1, "hello");
+bool y = x / (ds1, ds2)->func4((ds3, ds4)->func5(from 1 to 10)) > x >= y;
+
+float z = x / 0.05;
+x *= z + y / (z < y) <= x * 2;
+x->show();
+y->show();
+z->show();
+
 (ds3, ds4)->func1()[0]->func2({ return e != null; })->row(10) = 10; $$ ERROR_EXPECTED

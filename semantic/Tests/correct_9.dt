@@ -1,0 +1,35 @@
+function_declarations:
+function(float a) -> scale_value(integer multiplier) -> float 
+{
+    return a * multiplier;
+}
+
+function(array(float) data) -> normalize_data() -> array(float) 
+{
+    float max_val = data->max();
+
+    float min_val = data->min();
+    
+    array(float) normalized;
+   
+$$loop i from 0 to data->size() 
+$$  {
+$$        normalized->add((data[i] - min_val) / (max_val - min_val));
+$$  }    
+    return normalized;
+}
+
+start:
+$$dataset sensor_data = read("sensors.csv", ",");
+$$
+$$array(float) mixed_values = {1.5, 2.7, 3.2, 4.9, 5.1};
+$$
+$$array(float) processed_values;
+$$
+$$processed_values = mixed_values->normalize_data();
+$$
+$$processed_values->show();
+$$
+$$float scaled_result = processed_values[0]->scale_value(10);
+$$
+$$scaled_result->show();
